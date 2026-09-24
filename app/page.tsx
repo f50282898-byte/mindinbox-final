@@ -1,69 +1,93 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useAppStore } from '@/lib/store';
+import { loginWithGoogle, logoutUser } from '@/lib/authService';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+
+export default function HomePage() {
+  const { user, subscriptionTier } = useAppStore();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Mind in a Box",
+    "operatingSystem": "Web",
+    "applicationCategory": "EducationalApplication",
+    "description": "An interactive, intellectually deep digital entity powered by Edge AI. Consult the minds of ancient philosophers."
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-obsidian text-gold-light text-center">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <motion.h1 
+        className="text-6xl font-serif text-gold mb-8 drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        Mind in a Box (عقل في صندوق)
+      </motion.h1>
+      
+      <motion.div 
+        className="p-12 border border-gold-dark rounded-xl bg-obsidian-light max-w-2xl w-full shadow-[0_0_40px_rgba(212,175,55,0.05)]"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1, delay: 0.3 }}
+      >
+        {user ? (
+          <>
+            <h2 className="text-3xl font-serif text-gold mb-4">
+              The Journey Continues
+            </h2>
+            <p className="text-xl mb-6">
+              Welcome, {user.email || user.displayName}.
+            </p>
+            <div className="inline-block px-4 py-2 bg-gold/10 text-gold border border-gold rounded-full text-sm font-bold tracking-widest uppercase mb-8">
+              Tier: {subscriptionTier}
+            </div>
+            
+            <div className="flex gap-4 justify-center">
+              <Link href="/utopia" className="px-8 py-3 bg-gradient-to-r from-gold-dark to-gold text-black font-bold uppercase tracking-widest rounded hover:scale-105 transition-transform">
+                Enter Utopia
+              </Link>
+              {subscriptionTier === 'sanctum' || subscriptionTier === 'inner_sanctum' ? (
+                <Link href="/sanctum" className="px-8 py-3 border border-gold text-gold font-bold uppercase tracking-widest rounded hover:bg-gold hover:text-black transition-colors">
+                  The Sanctum
+                </Link>
+              ) : null}
+            </div>
+
+            <button 
+              onClick={logoutUser}
+              className="mt-12 text-sm opacity-50 hover:opacity-100 hover:text-white transition-opacity"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Sign out
+            </button>
+          </>
+        ) : (
+          <>
+            <h2 className="text-3xl font-serif text-gold mb-6">Unveil the Infinite</h2>
+            <p className="mb-10 text-lg opacity-80 leading-relaxed">
+              Log in to claim your 14-Day Free Trial. Consult the greatest philosophical minds in history, track your intellectual progression, and discover the secrets hidden within.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button 
+                onClick={loginWithGoogle}
+                className="px-8 py-4 bg-gradient-to-r from-gold-dark to-gold text-black font-bold uppercase tracking-widest rounded hover:scale-105 transition-transform shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+              >
+                Sign In With Google
+              </button>
+              <Link href="/utopia" className="px-8 py-4 border border-gold text-gold font-bold uppercase tracking-widest rounded hover:bg-gold hover:text-black transition-colors">
+                Free Trial (5 Uses)
+              </Link>
+            </div>
+          </>
+        )}
+      </motion.div>
+    </main>
   );
 }
