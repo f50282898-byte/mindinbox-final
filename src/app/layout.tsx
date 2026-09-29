@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Cairo, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { GoldenCursor } from "@/components/GoldenCursor";
-import { LeadGenModal } from "@/components/LeadGenModal";
+import { GoldenCursor } from "@/components/GoldenCursor";\nimport { LeadGenModal } from "@/components/LeadGenModal";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -16,8 +15,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} ${playfair.variable}`}>
       <body className="font-sans min-h-screen selection:bg-gold/30 selection:text-gold-light">
-        <GoldenCursor />
-        <LeadGenModal />
+        <GoldenCursor />\n        <LeadGenModal />
         {children}
       </body>
     </html>
