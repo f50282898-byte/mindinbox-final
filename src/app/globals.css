@@ -3,21 +3,193 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+    --obsidian: #0b0b0b;
+    --gold: #d4af37;
+    --gold-light: #ead89b;
+    --ivory: #f2eddf;
+  }
+
+  html {
+    min-height: 100%;
+    background: var(--obsidian);
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-obsidian text-gold-muted antialiased;
+    @apply m-0 min-h-screen antialiased;
+    background: var(--obsidian);
+    color: var(--ivory);
+    font-family: "Playfair Display", Georgia, "Noto Naskh Arabic", Amiri, serif;
   }
 }
 
-@layer utilities {
-  .gold-glow {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
-  }
-  .gold-text-glow {
-    text-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+.utopia-shell {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(126, 97, 30, 0.12), transparent 43%),
+    linear-gradient(180deg, #0b0b0b 0%, #10100e 62%, #080808 100%);
+}
+
+.utopia-grain {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  opacity: 0.13;
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+  mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+  pointer-events: none;
+}
+
+.utopia-horizon {
+  position: absolute;
+  right: 0;
+  bottom: 18%;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.28), transparent);
+  box-shadow: 0 0 48px 12px rgba(212, 175, 55, 0.06);
+}
+
+.utopia-colonnade {
+  position: absolute;
+  right: max(4vw, 24px);
+  bottom: 18%;
+  left: max(4vw, 24px);
+  display: flex;
+  height: min(34vh, 280px);
+  justify-content: space-around;
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.utopia-column {
+  position: relative;
+  width: clamp(13px, 2vw, 28px);
+  border-right: 1px solid rgba(212, 175, 55, 0.27);
+  border-left: 1px solid rgba(212, 175, 55, 0.27);
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.055), transparent);
+}
+
+.utopia-column::before,
+.utopia-column::after {
+  position: absolute;
+  right: -7px;
+  left: -7px;
+  height: 2px;
+  content: "";
+  background: rgba(212, 175, 55, 0.35);
+}
+
+.utopia-column::before {
+  top: 0;
+}
+
+.utopia-column::after {
+  bottom: 0;
+}
+
+.utopia-column:nth-child(even) {
+  transform: translateY(18px);
+  opacity: 0.65;
+}
+
+.utopia-content {
+  position: relative;
+  z-index: 2;
+  width: min(100% - 40px, 760px);
+  padding: 48px 0;
+  text-align: center;
+}
+
+.utopia-kicker {
+  margin: 0 0 24px;
+  color: rgba(234, 216, 155, 0.72);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10px;
+  letter-spacing: 0.32em;
+}
+
+.utopia-title {
+  margin: 0;
+  color: var(--gold-light);
+  font-family: "Noto Naskh Arabic", Amiri, Georgia, serif;
+  font-size: clamp(48px, 9vw, 88px);
+  font-weight: 500;
+  line-height: 1.35;
+  text-shadow: 0 0 44px rgba(212, 175, 55, 0.16);
+}
+
+.utopia-subtitle {
+  margin: 12px 0 0;
+  color: rgba(242, 237, 223, 0.78);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(19px, 3vw, 26px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.utopia-rule {
+  width: 54px;
+  height: 1px;
+  margin: 30px auto 24px;
+  transform-origin: center;
+  background: var(--gold);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
+}
+
+.utopia-invitation {
+  margin: 0;
+  color: rgba(242, 237, 223, 0.62);
+  font-size: 15px;
+}
+
+.golden-cursor {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(234, 216, 155, 0.8);
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.16);
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+  pointer-events: none;
+}
+
+.utopia-coordinate {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  color: rgba(234, 216, 155, 0.35);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+@media (pointer: coarse) {
+  .golden-cursor {
+    display: none;
   }
 }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #0b0b0b; }
-::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.25); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.5); }
+@media (max-width: 600px) {
+  .utopia-colonnade {
+    right: 12px;
+    left: 12px;
+    height: 23vh;
+  }
+
+  .utopia-coordinate {
+    right: 16px;
+    bottom: 16px;
+    font-size: 8px;
+  }
+}
