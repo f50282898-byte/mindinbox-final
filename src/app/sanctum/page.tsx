@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { PremiumContentShield } from "@/components/PremiumContentShield";
 export const runtime = "edge";
 
 export default function SanctumPage() {
   return (
+    <PremiumContentShield>
     <main className="relative flex min-h-screen items-center justify-center bg-black overflow-hidden p-6">
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08)_0%,_#000_80%)]" />
       <div className="z-10 w-full max-w-4xl text-center gold-glow rounded-3xl border border-gold/30 bg-[#0a0a0a] p-8 md:p-16 backdrop-blur-xl">
@@ -25,5 +27,6 @@ export default function SanctumPage() {
         </div>
       </div>
     </main>
+    </PremiumContentShield>
   );
 }

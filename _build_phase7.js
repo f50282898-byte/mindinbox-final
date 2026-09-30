@@ -1,4 +1,40 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+function w(rel, content) {
+  const abs = path.join(__dirname, rel);
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, content, "utf8");
+  console.log("OK", rel, content.length, "bytes");
+}
+
+w("src/components/PremiumContentShield.tsx", `"use client";
+import { useEffect } from "react";
+
+export function PremiumContentShield({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    // IP Shield: Prevent right-click and copy
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+    const handleCopy = (e: ClipboardEvent) => e.preventDefault();
+    
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("copy", handleCopy);
+    
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("copy", handleCopy);
+    };
+  }, []);
+
+  return (
+    <div className="select-none pointer-events-auto">
+      {children}
+    </div>
+  );
+}
+`);
+
+w("src/components/AdminConsole.tsx", `"use client";
 import { useState, useEffect } from "react";
 import { useAppStore } from "@/lib/store";
 import { motion } from "framer-motion";
@@ -90,4 +126,51 @@ export function AdminConsole() {
       </motion.div>
     </div>
   );
+}
+`);
+
+w("src/app/admin/page.tsx", `import { AdminConsole } from "@/components/AdminConsole";
+
+export const runtime = "edge";
+
+export default function AdminPage() {
+  return <AdminConsole />;
+}
+`);
+
+// Apply IP Shield to premium pages
+const oraclePath = path.join(__dirname, 'src/app/oracle/page.tsx');
+let oracleCode = fs.readFileSync(oraclePath, 'utf8');
+if (!oracleCode.includes('PremiumContentShield')) {
+  oracleCode = oracleCode.replace(
+    'import Link from "next/link";',
+    'import Link from "next/link";\\nimport { PremiumContentShield } from "@/components/PremiumContentShield";'
+  );
+  oracleCode = oracleCode.replace(
+    '<main',
+    '<PremiumContentShield>\\n    <main'
+  );
+  oracleCode = oracleCode.replace(
+    '</main>',
+    '</main>\\n    </PremiumContentShield>'
+  );
+  fs.writeFileSync(oraclePath, oracleCode, 'utf8');
+}
+
+const sanctumPath = path.join(__dirname, 'src/app/sanctum/page.tsx');
+let sanctumCode = fs.readFileSync(sanctumPath, 'utf8');
+if (!sanctumCode.includes('PremiumContentShield')) {
+  sanctumCode = sanctumCode.replace(
+    'import Link from "next/link";',
+    'import Link from "next/link";\\nimport { PremiumContentShield } from "@/components/PremiumContentShield";'
+  );
+  sanctumCode = sanctumCode.replace(
+    '<main',
+    '<PremiumContentShield>\\n    <main'
+  );
+  sanctumCode = sanctumCode.replace(
+    '</main>',
+    '</main>\\n    </PremiumContentShield>'
+  );
+  fs.writeFileSync(sanctumPath, sanctumCode, 'utf8');
 }

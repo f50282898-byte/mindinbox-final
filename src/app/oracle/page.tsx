@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { PremiumContentShield } from "@/components/PremiumContentShield";
 export const runtime = "edge";
 
 export default function OraclePage() {
   return (
+    <PremiumContentShield>
     <main className="relative flex min-h-screen items-center justify-center bg-black overflow-hidden p-6">
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.05)_0%,_#000_70%)]" />
       <div className="z-10 max-w-2xl text-center gold-glow rounded-3xl border border-gold/20 bg-[#0a0a0a] p-12 backdrop-blur-xl">
@@ -20,5 +22,6 @@ export default function OraclePage() {
         </div>
       </div>
     </main>
+    </PremiumContentShield>
   );
 }
