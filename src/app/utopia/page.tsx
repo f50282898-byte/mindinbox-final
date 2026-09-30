@@ -4,7 +4,7 @@ export const runtime = "edge";
 
 export default function UtopiaPage() {
   return (
-    <main className="relative h-screen w-full overflow-hidden bg-obsidian">
+    <main className="bg-black">
       <UtopiaUI />
     </main>
   );
