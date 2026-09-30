@@ -1,127 +1,81 @@
 "use client";
-
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export function UtopiaHero() {
-  const [mounted, setMounted] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+function GoldDust() {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; s: number; d: number; }>>([]);
   
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  const yBackground = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const yColumns = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const opacityText = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
   useEffect(() => {
-    setMounted(true);
+    // Generate static particle starting positions
+    const newParticles = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      s: Math.random() * 2 + 1,
+      d: Math.random() * 5 + 5
+    }));
+    setParticles(newParticles);
   }, []);
 
-  // Generate random particles for gold dust
-  const particles = Array.from({ length: 40 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    duration: 15 + Math.random() * 20,
-    delay: Math.random() * -20,
-    size: Math.random() * 3 + 1,
-  }));
-
-  if (!mounted) return null;
-
   return (
-    <div ref={containerRef} className="relative h-[150vh] w-full bg-black overflow-hidden">
-      {/* Background Deep Void */}
-      <motion.div 
-        className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]"
-        style={{ y: yBackground }}
-      />
-
-      {/* Greek Columns Parallax Layer */}
-      <motion.div 
-        className="absolute inset-0 z-10 opacity-30 mix-blend-screen bg-[url('/temple.jpg')] bg-cover bg-center bg-no-repeat"
-        style={{ 
-          y: yColumns,
-          filter: 'invert(1) sepia(1) saturate(2) hue-rotate(330deg) brightness(0.7)'
-        }}
-      />
-
-      {/* Gold Dust Particles */}
-      <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">
-        {particles.map((p) => (
-          <motion.div
-            key={p.id}
-            className="absolute rounded-full bg-gold shadow-[0_0_8px_2px_rgba(212,175,55,0.6)]"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              width: p.size,
-              height: p.size,
-            }}
-            animate={{
-              y: [0, -200],
-              opacity: [0, 0.8, 0],
-            }}
-            transition={{
-              duration: p.duration,
-              repeat: Infinity,
-              delay: p.delay,
-              ease: "linear",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Hero Typography & Navigation */}
-      <motion.div 
-        className="sticky top-0 z-30 flex h-screen w-full flex-col items-center justify-center text-center px-4"
-        style={{ opacity: opacityText }}
-      >
-        <motion.p 
-          initial={{ opacity: 0, letterSpacing: "0.1em" }}
-          animate={{ opacity: 1, letterSpacing: "0.5em" }}
-          transition={{ duration: 2, ease: "easeOut" }}
-          className="mb-6 font-serif text-[10px] uppercase text-gold-light/60 tracking-[0.5em]"
-        >
-          أعظم العقول تنتظرك
-        </motion.p>
-        
-        <motion.h1 
-          initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 2.5, ease: "easeOut", delay: 0.5 }}
-          className="gold-text-glow font-serif text-5xl md:text-7xl lg:text-8xl text-gold-light tracking-tight"
-        >
-          عقل في صندوق
-        </motion.h1>
-        
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, delay: 2 }}
-          className="mt-16"
-        >
-          <Link 
-            href="/utopia" 
-            className="group relative inline-flex items-center justify-center overflow-hidden font-serif text-lg text-gold-muted transition-all duration-500 hover:text-gold"
-          >
-            <span className="relative z-10 tracking-[0.2em]">الولوج إلى المحراب</span>
-            <span className="absolute bottom-0 left-0 h-[1px] w-0 bg-gold transition-all duration-700 ease-out group-hover:w-full" />
-          </Link>
-        </motion.div>
-      </motion.div>
-
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center opacity-50">
-        <motion.div 
-          animate={{ y: [0, 10, 0] }} 
-          transition={{ duration: 2, repeat: Infinity }}
-          className="h-16 w-[1px] bg-gradient-to-b from-transparent via-gold to-transparent"
+          key={p.id}
+          className="absolute rounded-full bg-gold/50 shadow-[0_0_10px_2px_rgba(212,175,55,0.4)]"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.s}px`,
+            height: `${p.s}px`,
+          }}
+          animate={{
+            y: [0, -100, 0],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: p.d,
+            repeat: Infinity,
+            ease: "linear",
+          }}
         />
-      </div>
+      ))}
+    </div>
+  );
+}
+
+export function UtopiaHero() {
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_#0a0a0a_0%,_#000_100%)] overflow-hidden">
+      <GoldDust />
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+        className="z-10 flex flex-col items-center text-center px-4"
+      >
+        <div className="gold-glow mb-8 flex h-24 w-24 items-center justify-center rounded-full border border-gold/30 bg-black text-gold-light shadow-2xl">
+          <span className="font-serif text-4xl font-bold">ع</span>
+        </div>
+        
+        <h1 className="gold-text-glow font-serif text-6xl md:text-8xl text-gold-light tracking-wide mb-6">
+          عقل في صندوق
+        </h1>
+        
+        <p className="text-xl md:text-2xl text-gold-muted/80 max-w-2xl font-serif leading-relaxed mb-12">
+          لا تسأل لتجد الإجابة، بل تساءل لترتقي بوعيك. 
+          ملاذك الفلسفي للذكاء الاصطناعي في بيئة معزولة عن ضجيج العالم.
+        </p>
+
+        <Link href="/utopia">
+          <button className="gold-glow relative group overflow-hidden rounded-full border border-gold/50 bg-black/50 px-12 py-5 text-xl text-gold font-serif transition-all hover:border-gold hover:text-black">
+            <div className="absolute inset-0 bg-gold translate-y-full transition-transform duration-500 ease-out group-hover:translate-y-0" />
+            <span className="relative z-10 font-bold tracking-widest">ابدأ الآن</span>
+          </button>
+        </Link>
+      </motion.div>
     </div>
   );
 }

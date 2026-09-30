@@ -9,9 +9,9 @@ export function UtopiaUI() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [secretRevealed, setSecretRevealed] = useState(false);
+  const [trackerInput, setTrackerInput] = useState("");
   
-  const { freeInteractions, increment, tier } = useAppStore();
+  const { freeInteractions, increment, tier, addEntry, entries } = useAppStore();
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export function UtopiaUI() {
     
     if (tier === 'free' && freeInteractions >= 5) {
       increment();
-      return; // Will trigger the LeadGenModal globally
+      return; 
     }
 
     const userMsg = input;
@@ -53,46 +53,40 @@ export function UtopiaUI() {
     }
   };
 
-  const revealSecret = () => {
-    if (secretRevealed) return;
-    setSecretRevealed(true);
-    setMessages(prev => [...prev, { role: 'model', content: '✨ [السر الأكبر]: "إنك لا تسبح في النهر مرتين." - هرقليطس.' }]);
+  const handleAddEntry = () => {
+    if (!trackerInput.trim()) return;
+    addEntry({
+      id: Math.random().toString(),
+      kind: "thought",
+      text: trackerInput,
+      createdAt: new Date().toISOString()
+    });
+    setTrackerInput("");
   };
 
   return (
-    <div className="relative flex h-screen w-full flex-col md:flex-row bg-black overflow-hidden">
-      {/* Background Deep Void */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_#111_0%,_#000_100%)]" />
-
-      {/* Greek Columns Layer */}
-      <div 
-        className="absolute inset-0 z-10 opacity-20 mix-blend-screen bg-[url('/temple.jpg')] bg-cover bg-center bg-no-repeat pointer-events-none"
-        style={{ filter: 'invert(1) sepia(1) saturate(2) hue-rotate(330deg) brightness(0.7)' }}
-      />
-
-      <div 
-        className="absolute top-10 left-10 z-20 h-6 w-6 cursor-pointer rounded-full bg-transparent"
-        onClick={revealSecret}
-      >
-        <div className="absolute inset-0 animate-ping rounded-full bg-gold opacity-10" />
-      </div>
-
-      <div className="z-20 flex h-full w-full flex-col bg-black/60 backdrop-blur-md md:w-[600px] md:border-l md:border-gold/20 mx-auto">
-        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+    <div className="relative flex min-h-screen w-full flex-col lg:flex-row bg-[radial-gradient(ellipse_at_top_right,_#1a1a1a_0%,_#000_100%)] overflow-hidden p-4 lg:p-8 gap-8">
+      
+      <div className="z-20 flex h-[85vh] w-full lg:w-2/3 flex-col rounded-3xl border border-gold/20 bg-black/40 backdrop-blur-md shadow-2xl">
+        <div className="border-b border-gold/10 p-6 flex justify-between items-center">
+          <div>
+            <h1 className="font-serif text-3xl text-gold-light gold-text-glow">اسأل الحكيم</h1>
+            <p className="text-sm text-gold-muted mt-1">تأملات فلسفية مدعومة بالذكاء الاصطناعي</p>
+          </div>
+          <div className="h-10 w-10 rounded-full border border-gold/30 flex items-center justify-center text-gold">👁</div>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
           <AnimatePresence>
             {messages.map((msg, i) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={"flex " + (msg.role === 'user' ? 'justify-end' : 'justify-start')}
               >
                 <div 
-                  className={`max-w-[85%] rounded-2xl p-5 leading-relaxed shadow-lg ${
-                    msg.role === 'user' 
-                      ? 'bg-gold text-black rounded-br-sm' 
-                      : 'gold-glow border border-gold/30 bg-[#0a0a0a] text-gold-light rounded-bl-sm font-serif'
-                  }`}
+                  className={"max-w-[85%] rounded-2xl p-5 leading-relaxed shadow-lg " + (msg.role === 'user' ? 'bg-gold text-black rounded-br-sm' : 'gold-glow border border-gold/30 bg-[#0a0a0a] text-gold-light rounded-bl-sm font-serif text-lg')}
                 >
                   {msg.content}
                 </div>
@@ -109,7 +103,7 @@ export function UtopiaUI() {
           </AnimatePresence>
         </div>
 
-        <div className="border-t border-gold/20 bg-black/80 p-4 md:p-6">
+        <div className="border-t border-gold/10 bg-black/60 p-6 rounded-b-3xl">
           <div className="relative flex items-center">
             <input
               type="text"
@@ -117,18 +111,51 @@ export function UtopiaUI() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="اطرح سؤالك الفلسفي..."
-              className="w-full rounded-full border border-gold/30 bg-[#111] px-6 py-4 pr-14 text-gold-light placeholder-gold-muted/50 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+              className="w-full rounded-full border border-gold/30 bg-[#111] px-6 py-4 pr-16 text-gold-light placeholder-gold-muted/50 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition-all"
             />
             <button
               onClick={handleSend}
               disabled={loading || !input.trim()}
-              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gold text-black transition hover:scale-105 disabled:opacity-50"
+              className="absolute right-2 flex h-12 w-12 items-center justify-center rounded-full bg-gold text-black transition hover:scale-105 disabled:opacity-50"
             >
               ➤
             </button>
           </div>
         </div>
       </div>
+
+      <div className="z-20 flex h-[85vh] w-full lg:w-1/3 flex-col rounded-3xl border border-gold/20 bg-[#0a0a0a]/80 backdrop-blur-md p-6">
+        <h2 className="font-serif text-2xl text-gold-light mb-2">متتبع الوعي</h2>
+        <p className="text-sm text-gold-muted mb-6">دوّن أفكارك وعاداتك اليومية</p>
+        
+        <div className="flex flex-col gap-3 mb-6">
+          <textarea 
+            value={trackerInput}
+            onChange={(e) => setTrackerInput(e.target.value)}
+            placeholder="بماذا تفكر الآن؟"
+            className="w-full rounded-xl border border-gold/20 bg-black p-4 text-gold-light focus:border-gold focus:outline-none resize-none h-24"
+          />
+          <button 
+            onClick={handleAddEntry}
+            className="w-full rounded-xl bg-gold/10 border border-gold/50 py-3 text-gold hover:bg-gold hover:text-black transition-all"
+          >
+            حفظ الفكرة
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {entries.map((entry) => (
+            <div key={entry.id} className="border-l-2 border-gold/50 pl-4 py-2">
+              <p className="text-gold-light text-sm">{entry.text}</p>
+              <span className="text-xs text-gold-muted/60">{new Date(entry.createdAt).toLocaleDateString('ar-EG')}</span>
+            </div>
+          ))}
+          {entries.length === 0 && (
+            <p className="text-center text-gold-muted/40 mt-10 text-sm">لم تسجل أي أفكار بعد.</p>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }
