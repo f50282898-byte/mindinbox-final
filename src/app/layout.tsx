@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cairo, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { LeadGenModal } from "@/components/LeadGenModal";
+import { Sidebar } from "@/components/Sidebar";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
@@ -14,9 +15,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} ${playfair.variable}`}>
-      <body className="font-sans min-h-screen selection:bg-gold/30 selection:text-gold-light">
+      <body className="font-sans min-h-screen bg-black selection:bg-gold/30 selection:text-gold-light">
+        <Sidebar />
         <LeadGenModal />
-        {children}
+        <div className="md:pr-[80px] w-full min-h-screen flex flex-col">
+          {children}
+        </div>
       </body>
     </html>
   );
