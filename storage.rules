@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function hasOracleAccess() {
+      return signedIn() && (
+        request.auth.token.tier == 'oracle' ||
+        request.auth.token.tier == 'sanctum' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.subscriptionTier in ['oracle', 'sanctum']
+      );
+    }
+
+    match /premium-library/{fileName} {
+      allow read: if hasOracleAccess() || isAdmin();
+      allow write: if isAdmin()
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+    }
+  }
+}

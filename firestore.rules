@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function hasOracleAccess() {
+      return signedIn() && (
+        request.auth.token.tier == 'oracle' ||
+        request.auth.token.tier == 'sanctum' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionTier in ['oracle', 'sanctum']
+      );
+    }
+
+    function hasSanctumAccess() {
+      return signedIn() && (
+        request.auth.token.tier == 'sanctum' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionTier == 'sanctum'
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId)
+        && request.resource.data.subscriptionTier == 'free'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(['email', 'displayName', 'subscriptionTier', 'createdAt']);
+      allow update: if isAdmin() || (isOwner(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'displayName']));
+      allow delete: if isAdmin();
+
+      match /entries/{entryId} {
+        allow read, delete: if isOwner(userId) || isAdmin();
+        allow create, update: if (isOwner(userId) || isAdmin())
+          && request.resource.data.kind in ['habit', 'thought', 'time']
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 500;
+      }
+
+      match /events/{eventId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId)
+          && request.resource.data.type == 'ai_interaction'
+          && request.resource.data.createdAt is string;
+        allow update, delete: if false;
+      }
+    }
+
+    match /siteConfig/{documentId} {
+      allow read: if documentId != 'library' || hasOracleAccess() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /analyticsEvents/{eventId} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.type in ['signup', 'ai_interaction']
+        && request.resource.data.createdAt is string;
+      allow update, delete: if false;
+    }
+
+    match /analyticsSessions/{sessionId} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.durationSeconds is int
+        && request.resource.data.durationSeconds >= 0;
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.durationSeconds is int
+        && request.resource.data.durationSeconds >= resource.data.durationSeconds;
+      allow delete: if isAdmin();
+    }
+
+    match /communityPosts/{postId} {
+      allow read: if hasSanctumAccess() || isAdmin();
+      allow create: if hasSanctumAccess()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.authorName is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1200
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if isAdmin();
+    }
+  }
+}

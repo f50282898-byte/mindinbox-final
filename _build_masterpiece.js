@@ -1,4 +1,63 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+function w(rel, content) {
+  const abs = path.join(__dirname, rel);
+  fs.mkdirSync(path.dirname(abs), { recursive: true });
+  fs.writeFileSync(abs, content, "utf8");
+  console.log("OK", rel, content.length, "bytes");
+}
+
+w("src/app/globals.css", `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-[#D9D0BA] antialiased overflow-x-hidden;
+    background: radial-gradient(circle at center, #080808 0%, #000000 100%);
+  }
+}
+
+@layer utilities {
+  .gold-glow {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+  }
+  .gold-text-glow {
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4), 0 0 30px rgba(212, 175, 55, 0.2);
+  }
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #000000; }
+::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+`);
+
+w("src/app/layout.tsx", `import type { Metadata } from "next";
+import { Cairo, Playfair_Display } from "next/font/google";
+import "./globals.css";
+
+const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+
+export const metadata: Metadata = {
+  title: "\\u0639\\u0642\\u0644 \\u0641\\u064A \\u0635\\u0646\\u062F\\u0648\\u0642 | Mind in a Box",
+  description: "A philosophical AI sanctuary.",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="ar" dir="rtl" className={\`\${cairo.variable} \${playfair.variable}\`}>
+      <body className="font-sans min-h-screen selection:bg-gold/30 selection:text-gold-light">
+        {children}
+      </body>
+    </html>
+  );
+}
+`);
+
+w("src/components/UtopiaHero.tsx", `"use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
@@ -57,8 +116,8 @@ export function UtopiaHero() {
             key={p.id}
             className="absolute rounded-full bg-gold shadow-[0_0_8px_2px_rgba(212,175,55,0.6)]"
             style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
+              left: \`\${p.x}%\`,
+              top: \`\${p.y}%\`,
               width: p.size,
               height: p.size,
             }}
@@ -125,3 +184,17 @@ export function UtopiaHero() {
     </div>
   );
 }
+`);
+
+w("src/app/page.tsx", `import { UtopiaHero } from "@/components/UtopiaHero";
+
+export const runtime = "edge";
+
+export default function Home() {
+  return (
+    <main className="bg-black">
+      <UtopiaHero />
+    </main>
+  );
+}
+`);

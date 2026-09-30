@@ -1,140 +1,293 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-import { useAppStore } from "@/lib/store";
-import { Send, Sparkles } from "lucide-react";
+
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import { ArrowUp, BookOpen, Check, Clock3, Sparkles } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
+import { useAppStore, type DailyEntry } from "@/lib/store";
+
+type ChatMessage = { role: "user" | "model"; content: string };
+type EntryKind = DailyEntry["kind"];
+
+const entryLabels: Record<EntryKind, string> = {
+  habit: "Practice",
+  thought: "Thought",
+  time: "Time",
+};
 
 export function UtopiaUI() {
-  const [messages, setMessages] = useState<{role: 'user'|'model', content: string}[]>([
-    { role: 'model', content: 'أهلاً بك في المدينة الفاضلة. أنا حارسك الفلسفي. تساءل، وسأجيبك بلسان عظماء التاريخ.' }
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: "model", content: "مرحباً بك. ما الفكرة التي تستحق أن نتأملها معاً؟" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [secretRevealed, setSecretRevealed] = useState(false);
-  
-  const { freeInteractions, increment, tier } = useAppStore();
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const [entryText, setEntryText] = useState("");
+  const [entryKind, setEntryKind] = useState<EntryKind>("thought");
+  const [savingEntry, setSavingEntry] = useState(false);
+  const [dailyReport, setDailyReport] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [today, setToday] = useState("");
+  const [todayLabel, setTodayLabel] = useState("");
+  const { freeInteractions, increment, setFreeInteractions, tier, uid, entries, setEntries, addEntry } = useAppStore();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const todayEntries = useMemo(
+    () => entries.filter((entry) => entry.createdAt.slice(0, 10) === today),
+    [entries, today],
+  );
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    const currentDate = new Date();
+    setToday(currentDate.toISOString().slice(0, 10));
+    setTodayLabel(currentDate.toLocaleDateString("en", { month: "short", day: "2-digit" }));
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, loading]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    
-    if (tier === 'free' && freeInteractions >= 5) {
-      increment();
+  useEffect(() => {
+    if (!uid || !db) return;
+    return onSnapshot(collection(db, "users", uid, "entries"), (snapshot) => {
+      const nextEntries = snapshot.docs
+        .map((entryDoc) => ({ id: entryDoc.id, ...entryDoc.data() }) as DailyEntry)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      setEntries(nextEntries);
+    }, () => setNotice("Offline mode: saved reflections will sync when connection returns."));
+  }, [uid, setEntries]);
+
+  const handleSend = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    const prompt = input.trim();
+    if (!prompt || loading) return;
+    if (!uid && freeInteractions >= 5) {
+      setNotice("Your five complimentary conversations are complete. Sign in to continue.");
       return;
     }
 
-    const userMsg = input;
+    const nextMessages = [...messages, { role: "user" as const, content: prompt }];
+    setMessages(nextMessages);
     setInput("");
-    setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
+    setNotice("");
 
     try {
-      if (tier === 'free') {
-        increment();
-      }
-
-      const res = await fetch('/api/ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          messages: [...messages, { role: 'user', content: userMsg }] 
-        })
+      const idToken = auth?.currentUser ? await auth.currentUser.getIdToken() : undefined;
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
+        },
+        body: JSON.stringify({ messages: nextMessages }),
       });
-
-      const data = await res.json();
-      if (data.ok) {
-        setMessages(prev => [...prev, { role: 'model', content: data.text }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'model', content: 'عذراً، تشوشت الرؤية قليلاً. هل يمكنك إعادة السؤال؟' }]);
+      const result = await response.json() as { ok?: boolean; text?: string; error?: string; via?: string };
+      if (response.status === 429) {
+        if (!uid) setFreeInteractions(5);
+        else setNotice(result.error ?? "Your current daily allowance is complete.");
+        setMessages(messages);
+        setInput(prompt);
+        return;
       }
-    } catch (e) {
-      setMessages(prev => [...prev, { role: 'model', content: 'انقطع الاتصال بعالم المُثل. حاول مجدداً.' }]);
+      if (!response.ok || !result.text) throw new Error(result.error ?? "Reflection service unavailable");
+      setMessages([...nextMessages, { role: "model", content: result.text }]);
+      if (!uid) increment();
+      if (uid && db) {
+        void addDoc(collection(db, "analyticsEvents"), {
+          uid,
+          type: "ai_interaction",
+          createdAt: new Date().toISOString(),
+          provider: result.via ?? "unknown",
+        }).catch(() => undefined);
+      }
+    } catch {
+      setMessages(messages);
+      setInput(prompt);
+      setNotice("The reflection service is unavailable for a moment. Your free turn was not used.");
     } finally {
       setLoading(false);
     }
   };
 
-  const revealSecret = () => {
-    if (secretRevealed) return;
-    setSecretRevealed(true);
-    setMessages(prev => [...prev, { role: 'model', content: '✨ [السر الأكبر]: "إنك لا تسبح في النهر مرتين." - هرقليطس. لقد اكتشفت البصيرة الخفية للمدينة الفاضلة.' }]);
+  const saveEntry = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = entryText.trim();
+    if (!text || savingEntry) return;
+    setSavingEntry(true);
+    const entry: DailyEntry = {
+      id: crypto.randomUUID(),
+      kind: entryKind,
+      text,
+      createdAt: new Date().toISOString(),
+    };
+    addEntry(entry);
+
+    try {
+      if (uid && db) {
+        await addDoc(collection(db, "users", uid, "entries"), entry);
+      }
+      setEntryText("");
+      setNotice(uid ? "Reflection saved and syncing across your devices." : "Reflection saved on this device.");
+    } catch {
+      setEntryText("");
+      setNotice("Could not sync this entry. It remains available in this session.");
+    } finally {
+      setSavingEntry(false);
+    }
+  };
+
+  const createDailyReport = async () => {
+    if (tier === "free" || todayEntries.length === 0 || reportLoading) return;
+    setReportLoading(true);
+    setDailyReport("");
+    try {
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(auth?.currentUser ? { Authorization: `Bearer ${await auth.currentUser.getIdToken()}` } : {}),
+        },
+        body: JSON.stringify({
+          feature: "daily-philosopher",
+          messages: [
+            { role: "user", content: `Offer a thoughtful, non-clinical daily reflection based only on these entries. Avoid diagnosis and give one gentle question for tomorrow: ${todayEntries.map((entry) => `${entry.kind}: ${entry.text}`).join("; ")}` },
+          ],
+        }),
+      });
+      const result = await response.json() as { text?: string };
+      if (!response.ok || !result.text) throw new Error("Report unavailable");
+      setDailyReport(result.text);
+    } catch {
+      setNotice("The Daily Philosopher is resting. Please try again later.");
+    } finally {
+      setReportLoading(false);
+    }
   };
 
   return (
-    <div className="relative flex h-full w-full flex-col md:flex-row">
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute inset-0 bg-[url('/temple.jpg')] bg-cover bg-center bg-no-repeat opacity-40 mix-blend-screen"
-          style={{ filter: 'invert(1) sepia(1) saturate(3) hue-rotate(330deg)' }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#0B0B0B_80%)]" />
-      </div>
-
-      <div 
-        className="absolute top-1/4 left-1/4 z-10 h-6 w-6 cursor-pointer rounded-full bg-transparent"
-        onClick={revealSecret}
-      >
-        <div className="absolute inset-0 animate-ping rounded-full bg-gold opacity-10" />
-      </div>
-
-      <div className="z-10 flex h-[100dvh] w-full flex-col bg-obsidian/80 backdrop-blur-md md:h-full md:w-1/2 md:border-l md:border-gold/20">
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-6">
-          <AnimatePresence>
-            {messages.map((msg, i) => (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`max-w-[85%] rounded-2xl p-5 leading-relaxed shadow-lg ${
-                    msg.role === 'user' 
-                      ? 'bg-gold text-obsidian rounded-br-sm' 
-                      : 'gold-glow border border-gold/30 bg-[#121212] text-gold-light rounded-bl-sm font-serif'
-                  }`}
-                >
-                  {msg.role === 'model' && <Sparkles className="mb-2 h-4 w-4 text-gold inline-block" />}
-                  {msg.content}
-                </div>
-              </motion.div>
-            ))}
-            {loading && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                <div className="gold-glow border border-gold/30 bg-[#121212] text-gold-muted p-4 rounded-2xl rounded-bl-sm">
-                  يتأمل...
-                </div>
-              </motion.div>
-            )}
-            <div ref={chatEndRef} />
-          </AnimatePresence>
+    <main className="utopia-app">
+      <header className="utopia-app-header">
+        <a className="app-wordmark" href="/">Mind in a Box <span>عقل في صندوق</span></a>
+        <div className="account-status">
+          <span className={`tier-indicator tier-${tier}`}>{tier === "free" ? (uid ? "TRIAL" : "OPEN ACCESS") : tier.toUpperCase()}</span>
+          {!uid && <span>{Math.max(0, 5 - freeInteractions)} conversations left</span>}
+          <a href="/#access">Membership</a>
         </div>
+      </header>
 
-        <div className="border-t border-gold/20 bg-obsidian p-4 md:p-6">
-          <div className="relative flex items-center">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="اطرح سؤالك هنا..."
-              className="w-full rounded-full border border-gold/30 bg-[#1a1a1a] px-6 py-4 pr-14 text-gold-light placeholder-gold-muted/50 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
-            />
-            <button
-              onClick={handleSend}
-              disabled={loading || !input.trim()}
-              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-full bg-gold text-obsidian transition hover:scale-105 disabled:opacity-50"
-            >
-              <Send className="h-5 w-5 rtl:-scale-x-100" />
-            </button>
+      <div className="utopia-workspace">
+        <section className="conversation-panel" aria-label="Philosophical conversation">
+          <div className="conversation-heading">
+            <div>
+              <p className="eyebrow">THE UTOPIA</p>
+              <h1>Make room for a better question.</h1>
+            </div>
+            <Sparkles aria-hidden="true" size={19} strokeWidth={1.4} />
           </div>
-        </div>
+
+          <div aria-live="polite" className="conversation-list">
+            <AnimatePresence initial={false}>
+              {messages.map((message, index) => (
+                <motion.article
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`message message-${message.role}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  key={`${index}-${message.role}`}
+                  transition={{ duration: 0.28 }}
+                >
+                  <span>{message.role === "model" ? "THE GUIDE" : "YOU"}</span>
+                  <p>{message.content}</p>
+                </motion.article>
+              ))}
+              {loading && <p className="thinking-indicator">Gathering a considered response…</p>}
+            </AnimatePresence>
+            <div ref={messagesEndRef} />
+          </div>
+
+          <form className="prompt-form" onSubmit={handleSend}>
+            <label className="sr-only" htmlFor="prompt">Your question</label>
+            <textarea
+              id="prompt"
+              maxLength={2000}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  void handleSend();
+                }
+              }}
+              placeholder="What is on your mind?"
+              rows={2}
+              value={input}
+            />
+            <button aria-label="Send question" disabled={loading || !input.trim()} type="submit">
+              <ArrowUp aria-hidden="true" size={18} />
+            </button>
+          </form>
+          <p className="conversation-disclaimer">For reflection and learning, not mental-health diagnosis or care.</p>
+        </section>
+
+        <aside className="journal-panel" aria-label="Daily reflection journal">
+          <div className="journal-heading">
+            <div>
+              <p className="eyebrow">A DAILY PRACTICE</p>
+              <h2>Keep what matters.</h2>
+            </div>
+            <span className="journal-date">{todayLabel}</span>
+          </div>
+
+          <form className="entry-form" onSubmit={saveEntry}>
+            <div className="entry-kind-control" aria-label="Reflection type" role="group">
+              {(Object.keys(entryLabels) as EntryKind[]).map((kind) => (
+                <button
+                  aria-pressed={entryKind === kind}
+                  className={entryKind === kind ? "selected" : ""}
+                  key={kind}
+                  onClick={() => setEntryKind(kind)}
+                  type="button"
+                >
+                  {entryLabels[kind]}
+                </button>
+              ))}
+            </div>
+            <label className="sr-only" htmlFor="daily-entry">Add a daily note</label>
+            <textarea
+              id="daily-entry"
+              maxLength={500}
+              onChange={(event) => setEntryText(event.target.value)}
+              placeholder={entryKind === "habit" ? "A practice you kept…" : entryKind === "time" ? "Where your time went…" : "A thought worth keeping…"}
+              rows={3}
+              value={entryText}
+            />
+            <button className="entry-submit" disabled={!entryText.trim() || savingEntry} type="submit">
+              <Check aria-hidden="true" size={15} /> Save reflection
+            </button>
+          </form>
+
+          <div className="journal-entries">
+            <div className="entries-title"><span>Today</span><span>{todayEntries.length} notes</span></div>
+            {todayEntries.length === 0 ? (
+              <p className="empty-journal">Begin with one honest sentence.</p>
+            ) : todayEntries.slice(0, 5).map((entry) => (
+              <article className="journal-entry" key={entry.id}>
+                <span>{entry.kind === "habit" ? <Check size={13} /> : entry.kind === "time" ? <Clock3 size={13} /> : <BookOpen size={13} />}</span>
+                <div><small>{entryLabels[entry.kind]}</small><p>{entry.text}</p></div>
+              </article>
+            ))}
+          </div>
+
+          {tier !== "free" && (
+            <section className="daily-philosopher">
+              <div><Sparkles aria-hidden="true" size={16} /><h3>Daily Philosopher</h3></div>
+              <p>A considered reflection on the notes you chose to keep today.</p>
+              <button disabled={!todayEntries.length || reportLoading} onClick={() => void createDailyReport()} type="button">
+                {reportLoading ? "Reflecting…" : "Prepare today’s reflection"}
+              </button>
+              {dailyReport && <p className="daily-report">{dailyReport}</p>}
+            </section>
+          )}
+
+          <p aria-live="polite" className="workspace-notice">{notice}</p>
+        </aside>
       </div>
-      <div className="hidden h-full w-1/2 md:block" />
-    </div>
+    </main>
   );
 }
