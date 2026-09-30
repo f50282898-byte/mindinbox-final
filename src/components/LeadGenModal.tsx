@@ -20,7 +20,6 @@ export function LeadGenModal() {
   const isVisible = isClient && freeInteractions >= 5;
 
   const handleLogin = async () => {
-    if (!auth || !db) return;
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();

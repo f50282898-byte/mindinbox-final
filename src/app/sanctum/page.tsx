@@ -1,67 +1,29 @@
-import Link from "next/link";
-import { PremiumContentShield } from "@/components/PremiumContentShield";
-
+import Link from "next/link";\nimport { PremiumContentShield } from "@/components/PremiumContentShield";
 export const runtime = "edge";
 
 export default function SanctumPage() {
   return (
-    <PremiumContentShield>
-      <main className="relative flex min-h-screen flex-col items-center py-20 px-6 bg-black overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08)_0%,_#000_80%)]" />
+    <PremiumContentShield>\n    <main className="relative flex min-h-screen items-center justify-center bg-black overflow-hidden p-6">
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_rgba(212,175,55,0.08)_0%,_#000_80%)]" />
+      <div className="z-10 w-full max-w-4xl text-center gold-glow rounded-3xl border border-gold/30 bg-[#0a0a0a] p-8 md:p-16 backdrop-blur-xl">
+        <h1 className="gold-text-glow font-serif text-4xl text-gold-light md:text-6xl">المحراب (The Sanctum)</h1>
+        <p className="mt-6 text-lg leading-relaxed text-gold-muted/80">
+          أنت الآن في المحراب. الطبقة العليا من العقول المشتركة.
+          <br/>
+          استكشف الجلسات الحصرية (Masterclasses) ونقاشات مجتمع النخبة.
+        </p>
         
-        <div className="z-10 w-full max-w-5xl space-y-12">
-          <div className="text-center gold-glow rounded-3xl border border-gold/30 bg-[#0a0a0a] p-12 md:p-16 backdrop-blur-xl">
-            <h1 className="gold-text-glow font-serif text-5xl text-gold-light md:text-7xl mb-6">المحراب</h1>
-            <p className="text-xl leading-relaxed text-gold-muted/90">
-              أهلاً بك في أعلى درجات الوعي. (The Sanctum)
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Masterclass Video */}
-            <div className="lg:col-span-2 gold-glow rounded-3xl border border-gold/40 bg-[#0a0a0a] p-2 backdrop-blur-xl relative">
-              <div className="absolute -inset-1 border border-gold/20 rounded-3xl pointer-events-none" />
-              <div className="aspect-video w-full rounded-2xl bg-black overflow-hidden relative border-2 border-gold/20">
-                <iframe 
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
-                  title="Masterclass Video" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <div className="p-6">
-                <h2 className="font-serif text-2xl text-gold-light">الجلسة الحصرية (Masterclass)</h2>
-                <p className="text-gold-muted/80 mt-2">كيف تتلاعب بالواقع وتصنع واقعك الخاص - الفلسفة التطبيقية.</p>
-              </div>
-            </div>
-
-            {/* AI Deep Analysis & Community */}
-            <div className="space-y-8">
-              <div className="gold-glow rounded-3xl border border-gold/20 bg-[#0a0a0a] p-8 backdrop-blur-xl">
-                <h2 className="font-serif text-xl text-gold-light mb-4">التحليل النفسي العميق</h2>
-                <p className="text-sm text-gold-muted/80 mb-6">
-                  الذكاء الاصطناعي يحلل نمط تفكيرك خلال آخر 14 يوماً. أنت تميل إلى النزعة الرواقية مع لمحات من التفكير الوجودي.
-                </p>
-                <button className="w-full rounded-xl bg-gold text-black font-bold py-3 hover:bg-gold-light transition-all">
-                  عرض التقرير المفصل
-                </button>
-              </div>
-
-              <div className="gold-glow rounded-3xl border border-gold/20 bg-[#0a0a0a] p-8 backdrop-blur-xl">
-                <h2 className="font-serif text-xl text-gold-light mb-4">مجتمع النخبة (Portal)</h2>
-                <p className="text-sm text-gold-muted/80 mb-6">
-                  تواصل مع العقول التي تشاركك نفس مستوى الوعي.
-                </p>
-                <button className="w-full rounded-xl border border-gold/50 bg-transparent text-gold py-3 hover:bg-gold/10 transition-all">
-                  دخول البوابة
-                </button>
-              </div>
-            </div>
-          </div>
+        <div className="mt-12 aspect-video w-full rounded-2xl border-2 border-gold/20 bg-black flex items-center justify-center text-gold-muted/50 overflow-hidden relative">
+          <div className="absolute inset-0 bg-[url('/temple.jpg')] bg-cover bg-center opacity-10 mix-blend-screen" style={{ filter: 'invert(1) sepia(1)' }} />
+          <span>[YouTube Masterclass Embed Placeholder]</span>
         </div>
-      </main>
-    </PremiumContentShield>
+
+        <div className="mt-10 flex justify-center">
+          <Link href="/utopia" className="rounded-full border border-gold/50 px-8 py-3 text-gold transition hover:bg-gold/10">
+            العودة للمدينة الفاضلة
+          </Link>
+        </div>
+      </div>
+    </main>\n    </PremiumContentShield>
   );
 }
