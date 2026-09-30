@@ -15,10 +15,9 @@ import {
 
 const NAV_ITEMS = [
   { name: "المدينة الفاضلة", href: "/utopia", icon: Home },
-  { name: "متتبع الوعي", href: "/tracker", icon: Activity },
   { name: "العرّاف", href: "/oracle", icon: Eye },
   { name: "المحراب", href: "/sanctum", icon: Key },
-  { name: "الإدارة", href: "/admin", icon: Settings },
+  { name: "الإدارة", href: "/god-mode-admin", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -35,7 +34,8 @@ export function Sidebar() {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
-  // Desktop Collapsible Sidebar
+  if (pathname === "/") return null;
+
   if (!isMobile) {
     return (
       <motion.nav 
@@ -58,9 +58,9 @@ export function Sidebar() {
                   <Link 
                     key={item.name} 
                     href={item.href}
-                    className={`group relative flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-300 ${isActive ? 'bg-gold/10 text-gold-light' : 'text-gold-muted hover:bg-gold/5 hover:text-gold'}`}
+                    className={"group relative flex items-center gap-4 rounded-xl px-4 py-3 transition-all duration-300 " + (isActive ? 'bg-gold/10 text-gold-light' : 'text-gold-muted hover:bg-gold/5 hover:text-gold')}
                   >
-                    <item.icon className={`h-6 w-6 flex-shrink-0 ${isActive ? 'text-gold-light drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]' : ''}`} />
+                    <item.icon className={"h-6 w-6 flex-shrink-0 " + (isActive ? 'text-gold-light drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]' : '')} />
                     <AnimatePresence>
                       {isOpen && (
                         <motion.span
@@ -83,7 +83,6 @@ export function Sidebar() {
     );
   }
 
-  // Mobile Bottom Navigation / Drawer
   return (
     <>
       <div className="fixed top-4 right-4 z-50 rounded-full border border-gold/20 bg-black/60 p-2 backdrop-blur-md">
@@ -124,8 +123,8 @@ export function Sidebar() {
       </AnimatePresence>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-gold/10 bg-black/80 px-2 py-4 backdrop-blur-lg">
-        {NAV_ITEMS.slice(0, 4).map((item) => (
-          <Link key={item.name} href={item.href} className={`flex flex-col items-center gap-1 ${pathname === item.href ? 'text-gold-light' : 'text-gold-muted'}`}>
+        {NAV_ITEMS.map((item) => (
+          <Link key={item.name} href={item.href} className={"flex flex-col items-center gap-1 " + (pathname === item.href ? 'text-gold-light' : 'text-gold-muted')}>
             <item.icon className="h-6 w-6" />
             <span className="text-[10px]">{item.name}</span>
           </Link>
