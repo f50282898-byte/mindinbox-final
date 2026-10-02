@@ -1,25 +1,14 @@
 #:schema node_modules/wrangler/config-schema.json
 # Cloudflare Pages — runtime configuration (next-on-pages adapter).
 #
-# The adapter writes its build output to `.vercel/output`; `pages:deploy`
+# The adapter writes its build output to `.vercel/output/static`; `pages:deploy`
 # uploads that directory. Framework versions stay pinned in package.json
 # (Next 14.2.15 / React 18.3.1) — do not float them.
 
 name = "mindinbox-final"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output"
-
-# Cloudflare Pages injects these into the Edge runtime automatically.
-# Declaring them here documents the contract and keeps `wrangler dev` honest.
-[vars]
-NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyDGgTDrDJsRvulhzK1p59AbuhJwQYSUufI"
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "mindinbox-50d84.firebaseapp.com"
-NEXT_PUBLIC_FIREBASE_PROJECT_ID = "mindinbox-50d84"
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "mindinbox-50d84.firebasestorage.app"
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "1087016266441"
-NEXT_PUBLIC_FIREBASE_APP_ID = "1:1087016266441:web:da1b3f31fad97e44ee3b18"
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = "G-SVSYPPTCX2"
+pages_build_output_dir = ".vercel/output/static"
 
 # NOTE: provider secrets are intentionally absent from this file.
 # Set them with `wrangler pages secret put <NAME>` or in the Pages dashboard:
