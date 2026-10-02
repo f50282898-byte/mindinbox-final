@@ -8,7 +8,7 @@
 name = "mindinbox-final"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output"
+pages_build_output_dir = ".vercel/output/static"
 
 # Cloudflare Pages injects these into the Edge runtime automatically.
 # Declaring them here documents the contract and keeps `wrangler dev` honest.
