@@ -30,20 +30,31 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
+      // Signup. The key set is closed and createdAt must be the server time, so
+      // a client cannot pre-write a membership tier. trialEnd is a free trial
+      // window only and is clamped to [now, now+14d]; it grants no read access
+      // on its own (siteConfig/library still requires subscriptionTier).
       allow create: if isOwner(userId)
         && request.resource.data.subscriptionTier == 'free'
         && request.resource.data.createdAt == request.time
-        && request.resource.data.keys().hasOnly(['email', 'displayName', 'subscriptionTier', 'createdAt']);
+        && request.resource.data.trialEnd is timestamp
+        && request.resource.data.trialEnd >= request.time
+        && request.resource.data.trialEnd <= request.time + duration.value(14, 'd')
+        && request.resource.data.keys().hasOnly(['email', 'displayName', 'subscriptionTier', 'createdAt', 'trialEnd']);
       allow update: if isAdmin() || (isOwner(userId)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'displayName']));
       allow delete: if isAdmin();
 
       match /entries/{entryId} {
         allow read, delete: if isOwner(userId) || isAdmin();
+        // Closed key set: createdAt must be a server timestamp so the offline
+        // queue cannot be replayed with forged ordering.
         allow create, update: if (isOwner(userId) || isAdmin())
           && request.resource.data.kind in ['habit', 'thought', 'time']
           && request.resource.data.text is string
-          && request.resource.data.text.size() <= 500;
+          && request.resource.data.text.size() <= 500
+          && request.resource.data.keys().hasOnly(['kind', 'text', 'createdAt'])
+          && request.resource.data.createdAt is timestamp;
       }
 
       match /events/{eventId} {

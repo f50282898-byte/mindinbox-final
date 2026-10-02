@@ -1,45 +1,179 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
-const RIDDLES = [
-  "أنا لست حياً، لكني أنمو؛ وليس لدي رئتان، لكني بحاجة إلى الهواء. ما أنا؟ (النار)",
-  "كلما أخذت مني أكثر، كلما كبرت أكثر. ما أنا؟ (الحفرة / الفراغ)",
-  "أتحدث بلا فم وأسمع بلا أذنين. ليس لدي جسد، ولكني أحيا بالرياح. ما أنا؟ (الصدى)"
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { db, paths } from "@/lib/firebase";
+import { useAppStore } from "@/lib/store";
+
+interface Riddle {
+  title: string;
+  body: string;
+  /** Revealed after the visitor commits to an answer. */
+  answer: string;
+}
+
+const RIDDLES: Record<number, Riddle> = {
+  0: {
+    title: "لغز الرمز الأول",
+    body: "لا أنا حية، ولا تتنفس، ومع ذلك أزداد نمواً كلما اقتربت من الهواء. ما أنا؟",
+    answer: "النار. حين ينقص الهواء يخبو جمالها، وحين يزيد اشتدت.",
+  },
+  1: {
+    title: "لغز الرمز الثاني",
+    body: "كلما أخذت مني أكثر، كبرت أكثر. لا مِلء لي، ومع ذلك أصير أوسع كلما غارت.",
+    answer: "الفراغ. المسحُ يوسّعه، والاكتفاء يصغّره.",
+  },
+  2: {
+    title: "لغز الرمز الثالث",
+    body: "أتحدث بلا فم، وأسمع بلا أذنين، وأحيا بالرياح وحدها. ما أنا؟",
+    answer: "الصدى. لا صوت لي، لكن الريح تولّد مني صدى غيري.",
+  },
+};
+
+interface SymbolSpec {
+  id: number;
+  /** Percent offsets within the viewport. */
+  x: number;
+  y: number;
+  label: string;
+}
+
+/**
+ * Three hidden gold symbols.
+ *
+ * Rendered as inline SVG rather than emoji: the emoji used previously
+ * (`✨ 🗝 👁`) ignored the palette and broke the visual language.
+ * Placement is viewport-relative and suppressed on `/admin` so the console
+ * stays clean.
+ */
+const SYMBOLS: SymbolSpec[] = [
+  { id: 0, x: 12, y: 78, label: "رمز الشرارة" },
+  { id: 1, x: 86, y: 22, label: "رمز المفتاح" },
+  { id: 2, x: 8, y: 44, label: "رمز العين" },
 ];
 
-export function GoldenSymbols() {
-  const [activeRiddle, setActiveRiddle] = useState<string | null>(null);
-
-  const triggerRiddle = (index: number) => {
-    setActiveRiddle(RIDDLES[index]);
+function Glyph({ id }: { id: number }) {
+  const common = {
+    width: 26,
+    height: 26,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.1,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
   };
+
+  if (id === 0) {
+    // Spark / flame
+    return (
+      <svg {...common} aria-hidden="true">
+        <path d="M12 2.5c2.6 3.4 1.2 5.2.4 6.6 1.9-.7 2.8-2.3 2.9-4.1 2 2 3.2 4.6 3.2 7.2A6.5 6.5 0 0 1 12 21.5 6.5 6.5 0 0 1 5.5 12c0-2.4.8-4.3 2.2-6 .3 1.5 1.1 2.4 2.1 2.9C10.4 6.4 10.6 4.4 12 2.5Z" />
+      </svg>
+    );
+  }
+  if (id === 1) {
+    // Key
+    return (
+      <svg {...common} aria-hidden="true">
+        <circle cx="7.5" cy="12" r="3.6" />
+        <path d="M11.1 12H21M18 12v3.2M15 12v2.4" />
+      </svg>
+    );
+  }
+  // Eye
+  return (
+    <svg {...common} aria-hidden="true">
+      <path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z" />
+      <circle cx="12" cy="12" r="2.6" />
+    </svg>
+  );
+}
+
+export function GoldenSymbols({
+  solvedCount = 0,
+  onSolve,
+}: {
+  solvedCount?: number;
+  onSolve?: () => void;
+}) {
+  const pathname = usePathname();
+  const recordPuzzle = useAppStore((s) => s.recordPuzzle);
+  const puzzles = useAppStore((s) => s.puzzles);
+  const uid = useAppStore((s) => s.uid);
+
+  const [open, setOpen] = useState<number | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [hidden, setHidden] = useState(false);
+
+  // Hidden on narrow screens (they collide with content) and in the console.
+  useEffect(() => {
+    const check = () => setHidden(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const isSolved = useMemo(() => {
+    const set = new Set(puzzles.map((p) => p.symbolId));
+    return (id: number) => set.has(id);
+  }, [puzzles]);
+
+  const activeRiddle = open !== null ? RIDDLES[open] : null;
+
+  const handleReveal = useCallback(async () => {
+    if (open === null) return;
+    setRevealed(true);
+    recordPuzzle(open);
+    onSolve?.();
+    if (!uid || !db) return;
+    try {
+      await setDoc(
+        doc(db, `${paths.userPuzzles(uid)}/${open}`),
+        { symbolId: open, createdAt: serverTimestamp() },
+        { merge: true }
+      );
+    } catch {
+      // Progress is mirrored locally; failure here is not fatal.
+    }
+  }, [open, onSolve, recordPuzzle, uid]);
+
+  // Never render on the console, nor over the cinematic landing hero.
+  const suppressed =
+    pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/god-mode-admin") ||
+    pathname === "/";
+  if (suppressed) return null;
 
   return (
     <>
-      <button 
-        onClick={() => triggerRiddle(0)}
-        className="fixed bottom-10 left-10 z-30 text-gold/30 hover:text-gold-light hover:scale-125 transition-all duration-500 cursor-pointer"
-        aria-label="Discover Symbol 1"
-      >
-        ✨
-      </button>
-
-      <button 
-        onClick={() => triggerRiddle(1)}
-        className="fixed top-20 right-1/4 z-30 text-gold/30 hover:text-gold-light hover:scale-125 transition-all duration-500 cursor-pointer"
-        aria-label="Discover Symbol 2"
-      >
-        🗝
-      </button>
-
-      <button 
-        onClick={() => triggerRiddle(2)}
-        className="fixed top-1/2 right-12 z-30 text-gold/30 hover:text-gold-light hover:scale-125 transition-all duration-500 cursor-pointer"
-        aria-label="Discover Symbol 3"
-      >
-        👁
-      </button>
+      {!hidden &&
+        SYMBOLS.map((symbol) => (
+          <button
+            key={symbol.id}
+            type="button"
+            onClick={() => {
+              setOpen(symbol.id);
+              setRevealed(false);
+            }}
+            aria-label={`اكتشف ${symbol.label}`}
+            className={`fixed z-[65] hidden transition-all duration-700 ease-silk sm:block ${
+              isSolved(symbol.id)
+                ? "text-gold opacity-30"
+                : "text-gold/25 hover:scale-125 hover:text-gold-light"
+            }`}
+            style={{ left: `${symbol.x}%`, top: `${symbol.y}%`, translate: "-50% -50%" }}
+          >
+            <span className="relative block">
+              <Glyph id={symbol.id} />
+              {!isSolved(symbol.id) && (
+                <span className="absolute inset-0 animate-ping rounded-full bg-gold/10" />
+              )}
+            </span>
+          </button>
+        ))}
 
       <AnimatePresence>
         {activeRiddle && (
@@ -47,25 +181,57 @@ export function GoldenSymbols() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/95 backdrop-blur-3xl px-4"
-            onClick={() => setActiveRiddle(null)}
+            transition={{ duration: 0.3 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={activeRiddle.title}
+            className="fixed inset-0 z-[9998] flex items-center justify-center bg-volcanic/93 px-5 backdrop-blur-2xl"
+            onClick={() => setOpen(null)}
           >
             <motion.div
-              initial={{ scale: 0.8, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="gold-glow max-w-2xl text-center rounded-3xl border border-gold/40 bg-[#0a0a0a] p-16"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(event) => event.stopPropagation()}
+              className="glass-strong gold-frame w-full max-w-xl rounded-3xl p-9 text-center sm:p-14"
             >
-              <h2 className="gold-text-glow font-serif text-3xl text-gold-light mb-8">لغز الفلاسفة</h2>
-              <p className="text-2xl leading-relaxed text-gold-muted font-serif">
-                {activeRiddle}
+              <p className="text-[10px] tracking-[0.35em] text-gold-muted/55">
+                {solvedCount > 0 ? `عثرت على ${solvedCount} من ٣` : "عثرت على ٠ من ٣"}
               </p>
-              <button 
-                onClick={() => setActiveRiddle(null)}
-                className="mt-12 text-sm text-gold hover:text-gold-light tracking-widest border-b border-gold/30 pb-1"
+
+              <h2 className="gold-text-glow display-arabic mt-4 text-2xl font-bold text-gold-light sm:text-3xl">
+                {activeRiddle.title}
+              </h2>
+
+              <p className="display-arabic mt-7 text-lg leading-loose text-gold-muted sm:text-xl">
+                {activeRiddle.body}
+              </p>
+
+              {revealed ? (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-8 border-t border-gold/15 pt-6 text-sm leading-relaxed text-gold/85"
+                >
+                  {activeRiddle.answer}
+                </motion.p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleReveal}
+                  className="mt-9 border-b border-gold/30 pb-1 text-xs tracking-widest text-gold transition-colors hover:border-gold hover:text-gold-light"
+                >
+                  أغمض عينيك لتفهم
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setOpen(null)}
+                className="mt-9 block w-full text-xs text-gold-muted/50 transition-colors hover:text-gold-muted"
               >
-                أغلق عينيك لتفهم
+                  إغلاق
               </button>
             </motion.div>
           </motion.div>

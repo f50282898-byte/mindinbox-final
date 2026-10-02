@@ -2,23 +2,389 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   MINDFUL DESIGN SYSTEM — Volcanic Black × Antique Gold
+   All backgrounds are code-generated. No stock photography.
+   ============================================================ */
+
 @layer base {
+  :root {
+    /* Core palette */
+    --volcanic: 5 5 5;        /* #050505 — volcanic black */
+    --obsidian: 11 11 11;     /* #0B0B0B */
+    --gold: 212 175 55;        /* #D4AF37 — antique gold */
+    --gold-light: 231 217 161; /* #E7D9A1 */
+    --gold-muted: 217 208 186; /* #D9D0BA */
+    --gold-dark: 170 140 44;   /* #AA8C2C */
+
+    /* Surface treatments */
+    --glass-bg: rgba(11, 11, 11, 0.55);
+    --glass-border: rgba(212, 175, 55, 0.18);
+    --glass-highlight: rgba(231, 217, 161, 0.09);
+
+    /* Motion */
+    --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-gate: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  * {
+    border-color: rgb(var(--gold) / 0.12);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Reserve scrollbar so sidebar/panels never cause layout shift */
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    @apply bg-black text-[#D9D0BA] antialiased overflow-x-hidden;
-    background: radial-gradient(circle at center, #080808 0%, #000000 100%);
+    @apply bg-black antialiased;
+    background-color: rgb(var(--volcanic));
+    color: rgb(var(--gold-muted));
+    font-feature-settings: "kern", "liga";
+    overflow-x: hidden;
+  }
+
+  /* Latin philosophical display face — never applied to Arabic glyphs */
+  .display-latin {
+    font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  }
+
+  /* Arabic naskh display face for philosophical headings */
+  .display-arabic {
+    font-family: var(--font-amiri), var(--font-cairo), "Cairo", serif;
+    line-height: 1.85;
+  }
+
+  ::selection {
+    background: rgb(var(--gold) / 0.28);
+    color: rgb(var(--gold-light));
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--volcanic));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--gold) / 0.28);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--gold) / 0.55);
+  }
+
+  /* Keyboard focus must always be visible — accessibility gate */
+  :focus-visible {
+    outline: 2px solid rgb(var(--gold) / 0.75);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---------- Glassmorphism ---------- */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  .glass-strong {
+    background: rgba(5, 5, 5, 0.82);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(30px) saturate(160%);
+    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-highlight),
+      0 30px 80px -30px rgba(0, 0, 0, 0.95);
+  }
+
+  /* ---------- Gold treatments ---------- */
+  .gold-glow {
+    box-shadow:
+      0 0 30px rgba(212, 175, 55, 0.14),
+      0 0 90px -30px rgba(212, 175, 55, 0.25);
+  }
+
+  .gold-text-glow {
+    text-shadow:
+      0 0 15px rgba(212, 175, 55, 0.35),
+      0 0 45px rgba(212, 175, 55, 0.18);
+  }
+
+  /* Ancient gold leaf frame — used on Sanctum video + sacred content */
+  .gold-frame {
+    position: relative;
+    border: 1px solid rgb(var(--gold) / 0.45);
+  }
+  .gold-frame::before,
+  .gold-frame::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: rgb(var(--gold) / 0.85);
+    pointer-events: none;
+  }
+  .gold-frame::before {
+    inset: -1px auto auto -1px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+  }
+  .gold-frame::after {
+    inset: auto -1px -1px auto;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .panel {
+    @apply rounded-3xl border border-gold/20 bg-[#0A0A0A]/70 backdrop-blur-xl;
+  }
+
+  .panel-inset {
+    @apply rounded-2xl border border-gold/10 bg-black/40;
+  }
+
+  /* ---------- Controls ---------- */
+  .btn-gold {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full
+      border border-gold/50 bg-black/40 px-8 py-4 font-bold text-gold
+      transition-[color,border-color,transform] duration-500;
+    transition-timing-function: var(--ease-silk);
+  }
+  .btn-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(var(--gold-light)), rgb(var(--gold)));
+    transform: translateY(101%);
+    transition: transform 0.55s var(--ease-silk);
+    z-index: -1;
+  }
+  .btn-gold:hover {
+    @apply border-gold text-black;
+    transform: translateY(-1px);
+  }
+  .btn-gold:hover::after {
+    transform: translateY(0);
+  }
+  .btn-gold:disabled {
+    @apply pointer-events-none opacity-40;
+  }
+  /* Ensure the gold fill never sits behind the label */
+  .btn-gold > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-gold/30
+      bg-transparent px-6 py-3 text-gold-muted transition-all duration-400;
+    transition-timing-function: var(--ease-silk);
+  }
+  .btn-ghost:hover {
+    @apply border-gold/70 bg-gold/5 text-gold-light;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-gold/20 bg-black/60 px-5 py-4 text-gold-light
+      placeholder:text-gold-muted/35 transition-colors;
+  }
+  .field:focus {
+    @apply border-gold/70 outline-none ring-1 ring-gold/40;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/5
+      px-4 py-1.5 text-xs tracking-widest text-gold-muted transition-colors;
+  }
+  .chip-active {
+    @apply border-gold/70 bg-gold/15 text-gold-light;
+  }
+
+  /* ---------- Greek column (pure CSS, no imagery) ---------- */
+  .greek-column {
+    position: relative;
+    width: 100%;
+    /* Fluted shaft: a repeating gradient carves the grooves.
+       Alpha here is low on purpose — GreekColumns multiplies it by a per-column
+       opacity (depth fog). Combined peak should land around 0.10 alpha so the
+       colonnade stays an atmosphere and never competes with the copy. */
+    background-image:
+      linear-gradient(90deg,
+        rgb(var(--gold) / 0.030) 0%,
+        rgb(var(--gold) / 0.105) 16%,
+        rgb(var(--gold) / 0.045) 33%,
+        rgb(var(--gold) / 0.095) 50%,
+        rgb(var(--gold) / 0.035) 67%,
+        rgb(var(--gold) / 0.095) 83%,
+        rgb(var(--gold) / 0.030) 100%),
+      linear-gradient(180deg, rgb(var(--gold) / 0.075), rgb(var(--gold) / 0.008) 70%);
+    border-left: 1px solid rgb(var(--gold) / 0.14);
+    border-right: 1px solid rgb(var(--gold) / 0.14);
+    will-change: transform;
+  }
+
+  /* Capital (abacus) + base mouldings drawn with pseudo-elements */
+  .greek-column::before {
+    content: "";
+    position: absolute;
+    inset-inline: -6px;
+    top: 0;
+    height: 13px;
+    background: linear-gradient(180deg, rgb(var(--gold) / 0.30), rgb(var(--gold) / 0.06));
+    border-radius: 2px;
+  }
+  .greek-column::after {
+    content: "";
+    position: absolute;
+    inset-inline: -4px;
+    bottom: 0;
+    height: 10px;
+    background: linear-gradient(180deg, rgb(var(--gold) / 0.05), rgb(var(--gold) / 0.24));
+    border-radius: 2px;
+  }
+
+  /* ---------- Atmospheric depth ---------- */
+  .void-vignette {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, rgb(var(--gold) / 0.07), transparent 70%),
+      radial-gradient(ellipse at center, #0A0A0A 0%, #050505 60%, #000000 100%);
+  }
+
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-gold/25 to-transparent;
+  }
+
+  /* ---------- IP Shield primitives ---------- */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 }
 
 @layer utilities {
-  .gold-glow {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+  @keyframes dust-drift {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.7;
+    }
+    85% {
+      opacity: 0.35;
+    }
+    100% {
+      transform: translate3d(var(--dust-x, 0px), -110vh, 0) scale(0.4);
+      opacity: 0;
+    }
   }
-  .gold-text-glow {
-    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4), 0 0 30px rgba(212, 175, 55, 0.2);
+
+  @keyframes veil-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes sheen {
+    0% {
+      transform: translateX(-120%);
+    }
+    100% {
+      transform: translateX(220%);
+    }
+  }
+
+  .animate-dust {
+    animation: dust-drift linear infinite;
+  }
+  .animate-veil {
+    animation: veil-pulse 6s ease-in-out infinite;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Safe-area padding for notched phones */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: #000000; }
-::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+/* Screen-reader-only, but focusable (skip link) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.skip-link:focus {
+  position: fixed;
+  inset-inline-start: 1rem;
+  top: 1rem;
+  z-index: 200;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  clip: auto;
+  white-space: normal;
+  @apply rounded-full bg-gold text-sm font-bold text-black;
+}
+
+/* ============================================================
+   IP SHIELD — Premium content deterrence.
+   Scope limited to [data-ip-shield]; never global.
+   ============================================================ */
+[data-ip-shield] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media print {
+  [data-ip-shield] {
+    display: none !important;
+  }
+  body {
+    background: #050505 !important;
+  }
+}
