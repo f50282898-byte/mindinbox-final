@@ -4,27 +4,239 @@
 
 /* ============================================================
    MINDFUL DESIGN SYSTEM — Volcanic Black × Antique Gold
-   All backgrounds are code-generated. No stock photography.
+   Calm, premium, trustworthy. Not a loud marketing site.
+
+   Token contract
+   --------------
+   Every token below is a *semantic* name (--surface-1, --text-1, --edge-1)
+   rather than a raw hue, so the light theme re-points semantics without
+   touching a single component. Raw brand colours are exposed only as
+   --brand-* and are never used for text.
+
+   Contrast: all text tokens on their background/surface pairs are >= 4.5:1
+   in BOTH themes. Verified by scripts/verify-contrast.mjs (22/22 pass), not
+   assumed. That script is part of the build:check chain and fails the build.
    ============================================================ */
 
 @layer base {
   :root {
-    /* Core palette */
-    --volcanic: 5 5 5;        /* #050505 — volcanic black */
-    --obsidian: 11 11 11;     /* #0B0B0B */
-    --gold: 212 175 55;        /* #D4AF37 — antique gold */
-    --gold-light: 231 217 161; /* #E7D9A1 */
-    --gold-muted: 217 208 186; /* #D9D0BA */
-    --gold-dark: 170 140 44;   /* #AA8C2C */
+    /* ---- Brand (never used for body text directly) ---- */
+    --brand-volcanic: #050505;
+    --brand-obsidian: #0b0b0b;
+    --brand-gold: #d4af37;
+    --brand-gold-light: #e7d9a1;
+    --brand-gold-muted: #d9d0ba;
+    --brand-gold-dark: #aa8c2c;
 
-    /* Surface treatments */
-    --glass-bg: rgba(11, 11, 11, 0.55);
-    --glass-border: rgba(212, 175, 55, 0.18);
+    /* ---- RGB triplets, THEME-AWARE ----
+       Triplets ("212 175 55") rather than colours so Tailwind's `/opacity`
+       modifier keeps working: `bg-gold/20` becomes `rgb(var(--gold) / 0.2)`.
+       A plain `var(--gold)` holding a full colour cannot carry an alpha
+       modifier — that is why the Tailwind ramp points here and not at
+       --accent directly.
+
+       The light theme re-points these triplets, so every existing
+       `text-gold-muted`, `border-gold/20`, `bg-gold/5` … follows the theme
+       without editing a single component. */
+    --volcanic: 5 5 5;
+    --obsidian: 11 11 11;
+    --gold: 212 175 55; /* accent         */
+    --gold-light: 242 237 225; /* primary text  */
+    --gold-muted: 217 208 186; /* secondary text */
+    --gold-dark: 231 217 161; /* accent hover  */
+
+    /* ---- Theme: default is dark ---- */
+    --theme-bg: #050505;
+    --bg-0: #050505; /* page          */
+    --bg-1: #0b0b0b; /* raised        */
+    --bg-2: #121212; /* overlay       */
+
+    --surface-1: rgba(11, 11, 11, 0.55); /* glass, default   */
+    --surface-2: rgba(5, 5, 5, 0.82); /* glass, stronger  */
+    --surface-solid: #0a0a0a;
+
+    /* Text — 4.5:1+ on bg-0/bg-1/surface-* */
+    --text-1: #f2ede1; /* primary   16.8:1 on --bg-0 */
+    --text-2: #d9d0ba; /* secondary 13.1:1 */
+    --text-3: #9c937f; /* tertiary   5.4:1 */
+    --text-on-gold: #050505; /* on solid gold */
+
+    /* Accent */
+    --accent: #d4af37;
+    --accent-hover: #e7d9a1;
+    --accent-quiet: rgba(212, 175, 55, 0.14);
+    --focus-ring: #d4af37;
+
+    /* Accent *fill* is a separate token from accent *text*.
+       In the dark theme gold is light, so the fill carries near-black text.
+       In the light theme a readable accent text must be a deep gold, so the
+       fill is deepened too and carries near-white text. Sharing one token
+       forces one of the two themes to fail AA — measured, not assumed. */
+    --accent-solid: #d4af37;
+    --accent-solid-hover: #e7d9a1;
+    --text-on-accent-solid: #050505; /* 9.69:1 */
+
+    /* Edges */
+    --edge-1: rgba(212, 175, 55, 0.18);
+    --edge-2: rgba(212, 175, 55, 0.32);
+    --edge-strong: rgba(212, 175, 55, 0.85);
+    --edge-hairline: rgba(212, 175, 55, 0.22);
+
+    /* Glass */
+    --glass-blur: 20px;
+    --glass-saturate: 140%;
     --glass-highlight: rgba(231, 217, 161, 0.09);
 
+    /* Gold gradients */
+    --grad-gold: linear-gradient(180deg, #e7d9a1 0%, #d4af37 100%);
+    --grad-gold-soft: linear-gradient(
+      180deg,
+      rgba(212, 175, 55, 0.16) 0%,
+      rgba(212, 175, 55, 0.02) 100%
+    );
+    --grad-gold-rule: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(212, 175, 55, 0.45) 50%,
+      transparent 100%
+    );
+
+    /* Elevation + glow */
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+    --shadow-3: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+    --glow-gold: 0 0 30px rgba(212, 175, 55, 0.14);
+    --glow-gold-wide: 0 0 90px -30px rgba(212, 175, 55, 0.25);
+    --glow-text: 0 0 15px rgba(212, 175, 55, 0.35);
+
+    /* Radii */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    /* Type scale (1.250 major third, fluid via clamp) */
+    --font-ui: var(--font-cairo), "Cairo", system-ui, sans-serif;
+    --font-display-ar: var(--font-amiri), var(--font-cairo), serif;
+    --font-display-lat: var(--font-playfair), "Playfair Display", Georgia, serif;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-md: clamp(1.05rem, 0.98rem + 0.35vw, 1.15rem);
+    --text-lg: clamp(1.2rem, 1.05rem + 0.7vw, 1.45rem);
+    --text-xl: clamp(1.45rem, 1.2rem + 1.1vw, 1.9rem);
+    --text-2xl: clamp(1.75rem, 1.35rem + 1.8vw, 2.5rem);
+    --text-3xl: clamp(2.1rem, 1.5rem + 2.6vw, 3.4rem);
+    --text-4xl: clamp(2.5rem, 1.6rem + 4vw, 4.5rem);
+
+    --leading-tight: 1.15;
+    --leading-snug: 1.35;
+    --leading-normal: 1.6;
+    --leading-relaxed: 1.85; /* Arabic body copy */
+
+    --tracking-tight: -0.01em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.08em;
+    --tracking-caps: 0.22em;
+
+    /* Spacing (4px base) */
+    --space-0: 0;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+    --space-10: 8rem;
+
     /* Motion */
+    --dur-1: 120ms;
+    --dur-2: 200ms;
+    --dur-3: 320ms;
+    --dur-4: 520ms;
+    --dur-5: 800ms;
     --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-gate: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    /* Z layers — single source so nothing fights */
+    --z-base: 0;
+    --z-art: 10; /* ArtLayer        */
+    --z-dust: 20; /* GoldDust canvas */
+    --z-content: 30;
+    --z-raised: 40; /* sticky headers  */
+    --z-drawer: 50; /* Sheet           */
+    --z-modal: 60; /* Modal           */
+    --z-toast: 70;
+    --z-tooltip: 80;
+    --z-skip: 100;
+
+    /* Legacy motion aliases */
+    --motion: var(--ease-silk);
+  }
+
+  /* ---- Light theme: "Parchment" ----
+     Text here is dark-on-light and independently verified for contrast;
+     it is NOT an inversion of the dark palette. */
+  [data-theme="light"] {
+    /* Re-point the RGB triplets so every Tailwind `gold-*` utility follows the
+       theme. Mirrors the dark values exactly, role for role. */
+    --volcanic: 244 239 228;
+    --obsidian: 236 229 214;
+    --gold: 111 86 17; /* accent         */
+    --gold-light: 26 23 18; /* primary text  */
+    --gold-muted: 69 61 49; /* secondary text */
+    --gold-dark: 88 68 13; /* accent hover  */
+
+    --bg-0: #f4efe4; /* parchment        */
+    --bg-1: #ece5d6;
+    --bg-2: #e3dac7;
+
+    --surface-1: rgba(255, 253, 247, 0.62);
+    --surface-2: rgba(255, 253, 247, 0.86);
+    --surface-solid: #faf6ec;
+
+    --text-1: #1a1712; /* 15.1:1 on --bg-0 */
+    --text-2: #453d31; /* 9.8:1  */
+    --text-3: #6b6152; /* 5.3:1  */
+    --text-on-gold: #1a1712;
+
+    --accent: #6f5611; /* readable accent *text* on parchment */
+    --accent-hover: #58440d;
+    --accent-quiet: rgba(111, 86, 17, 0.12);
+    --focus-ring: #58440d;
+
+    /* Deeper gold for fills so near-white text can clear AA (6.18:1). */
+    --accent-solid: #6f5611;
+    --accent-solid-hover: #58440d;
+    --text-on-accent-solid: #f7f1e3; /* 6.18:1 */
+
+    --edge-1: rgba(90, 74, 40, 0.22);
+    --edge-2: rgba(90, 74, 40, 0.34);
+    --edge-strong: rgba(90, 74, 40, 0.7);
+    --edge-hairline: rgba(90, 74, 40, 0.26);
+
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+
+    --grad-gold: linear-gradient(180deg, #b8912c 0%, #8a6d18 100%);
+    --grad-gold-soft: linear-gradient(
+      180deg,
+      rgba(184, 145, 44, 0.16) 0%,
+      rgba(184, 145, 44, 0.03) 100%
+    );
+
+    --shadow-1: 0 1px 2px rgba(74, 60, 32, 0.14);
+    --shadow-2: 0 8px 24px -12px rgba(74, 60, 32, 0.24);
+    --shadow-3: 0 24px 60px -30px rgba(74, 60, 32, 0.3);
+    --glow-gold: 0 0 26px rgba(184, 145, 44, 0.16);
+    --glow-gold-wide: 0 0 70px -30px rgba(184, 145, 44, 0.3);
+    --glow-text: none;
   }
 
   * {
@@ -39,22 +251,25 @@
   }
 
   body {
-    @apply bg-black antialiased;
-    background-color: rgb(var(--volcanic));
-    color: rgb(var(--gold-muted));
+    @apply antialiased;
+    background-color: var(--bg-0);
+    color: var(--text-2);
+    font-family: var(--font-ui);
     font-feature-settings: "kern", "liga";
     overflow-x: hidden;
+    transition: background-color var(--dur-4) var(--ease-silk),
+      color var(--dur-4) var(--ease-silk);
   }
 
   /* Latin philosophical display face — never applied to Arabic glyphs */
   .display-latin {
-    font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+    font-family: var(--font-display-lat);
   }
 
   /* Arabic naskh display face for philosophical headings */
   .display-arabic {
-    font-family: var(--font-amiri), var(--font-cairo), "Cairo", serif;
-    line-height: 1.85;
+    font-family: var(--font-display-ar);
+    line-height: var(--leading-relaxed);
   }
 
   ::selection {
@@ -101,23 +316,27 @@
 @layer components {
   /* ---------- Glassmorphism ---------- */
   .glass {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    /* --surface-1 / --edge-1 are defined per theme. The old --glass-bg and a
+       hardcoded rgba(5,5,5,0.82) were dark-only, so glass read as a black slab
+       on parchment and the light theme looked broken on every card. */
+    background: var(--surface-1);
+    border: 1px solid var(--edge-1);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     box-shadow:
       inset 0 1px 0 0 var(--glass-highlight),
-      0 24px 60px -30px rgba(0, 0, 0, 0.9);
+      var(--shadow-3);
   }
 
   .glass-strong {
-    background: rgba(5, 5, 5, 0.82);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(30px) saturate(160%);
-    -webkit-backdrop-filter: blur(30px) saturate(160%);
+    background: var(--surface-2);
+    border: 1px solid var(--edge-1);
+    backdrop-filter: blur(calc(var(--glass-blur) * 1.5)) saturate(var(--glass-saturate));
+    -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5))
+      saturate(var(--glass-saturate));
     box-shadow:
       inset 0 1px 0 0 var(--glass-highlight),
-      0 30px 80px -30px rgba(0, 0, 0, 0.95);
+      var(--shadow-3);
   }
 
   /* ---------- Gold treatments ---------- */
@@ -168,27 +387,52 @@
   }
 
   /* ---------- Controls ---------- */
+  /*
+   * Primary action.
+   *
+   * Solid gold fill, because accent-text and accent-fill have different
+   * contrast requirements in the two themes (see --accent-solid /
+   * --text-on-accent-solid). Verified 9.69:1 dark, 6.18:1 light.
+   *
+   * Previously a transparent pill with gold text and a sweep-on-hover. That
+   * could not survive the light theme: the fill under it was `bg-black/40`
+   * while the text became the light theme's deep gold.
+   */
   .btn-gold {
     @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full
-      border border-gold/50 bg-black/40 px-8 py-4 font-bold text-gold
-      transition-[color,border-color,transform] duration-500;
-    transition-timing-function: var(--ease-silk);
+      px-8 py-4 font-bold;
+    background-color: var(--accent-solid);
+    color: var(--text-on-accent-solid);
+    box-shadow:
+      var(--glow-gold),
+      var(--shadow-2);
+    transition:
+      background-color var(--dur-2) var(--ease-silk),
+      transform var(--dur-2) var(--ease-silk);
   }
   .btn-gold::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgb(var(--gold-light)), rgb(var(--gold)));
-    transform: translateY(101%);
-    transition: transform 0.55s var(--ease-silk);
+    background: linear-gradient(180deg, var(--grad-gold));
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-silk);
     z-index: -1;
   }
   .btn-gold:hover {
-    @apply border-gold text-black;
+    background-color: var(--accent-solid-hover);
     transform: translateY(-1px);
   }
   .btn-gold:hover::after {
+    opacity: 1;
+  }
+  .btn-gold:active {
     transform: translateY(0);
+  }
+  /* Gold on gold needs a visible edge or the button melts into the backdrop. */
+  .btn-gold:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
   }
   .btn-gold:disabled {
     @apply pointer-events-none opacity-40;
@@ -269,13 +513,34 @@
 
   /* ---------- Atmospheric depth ---------- */
   .void-vignette {
+    /* Theme-aware. Hardcoded #0A0A0A/#050505/#000 here kept the landing dark in
+       the Parchment theme, which made the theme control look broken on that
+       page. Seats the composition in whichever theme is active. */
     background:
       radial-gradient(ellipse 80% 60% at 50% 40%, rgb(var(--gold) / 0.07), transparent 70%),
-      radial-gradient(ellipse at center, #0A0A0A 0%, #050505 60%, #000000 100%);
+      radial-gradient(ellipse at center, var(--bg-1) 0%, var(--bg-0) 60%, var(--bg-0) 100%);
   }
 
   .hairline {
     @apply h-px w-full bg-gradient-to-r from-transparent via-gold/25 to-transparent;
+  }
+
+  /*
+   * Shell content inset.
+   *
+   * The desktop rail is fixed, so content must be padded past it. Done in CSS
+   * rather than as `md:ps-[var(--rail-w,0px)]`: Tailwind's arbitrary-value
+   * parser did not emit that rule, and the content silently slid under the
+   * rail — which is exactly the failure this is meant to prevent, so it is
+   * worth stating in one deterministic place.
+   *
+   * --rail-w is published by <Shell> and is 0 until it mounts. Mobile is
+   * untouched here; it clears the bottom bar with padding-block-end instead.
+   */
+  @media (min-width: 768px) {
+    .shell-content {
+      padding-inline-start: var(--rail-w, 0px);
+    }
   }
 
   /* ---------- IP Shield primitives ---------- */

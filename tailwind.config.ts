@@ -5,13 +5,45 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        volcanic: "#050505",
-        obsidian: "#0B0B0B",
+        /*
+         * Bound to the theme-aware RGB triplets in globals.css, not to raw hex.
+         *
+         * Two reasons:
+         *  1. `var(--token)` holding a full colour cannot take Tailwind's
+         *     `/opacity` modifier. Triplets can: `bg-gold/20` resolves to
+         *     `rgb(var(--gold) / 0.2)`. Roughly 55 call sites rely on that.
+         *  2. The light theme re-points the triplets, so every existing
+         *     `text-gold-muted`, `border-gold/20`, `bg-gold/5` … becomes
+         *     readable on parchment with no per-component rewrite.
+         *
+         * `brand.*` is the literal palette, for rules and decoration where the
+         * intent is "the gold" rather than "readable text".
+         */
+        volcanic: "rgb(var(--volcanic) / <alpha-value>)",
+        obsidian: "rgb(var(--obsidian) / <alpha-value>)",
         gold: {
-          DEFAULT: "#D4AF37",
-          light: "#E7D9A1",
-          muted: "#D9D0BA",
-          dark: "#AA8C2C",
+          DEFAULT: "rgb(var(--gold) / <alpha-value>)",
+          light: "rgb(var(--gold-light) / <alpha-value>)",
+          muted: "rgb(var(--gold-muted) / <alpha-value>)",
+          dark: "rgb(var(--gold-dark) / <alpha-value>)",
+        },
+        brand: {
+          gold: "#d4af37",
+          light: "#e7d9a1",
+          muted: "#d9d0ba",
+          dark: "#aa8c2c",
+          volcanic: "#050505",
+        },
+        ink: {
+          1: "var(--text-1)",
+          2: "var(--text-2)",
+          3: "var(--text-3)",
+          onaccent: "var(--text-on-accent-solid)",
+        },
+        surface: {
+          1: "var(--surface-1)",
+          2: "var(--surface-2)",
+          solid: "var(--surface-solid)",
         },
       },
       fontFamily: {

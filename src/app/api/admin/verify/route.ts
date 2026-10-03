@@ -1,38 +1,43 @@
 import { NextResponse } from "next/server";
-import { bearerFromHeaders, verifyIdToken } from "@/lib/edge-auth";
+import { requireUser, requireAdmin, authenticatedUser } from "@/lib/auth/guards";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**
- * Reports whether the caller's ID token carries the `admin: true` custom claim.
+ * Reports whether the caller is an admin, and why not when they are not.
  *
- * This endpoint only *reports*. Every privileged mutation lives behind
- * `/api/admin/*`, which re-verifies the token independently — a `false` here
- * must never be the sole control, and a `true` here is never trusted for
- * authorisation.
+ * Rewritten to use `requireUser` / `requireAdmin` from `src/lib/auth/guards`,
+ * which verify the token with `jose` and then confirm that `admins/{uid}`
+ * exists. The previous version trusted an `admin: true` custom claim, which
+ * survives for up to an hour after the document is deleted.
+ *
+ * This endpoint only *reports*. Every privileged mutation re-checks
+ * independently, so a `true` here is never the thing that grants access.
  */
 export async function POST(request: Request) {
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
-  if (!projectId) {
-    return NextResponse.json(
-      { error: "المشروع غير مهيأ: Firebase project id مفقود." },
-      { status: 503 }
-    );
+  const { uid } = authenticatedUser(request);
+
+  const forbidden = await requireAdmin(request);
+  if (forbidden) {
+    // requireAdmin already produced the correct 401/403 body; return it.
+    return forbidden;
   }
 
-  const result = await verifyIdToken(bearerFromHeaders(request.headers), projectId);
+  return NextResponse.json({ isAdmin: true, uid }, { status: 200, headers: { "Cache-Control": "no-store" } });
+}
 
-  if (!result.ok) {
-    return NextResponse.json(
-      { isAdmin: false, reason: result.reason },
-      { status: 401, headers: { "Cache-Control": "no-store" } }
-    );
-  }
+/** Cheap liveness probe for the identity path. */
+export async function GET(request: Request) {
+  const denied = await requireUser(request);
+  if (denied) return denied;
 
+  const { uid, email, emailVerified } = authenticatedUser(request);
   return NextResponse.json(
-    { isAdmin: result.token.isAdmin, uid: result.token.uid },
+    { uid, email, emailVerified },
     { status: 200, headers: { "Cache-Control": "no-store" } }
   );
 }

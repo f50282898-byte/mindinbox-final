@@ -1,27 +1,69 @@
 rules_version = '2';
+
+/**
+ * Cloud Storage security rules.
+ *
+ * Principle: DENY BY DEFAULT, as in firestore.rules. Every path must be matched
+ * explicitly; there is no catch-all.
+ *
+ * Paths:
+ *   users/{uid}/...          a user's own uploads, private
+ *   premium-library/{file}   study PDFs, gated on entitlements
+ *
+ * Storage rules cannot call `getEntitlements` — they evaluate Firestore with
+ * `firestore.get()`, so the tier is read from `subscriptions/{uid}` directly.
+ * The two must stay consistent: Firestore holds the authoritative record.
+ *
+ * Admin is "admins/{uid} exists" for the same reason as in firestore.rules:
+ * a custom claim would survive for up to an hour after revocation.
+ */
 service firebase.storage {
   match /b/{bucket}/o {
+
     function signedIn() {
       return request.auth != null;
     }
 
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
     function isAdmin() {
-      return signedIn() && request.auth.token.admin == true;
+      return signedIn() && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
-    function hasOracleAccess() {
-      return signedIn() && (
-        request.auth.token.tier == 'oracle' ||
-        request.auth.token.tier == 'sanctum' ||
-        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.subscriptionTier in ['oracle', 'sanctum']
-      );
+    /** Tier straight from the billing record, or 'free' when there is none. */
+    function currentTier() {
+      return firestore.get(/databases/(default)/documents/subscriptions/$(request.auth.uid)).data.tier;
     }
 
+    function hasOracle() {
+      return signedIn() && currentTier() in ['oracle', 'sanctum'];
+    }
+
+    /* ── per-user uploads ──────────────────────────────────────────────────
+       Private by default: only the owner reads. Kept small and type-limited
+       because user uploads are the one place an attacker could land arbitrary
+       content and have it served from our own bucket.
+       -------------------------------------------------------------------- */
+    match /users/{uid}/{allPaths=**} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if isSelf(uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('^(image/(jpeg|png|webp)|application/pdf)$');
+    }
+
+    /* ── premium study library ─────────────────────────────────────────── */
     match /premium-library/{fileName} {
-      allow read: if hasOracleAccess() || isAdmin();
-      allow write: if isAdmin()
-        && request.resource.size < 20 * 1024 * 1024
-        && request.resource.contentType == 'application/pdf';
+      allow read: if hasOracle() || isAdmin();
+
+      // Uploads are server-only, same as the Firestore records they mirror.
+      allow write: if false;
+    }
+
+    /* ── everything else is denied ─────────────────────────────────────── */
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

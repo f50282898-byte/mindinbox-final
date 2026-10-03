@@ -67,6 +67,12 @@ export function MembershipBanner() {
   const suppressed =
     pathname === "/" ||
     pathname === "/wisdom" ||
+    // `/dialogue` for the same reason as `/wisdom`: it ends in a primary CTA
+    // ("ابدأ الحوار") that sits low on a short page, and a fixed overlay lands
+    // squarely on it. Playwright caught this by reporting that the banner
+    // "intercepts pointer events" — a real visitor on a phone could not have
+    // started the dialogue either.
+    pathname === "/dialogue" ||
     pathname === "/membership" ||
     pathname?.startsWith("/admin");
 
@@ -125,7 +131,19 @@ export function MembershipBanner() {
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           aria-label="رسالة العضوية"
-          className="glass-strong fixed bottom-4 start-4 z-[70] flex w-[min(92vw,26rem)] items-start gap-3 rounded-2xl p-4 ps-16 md:bottom-6 md:ms-[6.5rem]"
+          /*
+           * Sits ABOVE the mobile bottom bar, never on it.
+           *
+           * `bottom-4` at z-70 put this 92vw panel directly over the fixed
+           * 5-item navigation (bottom-0, z-40). At 360px it covered the entire
+           * bar and swallowed every tap on it — the "More" trigger could not be
+           * clicked at all, which made the primary navigation unusable.
+           *
+           * `bottom-20` clears the bar and its safe-area inset; `md:bottom-6`
+           * restores the original offset where there is no bar, and `md:ms`
+           * clears the desktop rail.
+           */
+          className="glass-strong fixed bottom-20 start-4 z-[70] flex w-[min(92vw,26rem)] items-start gap-3 rounded-2xl p-4 ps-16 md:bottom-6 md:ms-[6.5rem]"
         >
           <div className="min-w-0 flex-1">
             <p className="text-[9px] tracking-[0.32em] text-gold-muted/55">A NOTE ON MEMBERSHIP</p>

@@ -7,21 +7,52 @@ import { GreekColumns } from "@/components/GreekColumns";
 import { GoldDust } from "@/components/GoldDust";
 
 /**
- * Start Now — the single-button cinematic landing.
+ * The landing.
  *
- * The colonnade is procedural CSS (see `.greek-column`), lit by gold dust, and
- * reacts to scroll through Framer Motion parallax. No stock imagery.
+ * Deliberately chromeless: `CHROMELESS_ROUTES` in `lib/nav` keeps the shell off
+ * this route, so there is no rail and no bottom bar. One logo, one title, one
+ * line of definition, one button. A nav beside it would read as a dashboard
+ * rather than an arrival.
+ *
+ * The horizon is procedural CSS (`.greek-column`) lit by gold dust, layered
+ * three deep for parallax. No stock photography.
+ *
+ * The title reveals progressively: each character fades up in sequence rather
+ * than the whole block fading at once, so the eye lands on the word rather than
+ * on a rectangle.
  */
 export function UtopiaHero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+
+  // Three depths only. More layers costs paint time and reads as noise.
+  const farY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const midY = useTransform(scrollYProgress, [0, 1], [0, 90]);
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
 
+  const title = "عقل في صندوق";
+
   return (
-    <div ref={ref} className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+    <div
+      ref={ref}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
+    >
       <div aria-hidden="true" className="absolute inset-0 void-vignette" />
-      <GreekColumns />
+
+      {/*
+        Two motion layers plus the colonnade, which carries its own parallax.
+        Depth order, back to front: horizon glow (slowest) → colonnade → dust.
+        Three layers is the budget; a fourth buys nothing visible and costs
+        paint time on a mid-range phone.
+      */}
+      <motion.div aria-hidden="true" style={{ y: farY }} className="absolute inset-0">
+        <div className="absolute inset-x-0 top-1/2 h-[46vh] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.09),transparent_70%)]" />
+      </motion.div>
+      <motion.div aria-hidden="true" style={{ y: midY }} className="absolute inset-0">
+        <GreekColumns />
+      </motion.div>
+
       <GoldDust count={52} />
 
       <motion.div
@@ -37,14 +68,31 @@ export function UtopiaHero() {
           <span className="text-4xl font-bold leading-none">ع</span>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 26 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        {/* Per-character reveal. Letters are marked aria-hidden and the word is
+            exposed once to assistive tech, otherwise it reads letter by letter. */}
+        <h1
           className="gold-text-glow display-arabic max-w-3xl text-5xl font-bold leading-tight text-gold-light sm:text-7xl lg:text-8xl"
+          aria-label={title}
         >
-          عقل في صندوق
-        </motion.h1>
+          {Array.from(title).map((ch, i) => (
+            <motion.span
+              key={`${ch}-${i}`}
+              aria-hidden="true"
+              initial={{ opacity: 0, y: 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.7,
+                // 90ms stagger: the word assembles left-to-right in reading
+                // order without the whole line feeling slow.
+                delay: 0.15 + i * 0.09,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="inline-block"
+            >
+              {ch === " " ? " " : ch}
+            </motion.span>
+          ))}
+        </h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -72,7 +120,7 @@ export function UtopiaHero() {
           transition={{ duration: 1.1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="mt-12"
         >
-          <Link href="/wisdom" className="btn-gold px-12 py-5 text-lg">
+          <Link href="/enter" className="btn-gold px-12 py-5 text-lg">
             <span className="tracking-widest">ابدأ الآن</span>
           </Link>
         </motion.div>
@@ -93,7 +141,6 @@ export function UtopiaHero() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll cue */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

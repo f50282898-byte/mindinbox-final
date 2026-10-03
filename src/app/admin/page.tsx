@@ -1,7 +1,5 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { AdminConsole } from "@/components/AdminConsole";
-
-export const runtime = "edge";
 
 // Not indexed, never linked from the sidebar.
 export const metadata: Metadata = {

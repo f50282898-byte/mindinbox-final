@@ -74,6 +74,7 @@ if (typeof window !== "undefined" && auth) {
 export const paths = {
   user: (uid: string) => `users/${uid}` as const,
   userEntries: (uid: string) => `users/${uid}/entries` as const,
+  userConversations: (uid: string) => `users/${uid}/conversations` as const,
   userEvents: (uid: string) => `users/${uid}/events` as const,
   userPuzzles: (uid: string) => `users/${uid}/puzzles` as const,
   siteConfig: "siteConfig",

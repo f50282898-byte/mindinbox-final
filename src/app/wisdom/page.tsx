@@ -1,13 +1,19 @@
-import type { Metadata } from "next";
-import { WisdomHub } from "@/components/WisdomHub";
-
-export const runtime = "edge";
+﻿import type { Metadata } from "next";
+import { WisdomChat } from "@/components/WisdomChat";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "اسأل الحكيم",
-  description: "واجهة الذكاء الاصطناعي — تتقمّص شخصيات الفلاسفة.",
+  description:
+    "اختر فيلسوفاً، واطرح سؤالك. ردّ فلسفي متأنٍّ، بلا تشخيص ولا تشويق.",
+  alternates: { canonical: "/wisdom", languages: { ar: "/wisdom", en: "/wisdom" } },
+  openGraph: {
+    title: "اسأل الحكيم | عقل في صندوق",
+    description: "اختر فيلسوفاً، واطرح سؤالك.",
+    url: absoluteUrl("/wisdom"),
+  },
 };
 
 export default function WisdomPage() {
-  return <WisdomHub />;
+  return <WisdomChat />;
 }

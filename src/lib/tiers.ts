@@ -42,9 +42,22 @@ export interface TierDefinition extends TierEntitlements {
   priceUsd: number;
   /** Per-period price suffix. */
   period: string;
+  /** English counterpart of `period`. */
+  periodEnglish: string;
   tagline: string;
+  /** Arabic feature list, index-aligned with `featuresEnglish`. */
   features: string[];
-  /** Scarcity framing shown to drive upgrade intent. */
+  /** Faithful English translation of `features`, same order. */
+  featuresEnglish: string[];
+  /** Per-tier English tagline. */
+  taglineEnglish: string;
+  /**
+   * Scarcity framing shown to drive upgrade intent.
+   *
+   * DEPRECATED — unverified claims ("seats are limited") are not used in
+   * pricing. Kept only so existing stored overrides keep parsing; see
+   * `siteConfig.pricing`, which deliberately omits it.
+   */
   scarcity: string;
   cta: string;
 }
@@ -71,6 +84,13 @@ export const TIER_DEFINITIONS: Record<Tier, TierDefinition> = {
       "ثلاثة إدخالات في المتتبع يومياً",
       "وصول إلى شخصيات الفلاسفة",
     ],
+    featuresEnglish: [
+      "Five dialogues with the sage",
+      "Three tracker entries per day",
+      "Access to the philosopher personas",
+    ],
+    periodEnglish: "/month",
+    taglineEnglish: "Five attempts open the door, then wisdom begins.",
     scarcity: "الدعوة للعضوية تُغلق عند انتهاء التجربة.",
     cta: "ابدأ الآن",
   },
@@ -80,6 +100,7 @@ export const TIER_DEFINITIONS: Record<Tier, TierDefinition> = {
     latin: "The Oracle",
     priceUsd: 33,
     period: "/شهرياً",
+    periodEnglish: "/month",
     tagline: "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
     aiAttempts: null,
     trackerEntries: null,
@@ -94,6 +115,13 @@ export const TIER_DEFINITIONS: Record<Tier, TierDefinition> = {
       "تحميل ملفات PDF الدراسية",
       "جلسات بلا حدود مع الحكيم",
     ],
+    featuresEnglish: [
+      "Unlimited habit and thought tracking",
+      "A gold chart and daily analysis from the philosopher",
+      "Downloadable PDF study material",
+      "Unlimited sessions with the sage",
+    ],
+    taglineEnglish: "Unlimited tracking and a daily philosopher reading.",
     scarcity: "مقاعد العرّاف محدودة، ويغلق باب المستوى عند اكتمالها.",
     cta: "احجز مقعدك",
   },
@@ -103,6 +131,7 @@ export const TIER_DEFINITIONS: Record<Tier, TierDefinition> = {
     latin: "The Sanctum",
     priceUsd: 100,
     period: "/شهرياً",
+    periodEnglish: "/month",
     tagline: "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل نفسي عميق.",
     aiAttempts: null,
     trackerEntries: null,
@@ -117,6 +146,13 @@ export const TIER_DEFINITIONS: Record<Tier, TierDefinition> = {
       "فيديوهات يوتيوب بإطارات ذهبية قديمة",
       "تحليل نفسي عميق لأنماط تفكيرك",
     ],
+    featuresEnglish: [
+      "Everything in the Oracle",
+      "A private community with members-only posts",
+      "Video lectures in antique gold frames",
+      "Deep psychological analysis of your thinking patterns",
+    ],
+    taglineEnglish: "The private circle: community, lectures, and deep analysis.",
     scarcity: "أربعة عشر مقعداً فقط في الدائرة، ومن يجلس لا يغادر.",
     cta: "ادخل المحراب",
   },
