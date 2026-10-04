@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import * as Icons from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { useLocale } from "@/lib/i18n";
@@ -179,7 +180,7 @@ function DesktopRail() {
           aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box — home" })}
           className="gold-glow flex size-10 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-black/60 text-gold-light transition-colors hover:border-gold/70"
         >
-          <span className="display-arabic text-lg font-bold leading-none">ع</span>
+          <Image src="/logo.jpg" alt="عقل في صندوق" width={40} height={40} className="object-cover rounded-full" />
         </Link>
         <AnimatePresence initial={false}>
           {!railCollapsed && (

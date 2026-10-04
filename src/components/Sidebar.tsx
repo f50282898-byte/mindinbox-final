@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
@@ -184,7 +185,7 @@ function Wordmark({ expanded }: { expanded: boolean }) {
         className="gold-glow flex size-11 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-black text-gold-light transition-colors hover:border-gold/70"
         aria-label="عقل في صندوق — الصفحة الرئيسية"
       >
-        <span className="display-arabic text-xl font-bold leading-none">ع</span>
+        <Image src="/logo.jpg" alt="عقل في صندوق" width={44} height={44} className="object-cover rounded-full" />
       </Link>
       <AnimatePresence>
         {expanded && (
