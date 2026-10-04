@@ -10,7 +10,7 @@ import { TIER_DEFINITIONS, TRIAL_DAYS, type Tier } from "@/lib/tiers";
  *
  * Prices come from `siteConfig/pricing` (admin-controlled) with the shipped
  * defaults as fallback. Scarcity language is deliberate and bounded to what
- * the product can actually honour — no fake countdowns.
+ * the product can actually honour â€” no fake countdowns.
  */
 const LADDER: Tier[] = ["free", "oracle", "sanctum"];
 
@@ -20,7 +20,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
   return (
     <div className="mx-auto w-full max-w-5xl px-5 py-14 sm:py-20">
       <header className="mb-14 text-center">
-        <p className="text-[10px] tracking-[0.35em] text-gold-muted/55">MEMBERSHIP · العضوية</p>
+        <p className="text-[10px] tracking-[0.35em] text-ink-3">MEMBERSHIP · العضوية</p>
         <h1 className="gold-text-glow display-arabic mt-4 text-3xl font-bold text-gold-light sm:text-5xl">
           اختر مستوى التزامك
         </h1>
@@ -55,7 +55,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
 
               <header>
                 <h2 className="display-arabic text-2xl font-bold text-gold-light">{tier.name}</h2>
-                <p className="display-latin mt-0.5 text-[10px] tracking-[0.25em] text-gold-muted/50">
+                <p className="display-latin mt-0.5 text-[10px] tracking-[0.25em] text-ink-3">
                   {tier.latin}
                 </p>
               </header>
@@ -98,7 +98,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
                     <span>{tier.cta}</span>
                   </a>
                 )}
-                <p className="mt-3 text-center text-[10px] leading-relaxed text-gold-muted/45">
+                <p className="mt-3 text-center text-[10px] leading-relaxed text-ink-3">
                   {tier.scarcity}
                 </p>
               </div>
@@ -107,7 +107,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
         })}
       </div>
 
-      <p className="display-arabic mx-auto mt-12 max-w-xl text-center text-xs leading-relaxed text-gold-muted/50">
+      <p className="display-arabic mx-auto mt-12 max-w-xl text-center text-xs leading-relaxed text-ink-3">
         التسجيل يمنحك {TRIAL_DAYS} يوماً من التجربة الكاملة بلا بطاقة. لا يوجد تغيير تلقائي،
         ولا نخزّن أي بيانات مالية على الإطلاق.
       </p>

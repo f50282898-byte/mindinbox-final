@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { JournalApp } from "@/components/journal/JournalApp";
-import { absoluteUrl } from "@/lib/seo";
 
 export const runtime = "edge";
 
@@ -8,12 +7,15 @@ export const metadata: Metadata = {
   title: "المفكرة",
   description:
     "مفكرة يومية: عاداتك، وأيامك، ومبادئك. تُكتب على جهازك أولاً، وتُزامَن حين تتوفّر الشبكة.",
-  alternates: { canonical: "/journal", languages: { ar: "/journal", en: "/journal" } },
-  openGraph: {
-    title: "المفكرة | عقل في صندوق",
-    description: "عاداتك، وأيامك، ومبادئك — في مكان واحد يبقى لك.",
-    url: absoluteUrl("/journal"),
-  },
+  /**
+   * `noindex` — see the note in `/enter`.
+   *
+   * The journal's local mirror works without Firebase, but nothing syncs, so a reader
+   * would lose entries on a new device with no warning. Its own copy already tells an
+   * unsynced reader to sign in to keep their entries with them; `noindex` keeps the
+   * page out of results while that promise cannot be kept.
+   */
+  robots: { index: false, follow: false },
 };
 
 /**

@@ -201,12 +201,29 @@ export async function sendVerification(user: User): Promise<void> {
   }
 }
 
-export async function isEmailVerified(user: User): Promise<boolean> {
-  // Reload so a click on the emailed link is observed.
+/**
+ * Whether this user has verified their email address, reloading first so a click on
+ * the emailed link is observed.
+ *
+ * Accepts a nullish user on purpose. A caller that has just read `auth.currentUser`
+ * and found nothing is asking a real question — "is anyone signed in?" — and the
+ * honest answer is `false`. Forcing every caller to null-check first is how the
+ * previous version ended up crashing: `user.reload()` threw a `TypeError`, the
+ * `catch` swallowed it, and the exception that actually escaped was the
+ * `user.emailVerified` read on the line *after*. The swallow made a missing user
+ * look like a network failure.
+ *
+ * A failed reload is also swallowed on purpose, for the same reason: the cached
+ * answer is stale but true-or-false, which beats an unhandled rejection. When it is
+ * wrong the panel re-reads on the next mount.
+ */
+export async function isEmailVerified(user: User | null | undefined): Promise<boolean> {
+  if (!user) return false;
+
   try {
     await user.reload();
   } catch {
-    return user.emailVerified;
+    // Fall through to the cached value.
   }
   return user.emailVerified;
 }

@@ -12,7 +12,7 @@ export const runtime = "edge";
 export default function NotFound() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center justify-center px-5 text-center">
-      <p className="display-latin text-xs tracking-[0.4em] text-gold-muted/40">404</p>
+      <p className="display-latin text-xs tracking-[0.4em] text-ink-3">404</p>
       <h1 className="display-arabic mt-4 text-3xl font-bold text-gold-light">
         هذه الصفحة ليست هنا
       </h1>

@@ -10,7 +10,7 @@ import { PERSONAS, type Persona } from "@/lib/ai/personas";
  * between. A dropdown would hide exactly the information that makes the choice
  * meaningful.
  *
- * The selection is stored per conversation, not globally — switching philosopher
+ * The selection is stored per conversation, not globally â€” switching philosopher
  * mid-thread should not rewrite what the earlier turns meant.
  */
 export function PersonaCards({
@@ -72,7 +72,7 @@ function PersonaCard({
       <span className="min-w-0 flex-1">
         <span className="display-arabic flex flex-wrap items-baseline gap-x-2 text-[0.98rem] font-bold text-gold-light">
           {persona.nameAr}
-          <span className="display-latin text-[10px] tracking-widest text-gold-muted/45">
+          <span className="display-latin text-[10px] tracking-widest text-ink-3">
             {persona.nameEn}
           </span>
         </span>
@@ -82,8 +82,8 @@ function PersonaCard({
           {persona.focusAr}
         </span>
 
-        <span className="mt-1.5 block text-[0.7rem] text-gold-muted/45">
-          {persona.epithetAr} · {persona.years}
+        <span className="mt-1.5 block text-[0.7rem] text-ink-3">
+          {persona.epithetAr} Â· {persona.years}
         </span>
       </span>
     </button>

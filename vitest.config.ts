@@ -14,7 +14,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    include: [
+      "src/**/*.{test,spec}.{ts,tsx}",
+      // Build gates live in scripts/ and have the same standing as unit tests: a
+      // gate that cannot be executed in CI is not a gate. See scripts/lib/*.test.mjs.
+      "scripts/**/*.test.mjs",
+    ],
     exclude: ["node_modules", ".next", "e2e", "tests"],
     coverage: {
       provider: "v8",

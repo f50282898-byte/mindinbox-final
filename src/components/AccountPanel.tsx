@@ -28,8 +28,8 @@ interface Entitlements {
  *
  * Three groups, in the order that matters to a person:
  *   1. who you are (email, verification, sign out)
- *   2. preferences (language, theme) — local, instant, no round trip
- *   3. your data (export, delete) — export first, delete last, and never
+ *   2. preferences (language, theme) â€” local, instant, no round trip
+ *   3. your data (export, delete) â€” export first, delete last, and never
  *      silently: deletion asks for the password and names what will go.
  *
  * Export is deliberately above delete and both are independent, so a user can
@@ -204,9 +204,9 @@ export function AccountPanel() {
         <p className="display-latin mt-1 text-lg text-gold-muted/70">Account</p>
       </header>
 
-      {/* ── 1. identity ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ 1. identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Section title="بيانات الحساب">
-        <Row label="البريد الإلكتروني" value={isAnonymous ? "حساب ضيف" : (email ?? "—")} />
+        <Row label="البريد الإلكتروني" value={isAnonymous ? "حساب ضيف" : (email ?? "â€”")} />
 
         {!isAnonymous && verified && (
           <Notice kind="ok">بريدك مُفعّل.</Notice>
@@ -240,7 +240,12 @@ export function AccountPanel() {
               onClick={() => {
                 void (async () => {
                   const { auth: a } = await import("@/lib/firebase");
-                  setVerified(await isEmailVerified(a!.currentUser!));
+                  // No non-null assertion: the session can expire between render and
+                  // click, and `a` itself is null when Firebase is not configured.
+                  // `isEmailVerified` reports `false` for a missing user, which is
+                  // the honest answer — previously this threw
+                  // "Cannot read properties of null (reading 'emailVerified')".
+                  setVerified(await isEmailVerified(a?.currentUser));
                 })();
               }}
               variant="ghost"
@@ -287,7 +292,7 @@ export function AccountPanel() {
         </Button>
       </Section>
 
-      {/* ── 2. preferences ──────────────────────────────────────────────── */}
+      {/* â”€â”€ 2. preferences â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Section title="التفضيلات">
         <Row label="اللغة">
           <div className="flex gap-1.5" role="group" aria-label="اللغة">
@@ -328,12 +333,12 @@ export function AccountPanel() {
             ))}
           </div>
         </Row>
-        <p className="text-xs leading-relaxed text-gold-muted/45">
+        <p className="text-xs leading-relaxed text-ink-3">
           تُحفظ اللغة والمظهر على هذا الجهاز. ربطهما بالحساب يأتي لاحقاً.
         </p>
       </Section>
 
-      {/* ── password ────────────────────────────────────────────────────── */}
+      {/* â”€â”€ password â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {!isAnonymous && (
         <Section title="كلمة المرور">
           <Field
@@ -378,7 +383,7 @@ export function AccountPanel() {
         </Section>
       )}
 
-      {/* ── email change ────────────────────────────────────────────────── */}
+      {/* â”€â”€ email change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {!isAnonymous && (
         <Section title="تغيير البريد الإلكتروني">
           <Field
@@ -423,7 +428,7 @@ export function AccountPanel() {
         </Section>
       )}
 
-      {/* ── 3. data ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ 3. data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <Section title="بياناتك">
         <p className="display-arabic text-sm leading-loose text-gold-muted/75">
           نزّل نسخة كاملة من بياناتك كملف JSON. صدّرها قبل أن تحذف حسابك إن أردت الاحتفاظ بها.
@@ -488,7 +493,7 @@ export function AccountPanel() {
   );
 }
 
-/* ── helpers ─────────────────────────────────────────────────────────────── */
+/* â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function tierLabel(tier: string, t: (p: { ar: string; en: string }) => string): string {
   return t({
@@ -565,9 +570,9 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         autoComplete={autoComplete}
-        className="panel-inset w-full rounded-2xl px-4 py-3 text-gold-muted placeholder:text-gold-muted/30 focus:outline-none"
+        className="panel-inset w-full rounded-2xl px-4 py-3 text-gold-muted placeholder:text-ink-3 focus:outline-none"
       />
-      {hint && <p className="mt-1 text-xs text-gold-muted/50">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-3">{hint}</p>}
     </div>
   );
 }

@@ -160,7 +160,7 @@ export function AdminGate({ uid }: { uid: string | null }) {
     <div className="flex flex-col gap-8">
       <header className="flex flex-wrap items-baseline justify-between gap-3 border-b border-white/10 pb-4">
         <h1 className="display-arabic text-xl text-gold-light">لوحة الإدارة</h1>
-        <p dir="ltr" className="text-xs text-gold-muted/50">
+        <p dir="ltr" className="text-xs text-ink-3">
           {uid}
         </p>
       </header>

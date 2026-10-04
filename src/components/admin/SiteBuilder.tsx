@@ -333,7 +333,7 @@ function SortableNavRow({
         ⋮⋮
       </button>
 
-      <span dir="ltr" className="text-xs text-gold-muted/50">
+      <span dir="ltr" className="text-xs text-ink-3">
         {item.id}
       </span>
 

@@ -10,7 +10,7 @@ import { useAppStore } from "@/lib/store";
 import { useSession } from "@/lib/session";
 
 /**
- * `/dialogue` — two philosophers answer the same question, three rounds, then a
+ * `/dialogue` â€” two philosophers answer the same question, three rounds, then a
  * neutral summary.
  *
  * What the server owns, and this file deliberately does not:
@@ -20,7 +20,7 @@ import { useSession } from "@/lib/session";
  *
  * The client asks for a round and renders what comes back. If a non-member asks
  * for round two they get `preview_end` from the server and an invitation on
- * screen — the client has no opinion on whether they are entitled, because a
+ * screen â€” the client has no opinion on whether they are entitled, because a
  * client opinion is not evidence.
  */
 
@@ -243,13 +243,13 @@ export function Dialogue() {
     await runSummary();
   }
 
-  /* ── Setup ─────────────────────────────────────────────────────────────── */
+  /* â”€â”€ Setup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (phase === "setup") {
     return (
       <div className="mx-auto w-full max-w-2xl px-5 py-10">
         <header className="mb-8">
           <h1 className="display-arabic text-2xl font-bold text-gold-light">الحوار</h1>
-          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-gold-muted/45">
+          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
             DIALOGUE
           </p>
           <p className="display-arabic mt-4 leading-loose text-gold-muted">
@@ -297,7 +297,7 @@ export function Dialogue() {
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <p className="display-arabic text-sm text-gold-muted">
               {PERSONAS.find((p) => p.id === picks[0])?.nameAr}{" "}
-              <span aria-hidden="true">⇄</span>{" "}
+              <span aria-hidden="true">â‡„</span>{" "}
               {PERSONAS.find((p) => p.id === picks[1])?.nameAr}
             </p>
             <button
@@ -306,7 +306,7 @@ export function Dialogue() {
                 setPicks(null);
                 setAssigning(0);
               }}
-              className="text-xs text-gold-muted/55 underline underline-offset-4 hover:text-gold-light"
+              className="text-xs text-ink-3 underline underline-offset-4 hover:text-gold-light"
             >
               تغيير
             </button>
@@ -329,7 +329,7 @@ export function Dialogue() {
         </button>
 
         {authState !== "loading" && (
-          <p className="display-arabic mt-4 text-center text-xs text-gold-muted/50">
+          <p className="display-arabic mt-4 text-center text-xs text-ink-3">
             يمكنك قراءة جولة كاملة مجاناً قبل أن نطلب منك أي قرار.
           </p>
         )}
@@ -337,7 +337,7 @@ export function Dialogue() {
     );
   }
 
-  /* ── The dialogue ──────────────────────────────────────────────────────── */
+  /* â”€â”€ The dialogue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   return (
     <div className="mx-auto w-full max-w-2xl px-4 pb-40 pt-8">
       <h1 className="display-arabic text-xl font-bold text-gold-light">الحوار</h1>
@@ -475,7 +475,7 @@ export function Dialogue() {
       )}
 
       {attemptsLeft !== null && attemptsLeft < 5 && !invited && (
-        <p role="status" className="display-arabic mt-6 text-center text-xs text-gold-muted/55">
+        <p role="status" className="display-arabic mt-6 text-center text-xs text-ink-3">
           {attemptsLeft === 1
             ? "بقي لك سؤال مجاني واحد."
             : `بقي لك ${attemptsLeft} من الأسئلة المجانية.`}

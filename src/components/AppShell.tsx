@@ -80,9 +80,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   // Anonymous visitors are metered by the server; surface the Gate once the
   // local mirror reports exhaustion (kept for instant feedback, not control).
   useEffect(() => {
-    if (state === "anonymous") {
-      void fetch("/api/ai", { method: "GET" }).catch(() => undefined);
-    }
+    if (state !== "anonymous") return;
+    const controller = new AbortController();
+    // The body must be consumed or cancelled.
+    //
+    // This request used to be `void fetch("/api/ai").catch(() => undefined)`, which
+    // left the response body unread. An unread body keeps the loader alive: the
+    // browser holds the connection open indefinitely, one per anonymous page view, and
+    // never reuses it. Playwright made it visible — `requestfinished` never fired for
+    // this URL and the page never reached `networkidle` 25 seconds later — but the cost
+    // is the reader's connection slot either way.
+    //
+    // The call exists only to make the server set the signed `miab-anon` cookie, so
+    // discarding the payload is correct; discarding it *without releasing the stream* is
+    // what was wrong.
+    void fetch("/api/ai", { method: "GET", signal: controller.signal })
+      .then((res) => res.body?.cancel())
+      .catch(() => undefined);
+    return () => controller.abort();
   }, [state]);
 
   return (

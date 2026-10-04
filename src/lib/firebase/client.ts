@@ -37,7 +37,7 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
-import { env } from "@/lib/env";
+import { firebaseProjectIdOrEmpty, isFirebaseConfigured } from "@/lib/firebase/config";
 
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
@@ -48,27 +48,26 @@ let analyticsInitialized = false;
 
 /** Returns true only when all required Firebase public config is present. */
 export function firebaseConfigured(): boolean {
-  const e = env();
-  return Boolean(
-    e.NEXT_PUBLIC_FIREBASE_API_KEY &&
-      e.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
-      e.NEXT_PUBLIC_FIREBASE_APP_ID
-  );
+  return isFirebaseConfigured();
 }
 
 /** Initializes Firebase app (idempotent). */
 function initApp(): FirebaseApp | null {
-  if (!firebaseConfigured()) return null;
+  if (!isFirebaseConfigured()) return null;
   if (app) return app;
-  const e = env();
+  // Read directly rather than via `env()`: `env()` throws when a Firebase key is
+  // absent, which is correct for a secret and wrong here — a build with no Firebase
+  // configuration is a legitimate state that must render, not crash. `config.ts` is
+  // the single source of truth for that question.
+  const e = process.env;
   const config = {
-    apiKey: e.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: e.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: e.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: e.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: e.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: e.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: e.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    apiKey: e.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
+    authDomain: e.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
+    projectId: e.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
+    storageBucket: e.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "",
+    messagingSenderId: e.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "",
+    appId: e.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
+    measurementId: e.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "",
   };
   app = getApps().length > 0 ? getApp() : initializeApp(config);
   return app;
@@ -134,7 +133,7 @@ export async function getAnalyticsClient(): Promise<Analytics | null> {
 }
 
 /** Mirrors the project id the edge routes verify ID tokens against. */
-export const firebaseProjectId = env().NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+export const firebaseProjectId = firebaseProjectIdOrEmpty();
 
 /** Firestore collection / document paths, centralised so rules stay in sync. */
 export const paths = {

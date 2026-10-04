@@ -57,13 +57,13 @@ export default function PathsPage() {
             <li key={tier.id}>
               <article className={`glass p-6 ${tier.highlighted ? "gold-frame" : ""}`}>
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="display-latin text-xs tracking-[0.3em] text-gold/40">
+                  <span className="display-latin text-xs tracking-[0.3em] text-ink-3">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h2 className="display-arabic text-xl font-bold text-gold-light">
                     {tier.name.ar}
                   </h2>
-                  <span className="display-latin text-sm text-gold-muted/55">{tier.latin}</span>
+                  <span className="display-latin text-sm text-ink-3">{tier.latin}</span>
                 </div>
 
                 <p className="display-arabic mt-3 leading-loose text-gold-muted/85">
@@ -92,7 +92,7 @@ export default function PathsPage() {
                       className="text-sm text-gold-muted/70 underline-offset-4 hover:text-gold-light hover:underline"
                     >
                       {d.ar}
-                      <span className="display-latin mx-2 text-xs text-gold-muted/40">
+                      <span className="display-latin mx-2 text-xs text-ink-3">
                         {d.en}
                       </span>
                     </Link>

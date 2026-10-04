@@ -46,7 +46,7 @@ import { ArtLayer } from "@/components/art/ArtLayer";
  *  - **Nothing is required.** Energy, focus and mood are all optional, all of them
  *    every day. An empty day is shown as an empty day, not as a failure.
  *  - **The streak is shown with its grace.** When a grace day has been spent, the
- *    reader is told — quietly — rather than discovering a reset later and not
+ *    reader is told â€” quietly â€” rather than discovering a reset later and not
  *    knowing why.
  *  - **No counters on the landing view.** No "days remaining", no nagging. The
  *    only numbers are the reader's own.
@@ -176,15 +176,15 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
   return (
     /* `relative` so the artwork has a positioned ancestor to inset itself against. The
        journal is the reader's own surface and the hourglass sits behind it at 30%
-       opacity — present on a scroll, never competing with an entry. */
+       opacity â€” present on a scroll, never competing with an entry. */
     <div className="relative">
       <ArtLayer id="hourglass" />
       <div className="relative mx-auto w-full max-w-3xl px-4 pb-24 pt-6">
-      {/* ── Header ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <header className="mb-6 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h1 className="display-arabic text-2xl font-bold text-gold-light">المفكرة</h1>
-          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-gold-muted/45">
+          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
             JOURNAL
           </p>
         </div>
@@ -195,7 +195,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
               محفوظ على جهازك
             </span>
           ) : syncing ? (
-            <span className="display-arabic text-[0.65rem] text-gold-muted/50">يحفظ…</span>
+            <span className="display-arabic text-[0.65rem] text-ink-3">يحفظ…</span>
           ) : null}
         </div>
       </header>
@@ -211,10 +211,10 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
 
       <AiConsentSwitch />
 
-      {/* ── Principles, always in view ─────────────────────────────────── */}
+      {/* â”€â”€ Principles, always in view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <PrinciplesPanel />
 
-      {/* ── View switcher ──────────────────────────────────────────────── */}
+      {/* â”€â”€ View switcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
         role="tablist"
         aria-label="المدى الزمني"
@@ -271,11 +271,11 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
         </div>
       )}
 
-      {/* ── Trends ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Trends â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="mt-6 flex flex-col gap-6">
         <div className="glass p-5">
           <h2 className="display-arabic mb-1 text-sm font-semibold text-gold-light">الطاقة</h2>
-          <p className="display-arabic mb-3 text-xs text-gold-muted/55">
+          <p className="display-arabic mb-3 text-xs text-ink-3">
             {series.energyMean === null
               ? "لم تُسجَّل أي قراءات بعد."
               : `المعدّل ${series.energyMean.toFixed(1)} من ٥ عبر ${series.points.filter((p) => p.energy !== null).length} يوماً.`}
@@ -297,7 +297,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
           <h2 className="display-arabic mb-1 text-sm font-semibold text-gold-light">
             العادات والطاقة
           </h2>
-          <p className="display-arabic mb-3 text-xs leading-relaxed text-gold-muted/55">
+          <p className="display-arabic mb-3 text-xs leading-relaxed text-ink-3">
             كل نقطة يوم كتبت فيه تقييماً للطاقة، وموضعها يبيّن كم أنجزت من مستحقّاتك.
           </p>
           <HabitEnergyScatter points={scatterPoints} wording={correlation.wording} />
@@ -313,7 +313,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
         </div>
       </section>
 
-      {/* ── Habits ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Habits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="mt-8">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="display-arabic text-sm font-semibold text-gold-light">العادات</h2>
@@ -343,7 +343,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
         )}
       </section>
 
-      {/* ── Export ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ Export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="mt-10">
         <h2 className="display-arabic mb-3 text-sm font-semibold text-gold-light">
           نسخة من مفكرتك
@@ -369,7 +369,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
             CSV
           </button>
           {!isMember && (
-            <span className="display-arabic self-center text-[0.7rem] text-gold-muted/45">
+            <span className="display-arabic self-center text-[0.7rem] text-ink-3">
               التصدير متاح للجميع.
             </span>
           )}
@@ -382,7 +382,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
       </section>
 
       {authState === "unavailable" && (
-        <p className="display-arabic mt-8 text-center text-xs leading-relaxed text-gold-muted/50">
+        <p className="display-arabic mt-8 text-center text-xs leading-relaxed text-ink-3">
           مفكرتك محفوظة على هذا الجهاز.{" "}
           <Link href="/enter" className="text-gold-light underline underline-offset-4">
             سجّل الدخول
@@ -417,7 +417,7 @@ export function JournalApp() {  const { state: authState, uid } = useSession();
  * Days between a habit's creation and a day, for an every-N-days schedule.
  *
  * Anchored on the habit's creation date so the rhythm is fixed and reproducible on
- * every device — anchoring on "today" would move the schedule each time the reader
+ * every device â€” anchoring on "today" would move the schedule each time the reader
  * opened the app, which is both wrong and maddening.
  */
 function indexFor(habit: Habit, key: DayKey): number {
@@ -428,7 +428,7 @@ function indexFor(habit: Habit, key: DayKey): number {
   return Math.round((Date.UTC(ky, km - 1, kd) - Date.UTC(oy, om - 1, od)) / 86_400_000);
 }
 
-/* ── Day navigation ──────────────────────────────────────────────────────── */
+/* â”€â”€ Day navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function DayNav({
   current,
@@ -454,11 +454,11 @@ function DayNav({
         aria-label="اليوم السابق"
         className="flex size-9 items-center justify-center rounded-full border border-gold/25 text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
       >
-        ‹
+        â€¹
       </button>
       <div className="text-center">
         <p className="display-arabic text-sm font-semibold text-gold-light">{current}</p>
-        <p className="display-arabic text-xs text-gold-muted/55">{weekday?.long}</p>
+        <p className="display-arabic text-xs text-ink-3">{weekday?.long}</p>
       </div>
       <button
         type="button"
@@ -467,7 +467,7 @@ function DayNav({
         aria-label="اليوم التالي"
         className="flex size-9 items-center justify-center rounded-full border border-gold/25 text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light disabled:opacity-25"
       >
-        ›
+        â€º
       </button>
       {current !== today && (
         <button
@@ -482,7 +482,7 @@ function DayNav({
   );
 }
 
-/* ── The day itself ──────────────────────────────────────────────────────── */
+/* â”€â”€ The day itself â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function DayPanel({ date }: { date: DayKey }) {
   const toggleHabit = useJournal((s) => s.toggleHabit);
@@ -531,7 +531,7 @@ function DayPanel({ date }: { date: DayKey }) {
                     </span>
                   </button>
                   {habit.intention && (
-                    <p className="display-arabic ps-9 text-xs leading-relaxed text-gold-muted/45">
+                    <p className="display-arabic ps-9 text-xs leading-relaxed text-ink-3">
                       {habit.intention}
                     </p>
                   )}
@@ -545,7 +545,7 @@ function DayPanel({ date }: { date: DayKey }) {
       {/* Check-in. Everything optional, nothing requested. */}
       <section className="glass p-5">
         <h2 className="display-arabic mb-1 text-sm font-semibold text-gold-light">متابعة اليوم</h2>
-        <p className="display-arabic mb-4 text-xs leading-relaxed text-gold-muted/50">
+        <p className="display-arabic mb-4 text-xs leading-relaxed text-ink-3">
           كل ما هنا اختياري. اترك ما لا ينطبق.
         </p>
 
@@ -569,7 +569,7 @@ function DayPanel({ date }: { date: DayKey }) {
             onChange={(v) => setMood(date, v)}
           />
         ) : (
-          <p className="display-arabic -mt-2 text-[0.7rem] leading-relaxed text-gold-muted/40">
+          <p className="display-arabic -mt-2 text-[0.7rem] leading-relaxed text-ink-3">
             المزاج لا يُطلب هنا. إن أردت تسجيله، فعّل القراءة من الأعلى.
           </p>
         )}
@@ -637,7 +637,7 @@ function DayPanel({ date }: { date: DayKey }) {
   );
 }
 
-/** 1–5 as a row of buttons. Keyboard reachable, no drag, no slider. */
+/** 1â€“5 as a row of buttons. Keyboard reachable, no drag, no slider. */
 function RatingRow({
   label,
   value,
@@ -714,7 +714,7 @@ function JournalBlock({
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="display-arabic text-[0.65rem] text-gold-muted/55 underline underline-offset-4 hover:text-gold-light"
+              className="display-arabic text-[0.65rem] text-ink-3 underline underline-offset-4 hover:text-gold-light"
             >
               تعديل
             </button>
@@ -728,14 +728,14 @@ function JournalBlock({
                 removeJournalBlock(date, template.id, existing.updatedAt);
                 setDraft("");
               }}
-              className="text-gold-muted/35 hover:text-gold-light"
+              className="text-ink-3 hover:text-gold-light"
             >
               <Trash2 className="size-3.5" />
             </button>
           )}
         </div>
       </div>
-      <p className="display-arabic mt-1 mb-3 text-xs leading-relaxed text-gold-muted/50">
+      <p className="display-arabic mt-1 mb-3 text-xs leading-relaxed text-ink-3">
         {template.hint}
       </p>
 
@@ -780,7 +780,7 @@ function JournalBlock({
   );
 }
 
-/* ── Principles ──────────────────────────────────────────────────────────── */
+/* â”€â”€ Principles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function PrinciplesPanel() {
   const principles = useJournal((s) => s.principles);
@@ -791,7 +791,7 @@ function PrinciplesPanel() {
   return (
     <section className="glass mb-6 p-5">
       <h2 className="display-arabic mb-1 text-sm font-semibold text-gold-light">مبادئي</h2>
-      <p className="display-arabic mb-4 text-xs leading-relaxed text-gold-muted/50">
+      <p className="display-arabic mb-4 text-xs leading-relaxed text-ink-3">
         كلماتك أنت. تظهر مع كل يوم.
       </p>
 
@@ -807,7 +807,7 @@ function PrinciplesPanel() {
                 type="button"
                 aria-label={`حذف ${principle.text}`}
                 onClick={() => removePrinciple(principle.id)}
-                className="mt-1 text-gold-muted/30 hover:text-gold-light"
+                className="mt-1 text-ink-3 hover:text-gold-light"
               >
                 <Trash2 className="size-3" />
               </button>
@@ -844,7 +844,7 @@ function PrinciplesPanel() {
   );
 }
 
-/* ── Habits ──────────────────────────────────────────────────────────────── */
+/* â”€â”€ Habits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function HabitRow({ habit, today }: { habit: Habit; today: DayKey }) {
   const day = useJournal((s) => s.days[today]);
@@ -882,16 +882,16 @@ function HabitRow({ habit, today }: { habit: Habit; today: DayKey }) {
         {ticked && <Check className="size-4" />}
       </button>
       <div className="min-w-0 flex-1">
-        <p className={`display-arabic truncate text-sm ${habit.archived ? "text-gold-muted/50 line-through" : "text-gold-light"}`}>
+        <p className={`display-arabic truncate text-sm ${habit.archived ? "text-ink-3 line-through" : "text-gold-light"}`}>
           {habit.title}
         </p>
-        <p className="display-arabic text-xs text-gold-muted/45">{schedule}</p>
+        <p className="display-arabic text-xs text-ink-3">{schedule}</p>
       </div>
       <button
         type="button"
         aria-label={habit.archived ? `إعادة تفعيل ${habit.title}` : `أرشفة ${habit.title}`}
         onClick={() => archiveHabit(habit.id, !habit.archived)}
-        className="shrink-0 text-gold-muted/35 hover:text-gold-light"
+        className="shrink-0 text-ink-3 hover:text-gold-light"
       >
         <Archive className="size-3.5" />
       </button>
@@ -899,7 +899,7 @@ function HabitRow({ habit, today }: { habit: Habit; today: DayKey }) {
         type="button"
         aria-label={`حذف ${habit.title}`}
         onClick={() => deleteHabit(habit.id)}
-        className="shrink-0 text-gold-muted/30 hover:text-gold-light"
+        className="shrink-0 text-ink-3 hover:text-gold-light"
       >
         <Trash2 className="size-3.5" />
       </button>
@@ -924,7 +924,7 @@ function AddHabitForm({ onDone }: { onDone: () => void }) {
         <p className="display-arabic text-sm leading-relaxed text-gold-muted">
           بلغت الحدّ في الخطة المجانية: {settings.habitsLimit} عادات.
         </p>
-        <p className="display-arabic mt-2 text-xs leading-relaxed text-gold-muted/55">
+        <p className="display-arabic mt-2 text-xs leading-relaxed text-ink-3">
           ثلاث عادات تُحمل فعلاً. إن أردت المزيد، فالأرشفة تفتح مكاناً، والعضوية ترفع الحدّ.
         </p>
       </div>
@@ -1003,7 +1003,7 @@ function AddHabitForm({ onDone }: { onDone: () => void }) {
             );
           })}
         </div>
-        <p className="display-arabic mt-1.5 text-[0.7rem] text-gold-muted/45">
+        <p className="display-arabic mt-1.5 text-[0.7rem] text-ink-3">
           {weekdays.length === 0 ? "بلا تحديد — أي يوم." : "في هذه الأيام فقط."}
         </p>
       </fieldset>

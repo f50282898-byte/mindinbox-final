@@ -55,7 +55,7 @@ function BlockView({ block }: { block: Block }) {
       return (
         <ul className="mb-3 space-y-1.5 ps-5 last:mb-0">
           {block.items.map((item, i) => (
-            <li key={i} className="list-disc marker:text-gold/50">
+            <li key={i} className="list-disc marker:text-ink-3">
               <InlineView nodes={item} />
             </li>
           ))}
@@ -64,7 +64,7 @@ function BlockView({ block }: { block: Block }) {
 
     case "ordered":
       return (
-        <ol className="mb-3 list-decimal space-y-1.5 ps-5 marker:text-gold/60 last:mb-0">
+        <ol className="mb-3 list-decimal space-y-1.5 ps-5 marker:text-ink-3 last:mb-0">
           {block.items.map((item, i) => (
             <li key={i}>
               <InlineView nodes={item} />

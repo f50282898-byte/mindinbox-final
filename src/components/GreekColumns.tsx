@@ -58,8 +58,11 @@ export function GreekColumns({ density = "full" }: { density?: "full" | "sparse"
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
     >
-      {/* Deep veil behind the colonnade */}
-      <div className="animate-veil absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_28%,rgba(212,175,55,0.10),transparent_70%)]" />
+      {/* Deep veil behind the colonnade.
+
+          `var(--gold)` rather than the literal #D4AF37: that literal is the dark
+          theme's accent, and in Parchment the accent is a different colour. */}
+      <div className="animate-veil absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_28%,rgb(var(--gold)/0.10),transparent_70%)]" />
 
       <div className="absolute inset-x-0 bottom-0 h-full">
         {columns.map((col, index) => (
@@ -73,8 +76,16 @@ export function GreekColumns({ density = "full" }: { density?: "full" | "sparse"
       </div>
 
       {/* Readability scrim: darkens the band the copy sits in, and the very top
-          and bottom, so the colonnade reads as depth rather than content. */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_58%_44%_at_50%_50%,rgba(5,5,5,0.86),rgba(5,5,5,0.35)_62%,transparent_85%)]" />
+          and bottom, so the colonnade reads as depth rather than content.
+
+          Built from `var(--volcanic)` — #050505 in the dark theme, #f4efe4 in
+          Parchment — so one declaration serves both: a dark scrim over dark art, a
+          pale scrim over pale art. The two lines below already did this with
+          `from-volcanic`; this gradient hardcoded `rgba(5,5,5,…)` instead, which in
+          Parchment painted a near-black ellipse over cream paper and dropped the
+          hero to 1.95:1. The sibling `art/ArtLayer` carries the same rule, and the
+          reasoning, in its header comment. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_58%_44%_at_50%_50%,rgb(var(--volcanic)/0.86),rgb(var(--volcanic)/0.35)_62%,transparent_85%)]" />
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-volcanic to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-volcanic to-transparent" />
 
@@ -118,7 +129,7 @@ function ColumnItem({
     >
       <div className="greek-column h-full w-full" style={{ opacity: spec.opacity }} />
       {/* Soft ground shadow anchoring the column to the floor */}
-      <div className="absolute inset-x-[-40%] bottom-0 h-10 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.18),transparent_70%)] blur-md" />
+      <div className="absolute inset-x-[-40%] bottom-0 h-10 bg-[radial-gradient(ellipse_at_center,rgb(var(--gold)/0.18),transparent_70%)] blur-md" />
     </motion.div>
   );
 }

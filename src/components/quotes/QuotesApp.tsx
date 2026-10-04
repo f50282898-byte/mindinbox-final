@@ -16,7 +16,7 @@ import { useAppStore } from "@/lib/store";
  * /quotes
  *
  * Every card here is built from `VERIFIED_QUOTES`, so nothing unverified can
- * reach this page at all — the guarantee is upstream in the accessor, not a filter
+ * reach this page at all â€” the guarantee is upstream in the accessor, not a filter
  * in this component.
  *
  * ## The download gate is not here
@@ -31,7 +31,7 @@ import { useAppStore } from "@/lib/store";
  * Chosen deterministically from the day number, so it is the same for every
  * reader on a given day and changes at midnight. Random would make it feel
  * arbitrary; "most recent" would make it not a quote of the day. Where the reader
- * has saved interests (the paths they are following), those narrow the pool —
+ * has saved interests (the paths they are following), those narrow the pool â€”
  * so the quote is drawn from what they are actually reading.
  */
 
@@ -89,7 +89,7 @@ export function QuotesApp() {
     <div className="mx-auto w-full max-w-3xl px-5 py-10">
       <header className="mb-8">
         <h1 className="display-arabic text-2xl font-bold text-gold-light">اقتباسات</h1>
-        <p className="display-latin mt-1 text-xs tracking-[0.25em] text-gold-muted/45">
+        <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
           QUOTES
         </p>
         <p className="display-arabic mt-4 leading-loose text-gold-muted">
@@ -98,10 +98,10 @@ export function QuotesApp() {
         </p>
       </header>
 
-      {/* ── Quote of the day ──────────────────────────────────────────── */}
+      {/* â”€â”€ Quote of the day â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {quoteOfTheDay && (
         <section className="gold-frame glass mb-10 rounded-2xl p-6">
-          <h2 className="display-arabic mb-4 text-xs tracking-widest text-gold-muted/55">
+          <h2 className="display-arabic mb-4 text-xs tracking-widest text-ink-3">
             اقتباس اليوم
           </h2>
           <blockquote dir="auto" className="display-arabic text-lg leading-loose text-gold-light">
@@ -111,18 +111,18 @@ export function QuotesApp() {
             {quoteOfTheDay.philosopherAr}
           </p>
           {/* The source is never optional, and never behind a control. */}
-          <p className="mt-1 text-xs text-gold-muted/55">
+          <p className="mt-1 text-xs text-ink-3">
             {quoteOfTheDay.workEn}, {quoteOfTheDay.locator} — ترجمة{" "}
             {quoteOfTheDay.translator}
           </p>
         </section>
       )}
 
-      {/* ── Search and filters ─────────────────────────────────────────── */}
+      {/* â”€â”€ Search and filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="mb-6 flex flex-col gap-3">
         <div className="relative">
           <Search
-            className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-gold-muted/40"
+            className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-ink-3"
             aria-hidden="true"
           />
           <label htmlFor="quote-search" className="sr-only">
@@ -172,7 +172,7 @@ export function QuotesApp() {
                 className={`rounded-full border px-3 py-1 text-[0.7rem] transition-colors ${
                   topic === t
                     ? "border-gold/60 bg-gold/20 text-gold-light"
-                    : "border-gold/15 text-gold-muted/55 hover:border-gold/40"
+                    : "border-gold/15 text-ink-3 hover:border-gold/40"
                 }`}
               >
                 {t}
@@ -182,7 +182,7 @@ export function QuotesApp() {
         )}
       </div>
 
-      {/* ── Template picker ────────────────────────────────────────────── */}
+      {/* â”€â”€ Template picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="mb-6 flex items-center gap-2">
         <span className="display-arabic text-xs text-gold-muted/60">القالب:</span>
         {CARD_TEMPLATES.map((t) => (
@@ -194,7 +194,7 @@ export function QuotesApp() {
             className={`rounded-lg border px-3 py-1.5 text-[0.7rem] transition-colors ${
               template === t
                 ? "border-gold/60 bg-gold/20 text-gold-light"
-                : "border-gold/15 text-gold-muted/55 hover:border-gold/40"
+                : "border-gold/15 text-ink-3 hover:border-gold/40"
             }`}
           >
             {t === "gold-black" ? "ذهبي-أسود" : t === "parchment" ? "ورقي" : "بسيط"}
@@ -202,7 +202,7 @@ export function QuotesApp() {
         ))}
       </div>
 
-      {/* ── The list ───────────────────────────────────────────────────── */}
+      {/* â”€â”€ The list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {filtered.length === 0 ? (
         <p className="glass p-8 text-center text-sm leading-relaxed text-gold-muted/70">
           لا نتائج. جرّب كلمة أخرى، أو امسح الفلترة.
@@ -223,7 +223,7 @@ export function QuotesApp() {
       )}
 
       {state === "unavailable" && (
-        <p className="display-arabic mt-10 text-center text-xs leading-relaxed text-gold-muted/50">
+        <p className="display-arabic mt-10 text-center text-xs leading-relaxed text-ink-3">
           يمكنك قراءة الاقتباسات كاملة دون حساب. إنشاء الحساب يضيف الحفظ والمفضّلة
           وبطاقات بلا علامة مائية.
         </p>
@@ -308,21 +308,21 @@ function QuoteCard({
 
       <p className="display-arabic mt-4 text-sm text-gold-muted">{quote.philosopherAr}</p>
 
-      {/* Source, always. Not collapsed, not behind a link — it is part of the
+      {/* Source, always. Not collapsed, not behind a link â€” it is part of the
           quote, not metadata about it. */}
       <div className="mt-1 space-y-0.5">
         <p className="text-xs text-gold-muted/60">
           {quote.workEn}, {quote.locator}
         </p>
-        <p className="text-[0.7rem] text-gold-muted/45">
-          ترجمة {quote.translator} — {quote.edition}
+        <p className="text-[0.7rem] text-ink-3">
+          ترجمة {quote.translator} â€” {quote.edition}
         </p>
       </div>
 
       {/* The original wording, in a disclosure. This is the anti-drift safeguard:
           a reader who suspects the Arabic has drifted can compare. */}
       <details className="mt-3">
-        <summary className="cursor-pointer text-[0.7rem] text-gold-muted/45 hover:text-gold-light">
+        <summary className="cursor-pointer text-[0.7rem] text-ink-3 hover:text-gold-light">
           النص الأصلي
         </summary>
         <p dir="auto" className="mt-2 text-[0.8rem] leading-relaxed text-gold-muted/70">
@@ -367,7 +367,7 @@ function QuoteCard({
         {!isMember && (
           <Link
             href="/enter?mode=signup"
-            className="display-arabic text-[0.7rem] text-gold-muted/55 underline underline-offset-4 hover:text-gold-light"
+            className="display-arabic text-[0.7rem] text-ink-3 underline underline-offset-4 hover:text-gold-light"
           >
             بلا علامة مائية للعضوية
           </Link>

@@ -162,7 +162,7 @@ export function GoldenSymbols({
             className={`fixed z-[65] hidden transition-all duration-700 ease-silk sm:block ${
               isSolved(symbol.id)
                 ? "text-gold opacity-30"
-                : "text-gold/25 hover:scale-125 hover:text-gold-light"
+                : "text-ink-3 hover:scale-125 hover:text-gold-light"
             }`}
             style={{ left: `${symbol.x}%`, top: `${symbol.y}%`, translate: "-50% -50%" }}
           >
@@ -196,7 +196,7 @@ export function GoldenSymbols({
               onClick={(event) => event.stopPropagation()}
               className="glass-strong gold-frame w-full max-w-xl rounded-3xl p-9 text-center sm:p-14"
             >
-              <p className="text-[10px] tracking-[0.35em] text-gold-muted/55">
+              <p className="text-[10px] tracking-[0.35em] text-ink-3">
                 {solvedCount > 0 ? `عثرت على ${solvedCount} من ٣` : "عثرت على ٠ من ٣"}
               </p>
 
@@ -229,7 +229,7 @@ export function GoldenSymbols({
               <button
                 type="button"
                 onClick={() => setOpen(null)}
-                className="mt-9 block w-full text-xs text-gold-muted/50 transition-colors hover:text-gold-muted"
+                className="mt-9 block w-full text-xs text-ink-3 transition-colors hover:text-gold-muted"
               >
                   إغلاق
               </button>

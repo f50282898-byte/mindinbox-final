@@ -10,7 +10,7 @@ import { useShell } from "@/lib/shell-config";
 import { NAV_GROUPS, groupItems, isActive, type NavItem } from "@/lib/nav";
 import { useTheme } from "@/components/ThemeProvider";
 
-/* ─────────────────────────── shared bits ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ shared bits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function iconFor(name: string) {
   const Cmp = (Icons as unknown as Record<string, typeof Icons.Home>)[name];
@@ -117,7 +117,7 @@ function LocaleToggle() {
   );
 }
 
-/* ─────────────────────────── desktop rail ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ desktop rail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function RailLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const { t } = useLocale();
@@ -176,7 +176,7 @@ function DesktopRail() {
       <div className="flex items-center gap-3 px-3 pt-5 pb-4">
         <Link
           href="/"
-          aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box — home" })}
+          aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box â€” home" })}
           className="gold-glow flex size-10 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-black/60 text-gold-light transition-colors hover:border-gold/70"
         >
           <span className="display-arabic text-lg font-bold leading-none">ع</span>
@@ -205,7 +205,7 @@ function DesktopRail() {
           return (
             <div key={group.id} className="mb-4 last:mb-0">
               {!railCollapsed && (
-                <p className="px-3 pb-1.5 text-[10px] tracking-[0.22em] text-gold-muted/45">
+                <p className="px-3 pb-1.5 text-[10px] tracking-[0.22em] text-ink-3">
                   {t(group.label).toUpperCase()}
                 </p>
               )}
@@ -246,7 +246,7 @@ function DesktopRail() {
   );
 }
 
-/* ─────────────────────────── mobile bar ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ mobile bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function BottomLink({ item }: { item: NavItem }) {
   const { t } = useLocale();
@@ -273,7 +273,7 @@ function BottomLink({ item }: { item: NavItem }) {
   );
 }
 
-/* ─────────────────────────── more sheet ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ more sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { overflow } = useShell();
@@ -405,12 +405,12 @@ function MobileShell() {
   );
 }
 
-/* ─────────────────────────── export ─────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 /**
  * Publishes the rail width as `--rail-w` so page content can inset itself.
  *
- * A sibling spacer `<div>` does not indent the content after it — the element
+ * A sibling spacer `<div>` does not indent the content after it â€” the element
  * that follows still takes the full width and slides under the fixed rail.
  * Padding on the content is the only thing that works, and a custom property
  * keeps it in sync with the collapse state.

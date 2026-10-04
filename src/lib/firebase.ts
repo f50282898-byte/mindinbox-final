@@ -26,7 +26,21 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
+import {
+  firebaseProjectIdOrEmpty,
+  isFirebaseConfigured,
+  type FirebaseEnvKey,
+} from "@/lib/firebase/config";
 
+export type { FirebaseEnvKey };
+
+/**
+ * Read from `process.env` directly, never through `env()`.
+ *
+ * `env()` throws when a Firebase key is absent. That is the right behaviour for a
+ * secret and the wrong behaviour here: a build with no Firebase configuration is a
+ * legitimate state, and this module's entire job is to represent it without throwing.
+ */
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
@@ -37,12 +51,17 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "",
 };
 
-export const firebaseConfigured = Boolean(
-  firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId
-);
+/**
+ * Whether sign-in and Firestore can work.
+ *
+ * Re-exported from `firebase/config` rather than recomputed, because two components
+ * asking this question must not be able to get two different answers. The local const
+ * above still holds the same values; `isFirebaseConfigured()` is what decides.
+ */
+export const firebaseConfigured = isFirebaseConfigured();
 
 /** Mirrors the project id the edge routes verify ID tokens against. */
-export const firebaseProjectId = firebaseConfig.projectId;
+export const firebaseProjectId = firebaseProjectIdOrEmpty();
 
 let app: FirebaseApp | null = null;
 if (firebaseConfigured) {

@@ -38,7 +38,7 @@ export function PricingGrid() {
           no countdown timers — the numbers here are the numbers you pay.
         </p>
         {/* Surfaced so it is never a hidden fact which copy is live. */}
-        <p className="mt-5 text-xs text-gold-muted/40" data-pricing-source={source}>
+        <p className="mt-5 text-xs text-ink-3" data-pricing-source={source}>
           {source === "remote"
             ? t({ ar: "الأسعار محمّلة من إعدادات الموقع.", en: "Pricing loaded from site settings." })
             : t({ ar: "الأسعار الافتراضية المعروضة.", en: "Showing default pricing." })}
@@ -69,7 +69,7 @@ function TierCard({ tier }: { tier: PricingTier }) {
       <h2 id={`tier-${tier.id}`} className="display-arabic text-2xl font-bold text-gold-light">
         {t(tier.name)}
       </h2>
-      <p className="display-latin text-sm tracking-wide text-gold-muted/55">{tier.latin}</p>
+      <p className="display-latin text-sm tracking-wide text-ink-3">{tier.latin}</p>
 
       <p className="mt-5 flex items-baseline gap-1.5">
         <span className="display-arabic text-3xl font-bold text-gold-light">{t(tier.price)}</span>
@@ -115,7 +115,7 @@ function TierCard({ tier }: { tier: PricingTier }) {
         <ul className="flex flex-col gap-2">
           {tier.limits.map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <Minus className="mt-1 size-3.5 shrink-0 text-gold-muted/40" aria-hidden="true" />
+              <Minus className="mt-1 size-3.5 shrink-0 text-ink-3" aria-hidden="true" />
               <span className="text-sm leading-relaxed text-gold-muted/60">{t(item)}</span>
             </li>
           ))}

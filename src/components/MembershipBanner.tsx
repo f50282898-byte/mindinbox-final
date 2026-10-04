@@ -146,7 +146,7 @@ export function MembershipBanner() {
           className="glass-strong fixed bottom-20 start-4 z-[70] flex w-[min(92vw,26rem)] items-start gap-3 rounded-2xl p-4 ps-16 md:bottom-6 md:ms-[6.5rem]"
         >
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] tracking-[0.32em] text-gold-muted/55">A NOTE ON MEMBERSHIP</p>
+            <p className="text-[9px] tracking-[0.32em] text-ink-3">A NOTE ON MEMBERSHIP</p>
             <p className="display-arabic mt-1.5 text-base leading-snug text-gold-light">
               {active.headline}
             </p>
@@ -164,7 +164,7 @@ export function MembershipBanner() {
             type="button"
             onClick={dismiss}
             aria-label="إخفاء الرسالة"
-            className="absolute start-3 top-3 rounded-full p-1.5 text-gold-muted/50 transition-colors hover:text-gold"
+            className="absolute start-3 top-3 rounded-full p-1.5 text-ink-3 transition-colors hover:text-gold"
           >
             <X className="size-4" />
           </button>

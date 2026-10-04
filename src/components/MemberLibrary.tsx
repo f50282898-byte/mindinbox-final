@@ -80,7 +80,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
   const definition = TIER_DEFINITIONS[requiredTier];
   const permitted = tierSatisfies(tier, requiredTier);
 
-  /* ── Resolve the authoritative tier from the server ── */
+  /* â”€â”€ Resolve the authoritative tier from the server â”€â”€ */
   useEffect(() => {
     let active = true;
     const authInstance = auth;
@@ -121,7 +121,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
     };
   }, [requiredTier, setMembership]);
 
-  /* ── Sanctum community stream ── */
+  /* â”€â”€ Sanctum community stream â”€â”€ */
   useEffect(() => {
     if (requiredTier !== "sanctum" || !permitted || !uid || !db) return;
     const q = query(collection(db, paths.communityPosts), orderBy("createdAt", "desc"), limit(30));
@@ -155,7 +155,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
     }
   };
 
-  /* ── PDF download via Storage SDK ── */
+  /* â”€â”€ PDF download via Storage SDK â”€â”€ */
   const download = async (item: LibraryItem) => {
     if (!item.filePath || !storage) return;
     setBusyPath(item.filePath);
@@ -177,7 +177,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
   const videos = useMemo(() => items.filter((i) => safeYouTubeEmbed(i.videoUrl ?? "")), [items]);
   const documents = useMemo(() => items.filter((i) => i.filePath), [items]);
 
-  /* ── Render states ── */
+  /* â”€â”€ Render states â”€â”€ */
   if (!checked) {
     return (
       <Shell requiredTier={requiredTier}>
@@ -214,7 +214,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
     <Shell requiredTier={requiredTier}>
       <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:py-16">
         <header className="text-center">
-          <p className="text-[10px] tracking-[0.35em] text-gold-muted/55">
+          <p className="text-[10px] tracking-[0.35em] text-ink-3">
             {requiredTier === "sanctum" ? "THE INNER CIRCLE" : "THE DAILY PRACTICE"}
           </p>
           <h1 className="gold-text-glow display-arabic mt-3 text-3xl font-bold text-gold-light sm:text-5xl">
@@ -224,7 +224,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
         </header>
 
         <PremiumShield>
-          {/* ── Masterclasses (Sanctum) — antique gold frames ── */}
+          {/* â”€â”€ Masterclasses (Sanctum) â€” antique gold frames â”€â”€ */}
           {requiredTier === "sanctum" && (
             <section className="mt-12">
               <h2 className="display-arabic mb-5 text-xl text-gold-light">المحاضرات</h2>
@@ -259,7 +259,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
             </section>
           )}
 
-          {/* ── Sanctum community ── */}
+          {/* â”€â”€ Sanctum community â”€â”€ */}
           {requiredTier === "sanctum" && (
             <section className="panel mt-12 p-6 sm:p-8">
               <h2 className="display-arabic text-xl text-gold-light">دائرة المحراب</h2>
@@ -299,10 +299,10 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                       <p className="whitespace-pre-wrap text-sm leading-relaxed text-gold-muted/90">
                         {post.text}
                       </p>
-                      <p className="mt-2 text-[10px] text-gold-muted/45">
+                      <p className="mt-2 text-[10px] text-ink-3">
                         {post.authorName}
                         {post.createdAt?.toDate
-                          ? ` · ${post.createdAt.toDate().toLocaleDateString("ar-EG")}`
+                          ? ` Â· ${post.createdAt.toDate().toLocaleDateString("ar-EG")}`
                           : ""}
                       </p>
                     </article>
@@ -314,7 +314,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
             </section>
           )}
 
-          {/* ── Study documents (PDF) ── */}
+          {/* â”€â”€ Study documents (PDF) â”€â”€ */}
           {definition.pdfLibrary && (
             <section className="panel mt-12 p-6 sm:p-8">
               <h2 className="display-arabic text-xl text-gold-light">المخطوطات</h2>
@@ -340,7 +340,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                         className="btn-ghost shrink-0 gap-2 py-2 text-xs"
                       >
                         <Download className="size-3.5" />
-                        {busyPath === item.filePath ? "…" : "تحميل"}
+                        {busyPath === item.filePath ? "â€¦" : "تحميل"}
                       </button>
                     </li>
                   ))}
@@ -351,7 +351,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
             </section>
           )}
 
-          {/* ── Daily philosopher analysis ── */}
+          {/* â”€â”€ Daily philosopher analysis â”€â”€ */}
           {definition.dailyAnalysis && <DailyAnalysis />}
         </PremiumShield>
 
@@ -424,7 +424,7 @@ function DailyAnalysis() {
       </button>
 
       {!entries.length && (
-        <p className="mt-4 text-xs text-gold-muted/45">سجّل مدخلات في المتتبع أولاً.</p>
+        <p className="mt-4 text-xs text-ink-3">سجّل مدخلات في المتتبع أولاً.</p>
       )}
       {error && <p className="mt-4 text-xs text-red-300/85">{error}</p>}
 
@@ -457,8 +457,8 @@ function Shell({
       {/* The gate engraving, with the procedural colonnade as its placeholder. */}
       <ArtLayer id="gate" fallback={<GreekColumns density="sparse" />} />
       <div className="relative">{children}</div>
-      <footer className="display-arabic pb-10 text-center text-[11px] text-gold-muted/35">
-        {definition.name} · {definition.latin}
+      <footer className="display-arabic pb-10 text-center text-[11px] text-ink-3">
+        {definition.name} Â· {definition.latin}
       </footer>
     </div>
   );
@@ -467,7 +467,7 @@ function Shell({
 function LockedState({ title, message }: { title: string; message: string }) {
   return (
     <div className="mx-auto w-full max-w-lg px-5 py-24 text-center">
-      <Lock className="mx-auto size-8 text-gold/50" aria-hidden="true" />
+      <Lock className="mx-auto size-8 text-ink-3" aria-hidden="true" />
       <h1 className="gold-text-glow display-arabic mt-6 text-3xl font-bold text-gold-light">
         {title}
       </h1>
@@ -486,6 +486,6 @@ function LockedState({ title, message }: { title: string; message: string }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="display-arabic py-6 text-center text-sm text-gold-muted/40">{children}</p>
+    <p className="display-arabic py-6 text-center text-sm text-ink-3">{children}</p>
   );
 }

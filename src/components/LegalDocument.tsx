@@ -69,7 +69,7 @@ export function LegalDocument({
           {titleAr}
         </h1>
         <p className="display-latin mt-1 text-lg text-gold-muted/80">{titleEn}</p>
-        <p className="mt-4 text-xs tracking-wide text-gold-muted/50">
+        <p className="mt-4 text-xs tracking-wide text-ink-3">
           {updatedAr} · {updatedEn}
         </p>
       </header>
@@ -85,7 +85,7 @@ export function LegalDocument({
                 className="text-sm text-gold-muted underline-offset-4 transition-colors hover:text-gold-light hover:underline"
               >
                 <span className="display-arabic">{s.headingAr}</span>
-                <span className="mx-2 text-gold/25">/</span>
+                <span className="mx-2 text-ink-3">/</span>
                 <span className="display-latin text-gold-muted/70">{s.headingEn}</span>
               </a>
             </li>
@@ -97,7 +97,7 @@ export function LegalDocument({
         {sections.map((s, i) => (
           <section key={s.id} id={s.id} className="scroll-mt-8">
             <h2 className="display-arabic mb-3 text-xl font-bold text-gold-light">
-              <span className="me-2 text-gold/40">{String(i + 1).padStart(2, "0")}</span>
+              <span className="me-2 text-ink-3">{String(i + 1).padStart(2, "0")}</span>
               {s.headingAr}
             </h2>
             <p className="display-latin mb-3 text-sm text-gold-muted/65">{s.headingEn}</p>

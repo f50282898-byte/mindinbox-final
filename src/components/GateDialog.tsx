@@ -28,7 +28,7 @@ export function GateDialog({
 }: {
   open: boolean;
   onClose: () => void;
-  /** Never rendered as pressure — shown as context only. */
+  /** Never rendered as pressure â€” shown as context only. */
   remaining?: number | null;
 }) {
   const titleId = useId();
@@ -162,7 +162,7 @@ export function GateDialog({
           </Link>
         </div>
 
-        <p className="mt-4 text-center text-xs text-gold-muted/45">
+        <p className="mt-4 text-center text-xs text-ink-3">
           {remaining !== null && remaining !== undefined
             ? `لديك ${remaining} من المحاولات المجانية.`
             : "لا نطلب بطاقة، ولا نُعيد توجيهك إلى الدفع."}

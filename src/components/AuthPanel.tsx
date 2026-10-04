@@ -14,6 +14,10 @@ import {
 } from "@/lib/auth/client";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/errors";
 import { firebaseConfigured } from "@/lib/firebase";
+import {
+  FirebaseRequired,
+  useFirebaseNotice,
+} from "@/lib/firebase/FirebaseRequired";
 import { Turnstile } from "@/components/Turnstile";
 
 type Mode = "signin" | "signup" | "forgot" | "reset";
@@ -45,6 +49,10 @@ export function AuthPanel() {
   const [notice, setNotice] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileNonce, setTurnstileNonce] = useState(0);
+
+  // Logs the missing-variable names to the console, once per session. See the note on
+  // the unavailable screen below for why this is not shown to the reader.
+  useFirebaseNotice("/enter");
 
   // A new tab starts from a clean slate.
   const reset = useCallback(() => {
@@ -106,19 +114,21 @@ export function AuthPanel() {
     }
   }
 
+  /*
+   * Firebase is absent from this build.
+   *
+   * The reader is told the surface is unavailable and is offered somewhere to go. They
+   * are not told which variables are missing: that sentence used to be on this page,
+   * and it was a map of the keys worth stealing. The diagnosis now goes to the console
+   * (`useFirebaseNotice`), which is the only audience that can act on it.
+   */
   if (!firebaseConfigured) {
     return (
-      <div className="glass p-7">
-        <h1 className="display-arabic text-2xl font-bold text-gold-light">المدخل</h1>
-        <p className="display-arabic mt-4 leading-loose text-gold-muted">
-          خدمة الدخول غير مهيأة في هذا التطبيق بعد. تُقرأ إعدادات Firebase من متغيّرات البيئة، وهي
-          غير موجودة الآن.
+      <FirebaseRequired title="المدخل">
+        <p>
+          تسجيل الدخول غير متاح الآن. يمكنك قراءة الحكمة وحوار الفلاسفة والاقتباسات دون حساب.
         </p>
-        <p className="mt-3 leading-relaxed text-gold-muted/65">
-          Sign-in is not configured in this build yet. The Firebase settings come from environment
-          variables, which are absent.
-        </p>
-      </div>
+      </FirebaseRequired>
     );
   }
 
@@ -330,7 +340,7 @@ export function AuthPanel() {
         جرّب كضيف ({FREE_ATTEMPTS} محاولات)
       </Button>
 
-      <p className="mt-6 text-center text-xs leading-relaxed text-gold-muted/55">
+      <p className="mt-6 text-center text-xs leading-relaxed text-ink-3">
        {KEEP_NOTE}
       </p>
 
@@ -414,9 +424,9 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         autoComplete={autoComplete}
         required
-        className="panel-inset w-full rounded-2xl px-4 py-3 text-gold-muted placeholder:text-gold-muted/30 focus:outline-none"
+        className="panel-inset w-full rounded-2xl px-4 py-3 text-gold-muted placeholder:text-ink-3 focus:outline-none"
       />
-      {hint && <p className="mt-1 text-xs text-gold-muted/50">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-ink-3">{hint}</p>}
     </div>
   );
 }
@@ -450,7 +460,7 @@ function Divider() {
   return (
     <div className="my-4 flex items-center gap-3" aria-hidden="true">
       <span className="hairline flex-1" />
-      <span className="text-xs text-gold-muted/35">أو</span>
+      <span className="text-xs text-ink-3">أو</span>
       <span className="hairline flex-1" />
     </div>
   );

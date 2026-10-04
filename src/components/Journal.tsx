@@ -116,14 +116,14 @@ export function Journal() {
           rows={4}
           maxLength={4000}
           dir="auto"
-          className="panel-inset mt-3 w-full resize-y text-gold-muted placeholder:text-gold-muted/35 focus:outline-none"
+          className="panel-inset mt-3 w-full resize-y text-gold-muted placeholder:text-ink-3 focus:outline-none"
           placeholder={t({
             ar: "اكتب هنا. لا أحد يقرأ هذا إلا أنت.",
             en: "Write here. No one reads this but you.",
           })}
         />
         <div className="mt-3 flex items-center justify-between gap-3">
-          <span className="text-xs text-gold-muted/40">
+          <span className="text-xs text-ink-3">
             {uid
               ? syncing
                 ? t({ ar: "جارٍ المزامنة…", en: "Syncing…" })
@@ -171,7 +171,7 @@ export function Journal() {
                       <button
                         type="button"
                         onClick={() => void remove(e.id)}
-                        className="mt-2 flex items-center gap-1.5 text-xs text-gold-muted/40 opacity-0 transition-opacity hover:text-gold-light focus-visible:opacity-100 group-hover:opacity-100"
+                        className="mt-2 flex items-center gap-1.5 text-xs text-ink-3 opacity-0 transition-opacity hover:text-gold-light focus-visible:opacity-100 group-hover:opacity-100"
                         aria-label={t({ ar: "احذف هذه الفكرة", en: "Delete this thought" })}
                       >
                         <Trash2 className="size-3" aria-hidden="true" />

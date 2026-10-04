@@ -20,7 +20,7 @@ import { writeEntry } from "@/lib/session";
 import { consumeStream, readErrorBody } from "@/lib/stream-client";
 
 /**
- * /wisdom — ask one philosopher.
+ * /wisdom â€” ask one philosopher.
  *
  * Order of concerns in this file, deliberately:
  *  1. render the conversation (local, instant, works offline)
@@ -434,13 +434,13 @@ export function WisdomChat() {
   const gateOpen = useAppStore((s) => s.gateOpen);
   const closeGate = useAppStore((s) => s.closeGate);
 
-  /* ── Empty state ────────────────────────────────────────────────────── */
+  /* â”€â”€ Empty state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   if (!active) {
     return (
       <div className="mx-auto w-full max-w-2xl px-5 py-10">
         <header className="mb-8">
           <h1 className="display-arabic text-2xl font-bold text-gold-light">اسأل الحكيم</h1>
-          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-gold-muted/45">
+          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
             ASK THE WISE
           </p>
           <p className="display-arabic mt-4 leading-loose text-gold-muted">
@@ -595,7 +595,7 @@ export function WisdomChat() {
     }
   }
 
-  /* ── Transcript ─────────────────────────────────────────────────────── */
+  /* â”€â”€ Transcript â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <Header
@@ -627,7 +627,7 @@ export function WisdomChat() {
         /* An explicit state hook, so "the reply finished" is observable rather
            than inferred from the DOM. The streaming placeholder bubble and the
            finished bubble share styling, so counting them cannot tell the two
-           apart — which made a test wait pass mid-stream. */
+           apart â€” which made a test wait pass mid-stream. */
         data-streaming={status === "streaming" ? "1" : "0"}
         data-bubbles={active.messages.length}
         className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-4 pb-4"
@@ -757,7 +757,7 @@ export function WisdomChat() {
                * Deliberately NOT disabled when the allowance is spent.
                *
                * The server is the authority on the quota, and the sixth question
-               * is what opens the gate — so the field has to stay usable for that
+               * is what opens the gate â€” so the field has to stay usable for that
                * request to happen at all. Refusing it client-side would hide the
                * gate behind a dead control, and the visitor would never learn
                * that signing up is possible from here.
@@ -861,7 +861,7 @@ function MessageActions({
 
       {open && (
         <span className="display-arabic flex items-center gap-1.5 text-[0.7rem] text-gold-muted/70">
-          <span className="max-w-[16rem] truncate">{content.slice(0, 40)}…</span>
+          <span className="max-w-[16rem] truncate">{content.slice(0, 40)}â€¦</span>
           <Link
             href="/quotes"
             className="text-gold-light underline underline-offset-2"
@@ -869,7 +869,7 @@ function MessageActions({
           >
             إلى الأرشيف
           </Link>
-          <span className="text-gold-muted/40">(قريباً)</span>
+          <span className="text-ink-3">(قريباً)</span>
         </span>
       )}
     </div>
@@ -1007,7 +1007,7 @@ function Header({
                       type="button"
                       onClick={() => remove(c.id)}
                       aria-label={`احذف المحادثة ${c.title}`}
-                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-gold-muted/40 transition-colors hover:text-gold-light"
+                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-ink-3 transition-colors hover:text-gold-light"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -1021,14 +1021,14 @@ function Header({
 
       {pickerOpen && (
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">
-          <p className="display-arabic mb-2 text-xs text-gold-muted/55">
+          <p className="display-arabic mb-2 text-xs text-ink-3">
             تغيير الفيلسوف يبدأ محادثة جديدة، حتى لا تتغيّر معنى الأسطر السابقة.
           </p>
           <PersonaCards selectedId={conversation.personaId} onSelect={onChangePersona} />
           <button
             type="button"
             onClick={() => setPickerOpen(false)}
-            className="mt-3 w-full text-center text-xs text-gold-muted/50"
+            className="mt-3 w-full text-center text-xs text-ink-3"
           >
             إغلاق
           </button>
@@ -1094,7 +1094,7 @@ function ConversationList({
               type="button"
               onClick={() => onStartRename(c.id, c.title)}
               aria-label={`إعادة تسمية ${c.title}`}
-              className="text-xs text-gold-muted/50 hover:text-gold-light"
+              className="text-xs text-ink-3 hover:text-gold-light"
             >
               تسمية
             </button>
@@ -1102,7 +1102,7 @@ function ConversationList({
               type="button"
               onClick={() => onDelete(c)}
               aria-label={`حذف ${c.title}`}
-              className="flex size-7 items-center justify-center rounded-full text-gold-muted/45 hover:text-gold-light"
+              className="flex size-7 items-center justify-center rounded-full text-ink-3 hover:text-gold-light"
             >
               <Trash2 className="size-3" />
             </button>
@@ -1110,7 +1110,7 @@ function ConversationList({
         ))}
       </ul>
       {!uid && (
-        <p className="display-arabic mt-3 text-xs leading-relaxed text-gold-muted/45">
+        <p className="display-arabic mt-3 text-xs leading-relaxed text-ink-3">
           محادثاتك محفوظة على هذا الجهاز. أنشئ حساباً لتحملها معك إلى أي جهاز آخر.
         </p>
       )}

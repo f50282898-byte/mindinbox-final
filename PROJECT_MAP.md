@@ -512,6 +512,20 @@ The brief asked for more than is here. These are the real gaps, not stubs:
 7. **`jose` migration** in `edge-auth.ts` — hand-rolled RS256 should use `jose`.
 8. **`public/_headers` deployment** — needs `pages:build` (requires bash/WSL) or Cloudflare Transform Rules.
 9. **`FIREBASE_SERVICE_ACCOUNT_JSON` / `ADMIN_UID`** in `.env.example` — remove entries.
+10. ~~**`verify-contrast.mjs` does not check usage.**~~ **Done — see D85.** The script now
+    resolves each opacity-modified text colour against both themes and all five backgrounds,
+    fails below 3:1, and warns without blocking in the 3:1–4.5:1 band. Its pair list grew
+    from 11 to 33 to include the gold tokens and the composited glass/overlay panels. It runs
+    inside `build:cf`. **Remaining decision:** move `FLOOR` from 3 to 4.5 and repair the 108
+    class uses it now reports, which closes the AA gap rather than just the legibility gap.
+11. **Sign-in has never been verified end to end.** D80 was found by reading source, and the
+    fix is proven in a browser (form renders, zero hydration errors). But **nothing has yet
+    proven a write lands in Firestore and survives a reload** — no JRE, no rules tests, and no
+    deploy with `NEXT_PUBLIC_FIREBASE_*` set. This is the single largest remaining unknown.
+12. **Firestore and Storage rules are untested.** `npm run test:rules` needs a JRE (17+)
+    that this machine does not have (`Could not spawn 'java -version'`). Every rules assertion
+    in the repository is unverified. Security-critical, and larger than everything else on
+    this list.
 
 ### Recently completed (Phase B)
 
@@ -1292,6 +1306,514 @@ a proxy, not cluster detection — real clustering needs cross-account correlati
 data this product deliberately does not collect. Recorded as a gap rather than dressed
 up.
 
+### D63 - A build without Firebase succeeds; a CI check refuses it
+
+`lib/env.ts` validates with zod and **throws**, which is correct for a server secret and
+wrong for the client Firebase config: that module is imported through `lib/firebase`, so
+a build with no Firebase keys could not compile at all.
+
+The fix splits the two concerns deliberately:
+
+- **The build succeeds** with whatever is configured. `/`, `/wisdom`, `/dialogue`,
+  `/quotes`, `/paths`, `/pricing` and the legal pages genuinely need no Firebase, and a
+  documentation build should not be blocked by an auth key.
+- **`npm run check:env` fails** when Production is missing a variable, and fails on four
+  *incoherent* configurations that pass every presence check.
+
+The failure this replaces was the worst kind: a login page that renders and then does
+nothing, which looks fine.
+
+### D64 - One question, one answer: `isFirebaseConfigured()`
+
+There were two definitions of "is Firebase configured" — a module-load `const` in
+`lib/firebase.ts` and a function in `lib/firebase/client.ts` (an orphan, imported by
+nothing). They disagreed in shape, in how many keys they required, and in behaviour under
+a partial config, so a component asking the question could get two different answers.
+
+Both now delegate to `lib/firebase/config.ts`. It reads `process.env` directly and never
+calls `env()`, because its whole job is to represent the state where `env()` would throw.
+
+### D65 - A public page must never name an environment variable
+
+`/enter` used to render, in English, to any visitor:
+
+> Sign-in is not configured in this build yet. The Firebase settings come from
+> environment variables, which are absent.
+
+Two problems in one sentence. It told a visitor the thing in front of them is unfinished,
+which is a credibility cost the product cannot recover from cheaply; and it handed anyone
+reading a map of the keys worth stealing.
+
+The reader now sees that the surface is unavailable, plus one link to a route that works.
+The **names** of the missing variables go to `console.warn`, once per session, guarded by
+`sessionStorage`. Same information, entirely different audience.
+
+### D66 - `noindex` on the Firebase-dependent routes, and out of the sitemap
+
+`/enter`, `/tracker` and `/journal` each export `robots: { index: false, follow: false }`
+in their own `metadata`, and `sitemap.ts` drops them when `isFirebaseConfigured()` is
+false. Three reasons, all deliberate:
+
+- **Declared in `metadata`, not in a component.** A `noindex` set by a client component
+  arrives after the crawler has already fetched the page.
+- **`/journal` counts even though its local mirror works.** Without Firebase nothing
+  syncs, so the page promises "saved in your account" and cannot keep it. A feature that
+  silently loses data is worse than an absent one.
+- **The sitemap is a second door.** `noindex` is honoured by compliant crawlers; a sitemap
+  entry is an invitation. Either alone leaves the other open.
+
+The route list lives in `lib/firebase/routes.ts` because three consumers — the three page
+files and `sitemap.ts` — must not be able to disagree about which routes those are.
+
+### D67 - A local `.env` file never satisfies a requirement
+
+The first version of `check:env` accepted a value found in `.env.local` as present. The
+consequence was the exact bug the script exists to prevent, in a direction nobody expects:
+a developer with a complete `.env.local` ran the gate, it went green, and the deployed
+site had no Firebase at all.
+
+A gate that passes on false evidence is worse than no gate, because it turns "I verified
+the environment" into a false statement. `.env` files are now read only to *explain* a
+missing key ("you have it in `.env.local` but not in the deploy environment"), never to
+excuse one.
+
+---
+
+## The UI audit harness
+
+### What it is
+
+`scripts/audit/crawl.ts` opens every route in a real Chromium at three viewports, in both
+themes, in both languages, and records what a user would see. `scripts/audit/probes.ts`
+holds the in-page probes; `scripts/audit/routes.ts` reads the route map.
+
+| | |
+|---|---|
+| Routes | read from `src/lib/nav.ts` `INDEXABLE_ROUTES` + 5 reachable-by-URL extras |
+| Combinations | 3 viewports × 2 themes × 2 locales = **12 per route**, 204 visits |
+| Records | console errors, failed requests, horizontal scroll + culprit, clipped text, contrast, keyboard reachability, unnamed controls, heading order, tap targets, CLS, LCP, axe WCAG A/AA, internal link integrity, which UI state rendered |
+| Also | clicks every button, link and disclosure control on every route |
+| Output | `AUDIT-UI.md` (root), `docs/audit/raw.json`, `docs/audit/screenshots/` |
+| Gate | `e2e/audit-regression.spec.ts` — fails on any unresolved P0/P1, and independently re-checks the three acceptance criteria in a live browser |
+
+### D68 - The audit crawls the route map, never the sitemap
+
+`sitemap.ts` answers "what should a search engine be told about". It omits `/account` on
+purpose, and since D66 it drops `/enter`, `/tracker` and `/journal` whenever Firebase is
+absent. Crawling the sitemap would therefore have silently skipped the three pages
+currently rendering their degraded state — exactly where a regression would hide.
+
+The audit answers "what does a user have a URL for". Different question, and the only one
+worth gating on.
+
+### D69 - A probe that cannot run is a P0, never an absence
+
+The first real run reported one console error and *nothing else*: no overflow, no
+contrast, no keyboard gaps. The cause was not the app. esbuild (which `tsx` uses) rewrites
+every compiled function to `__name(fn, "original")`; Playwright ships `page.evaluate`'s
+function to the browser as a string, where that helper does not exist, so **every probe
+threw on every page**.
+
+An audit that silently measures nothing is worse than no audit, because its empty report
+reads as a clean page. Three consequences, all now permanent:
+
+- the shim is installed in the page (`globalThis.__name = fn => fn`), which is the identity
+  the helper was meant to be;
+- a probe exception sets `harnessFailure` and is reported as a **P0 titled "the audit
+  itself did not work"** — never as a finding against the application, which would send
+  the reader to fix the wrong file;
+- no result is written for a combination whose probes did not run.
+
+### D70 - The Tab walk presses real keys, and matches by index
+
+Focus cannot be audited from inside the page. Focus moves as the *default action* of a
+**trusted** key event; dispatching a synthetic `KeyboardEvent` performs no default action,
+so an in-page probe reports a keyboard trap as a perfectly reachable page.
+
+The walk therefore uses `keyboard.press("Tab")` over CDP, and matches against the
+inventory **by per-page numeric index, not by selector**. `describe()` returns a short
+selector on purpose, so twelve persona buttons all come back as
+`button.group.items-start` — every one matches the first walk hit, all twelve are reported
+reachable, and the run reports no finding while the keyboard is in fact skipping twelve
+controls. An audit that under-reports a real keyboard trap is worse than one that
+over-reports noise, because the bug it hides makes the product unusable without a mouse.
+
+### D71 - The interaction pass reloads when the DOM is invalidated
+
+Clicking a drawer toggle or a riddle reveal re-renders the tree and destroys every
+`data-audit-idx` marker. Judging the next click's `scrollIntoViewIfNeeded` timeout as "this
+control does not work" produced **21 false P1s on `/enter`** — a page where every button
+works, and the most damaging output this harness can produce, because it is
+indistinguishable from a real finding.
+
+So: a missing marker triggers a reload and re-stamp; an open `aria-modal` dialog is closed
+with `Escape` first, since the riddle overlay is `z-[9998]` over the whole viewport and any
+control beneath it is present, visible and unclickable. Only a click that times out **with
+the element still in the DOM** is a finding.
+
+Controls that exist only inside a collapsed disclosure cannot be clicked from a clean load,
+so they are skipped — and **counted**, because a report that claims coverage it does not
+have is the one failure mode an audit must not have. The count is printed in
+`AUDIT-UI.md` and stored in `raw.json` as `coverage.controlsHiddenBehindDisclosure`.
+
+### D72 - An opacity-modified token is a different colour, and must be measured as one
+
+`text-gold-muted/45` compiles to `rgb(217 208 186 / 0.45)`. The first contrast probe parsed
+the three colour channels and discarded the alpha, so it compared **full-opacity** gold
+against the background — 13:1, comfortably passing — while axe, on the same page and the
+same elements, reported nine failures.
+
+A probe blind to the most common way text is coloured in this codebase is not a partial
+probe, it is a false assurance. Alpha is now composited before measuring.
+
+That is how the real defect was found, described in the next section.
+
+### D73 - `verify-contrast.mjs` validated tokens, and nobody validated usage
+
+The static checker parses `globals.css` and asserts every **declared** text/surface pair
+clears 4.5:1. It reported 22/22 green while 23 call sites rendered at **2.29:1 in Parchment
+and 3.27:1 in dark**, on 10–12px text. A token checker cannot see a `/45` modifier, so the
+green was accurate about the palette and silent about the product.
+
+The 23 sites now use `text-ink-3` — `var(--text-3)`, which the stylesheet already declares
+and documents as tertiary at 5.4:1 dark and 5.3:1 light. The token existed, was correct, and
+was used zero times; every one of those call sites had reached past it for a hand-tuned
+opacity instead.
+
+There is no way to keep the quieter look accessibly: at 10px the WCAG large-text threshold
+(24px) is unreachable, so contrast is the only lever. **Raising the type size and keeping
+the low contrast is not an alternative** — it is the same illegibility with extra steps.
+
+`verify-contrast.mjs` still does not check usage. That is a known gap, listed in PENDING.
+
+### D76 - Backgrounds paint child-over-parent, so the ancestor walk may not stop early
+
+The contrast probe walked up the ancestor chain looking for the first opaque background
+and stopped there. That is the wrong walk. A background paints **over** whatever is behind
+it, so the answer is the composite of every layer from root to leaf — and the first opaque
+ancestor is the last one that matters, not the first.
+
+The bug was invisible because it made the probe *agree* with a pass. The old `break` stopped
+at `body`'s `rgb(5,5,5)` and reported the landing CTA "ابدأ الآن" as `rgb(5,5,5)` on
+`rgb(5,5,5)` — a ratio of exactly 1:1, which a naive `ratio < threshold` filter can read as
+"no problem". axe saw the same page and said nothing, so two tools appeared to confirm each
+other while both were looking at the same single layer.
+
+Fixed by compositing root→leaf with no early exit. The check was then validated against axe
+independently: on 90 elements measured by both, the mean absolute difference is **0.081**
+and most pairs are exactly 0.00. That agreement is what licenses trusting the probe on the
+pages axe cannot judge (D79).
+
+### D77 - Chrome reports the contents of a closed `<details>` as visible
+
+`getComputedStyle` returns `display: block` and a real bounding box for elements inside a
+collapsed `<details>`. They are not rendered, not focusable and not clickable, but every
+geometric and accessibility check that asks the DOM rather than the compositor believes
+they are.
+
+This produced 11 unreachable links on `/quotes` and a `focusOffInventory` mismatch — a
+complete keyboard defect, invented by the instrument, on a page whose disclosure behaviour
+is correct. Content inside a closed `<details>` is now excluded from every visibility,
+clipping and keyboard-inventory check. **The `<summary>` is not excluded**: it is the
+control, and it is genuinely visible and focusable.
+
+### D78 - An input's accessible name is `el.labels`, not a `<label>` sibling search
+
+The unnamed-control probe searched for a wrapping `<label>` or an `aria-label`. It missed
+`HTMLInputElement.labels`, so 130+ correctly-wrapped inputs were reported as having no
+accessible name — enough noise to make the whole P1 class unreadable, and therefore enough
+noise to hide a real one.
+
+`accessibleName()` now reads `el.labels`. The general rule this taught: **cross-check any
+finding against a second tool before believing it.** Both this and D76 were cases where the
+probe was confidently wrong and nothing in the run said so.
+
+### D79 - axe returning `incomplete` is not axe returning `pass`
+
+Where axe cannot determine the background behind a text node it returns the rule under
+`incomplete`, not under `violations`. On a page with a painted artwork layer behind the
+content that is **every** heading and paragraph — so `/` and `/dialogue` have **zero** axe
+colour coverage, and an audit that reported only violations would present those two pages as
+contrast-verified.
+
+Both halves of this have a blind spot, and they meet in the report: axe sees through CSS
+layers but not artwork, and the probe composites CSS layers but not artwork. The count of
+text axe declined to judge is now recorded per combination (`axeIncomplete`) and printed in
+its own table, and text the probe skipped over a gradient is counted as
+`contrastUnmeasured` — because a skipped element is exactly where a contrast problem would
+be chosen to hide.
+
+### D80 - `process.env[key]` is never inlined, and the result is that nobody can sign in
+
+Next.js substitutes the *text* of `process.env.NEXT_PUBLIC_FOO` into client bundles, one
+literal expression at a time. A computed index is not that expression: nothing is
+substituted, the lookup runs against an empty object in the browser, and it answers
+`undefined`.
+
+`src/lib/firebase/config.ts` did exactly that for all seven Firebase keys, while
+`src/lib/firebase.ts` read the same keys statically and was inlining correctly. One build,
+two contradictory answers: the server rendered the sign-in form, the browser decided Firebase
+was absent, React discarded the server HTML (#418/#423) and re-rendered "sign-in is not
+available right now".
+
+So on a **correctly configured** deployment, no visitor could ever sign in — and the
+journal, the tracker, `/account` and `/god-mode-admin` were all behind the same broken
+answer. **Every browser-visible `NEXT_PUBLIC_*` read must be a literal member access.**
+
+What makes this worth a decision rather than a patch: **no behavioural test can see it.**
+Under vitest `process.env` is a real object, the computed access works perfectly, and all 433
+tests passed while the product was un-signable-in. The defect lives in the source *text*, so
+the guard reads source text: `src/lib/firebase/config.test.ts` strips comments, fails on any
+computed `process.env[`, and asserts every name in `FIREBASE_ENV_KEYS` has a matching
+`process.env.<NAME>` read. Verified by reintroducing the bug: 2 tests fail, restore, 4 pass.
+
+`src/lib/ai/providers/index.ts` uses the same computed pattern for `ANTHROPIC_API_KEY` and
+friends and is **correct** — those are server-side secrets read inside adapter closures that
+never execute in a browser. Reading a secret dynamically is safe precisely because there is
+no browser to read it in. The general guard in that test file is therefore "no computed
+`process.env[` in a file that mentions `NEXT_PUBLIC_`", not "no computed access anywhere".
+
+### D81 - A popup to another origin is the feature working
+
+The crawler flagged every `window.open` target as a defect. Some links legitimately leave the
+site — a support address, a legal reference. **Only a popup to an unknown route on our own
+origin is a defect.** Anything else is the product doing what it says.
+
+### D82 - A run that examined nothing must not report that it found nothing
+
+`--only=` took a single substring. `--only=/quotes,/paths` matched no route, crawled zero
+combinations, and wrote a report headed **"No P0 or P1"** with zero screenshots. At a glance
+that is a passing audit, and it is the single most dangerous output this script can produce
+because it is indistinguishable from the good news it imitates.
+
+`--only=` now accepts a comma-separated list, and a filter matching no route exits non-zero
+before anything is written. A gate that cannot tell a pass from a run that never executed is
+not a gate.
+
+### D83 - `networkidle` is unreachable for a correctly configured app
+
+The sweep waited on `waitUntil: "networkidle"`. Firestore's `Listen` channel is a permanent
+long-poll by design, so the moment the browser stopped believing Firebase was absent — that
+is, the moment D80 was fixed — **all 204 combinations timed out at 30s with zero characters
+recorded** and the run reported `ERR` everywhere.
+
+The instrument had been passing only because the bug was suppressing the traffic that broke
+it. Playwright discourages `networkidle` for the same class of reason: it couples the verdict
+to third-party and long-lived network state.
+
+Replaced with a sequence that waits for what actually matters: `domcontentloaded`, then
+`html[data-hydrated="1"]` — which `AppShell`'s mount effect already publishes for the e2e
+suite, so there is one definition of "ready" — then a bounded `document.fonts.ready`, because
+a webfont swap is the single largest source of false CLS numbers, then a short settle for LCP.
+Both the sweep and the interaction pass share it, so one pass cannot click controls the other
+measured as absent. A page that never hydrates is a **P0 harness failure**, not a clean page.
+
+### D84 - An unread response body holds the connection open forever
+
+`AppShell` fired `void fetch("/api/ai").catch(() => undefined)` on every page for an anonymous
+visitor and never read the body. An unread body keeps the loader alive: the browser holds one
+connection open per page view and never reuses it. `requestfinished` never fired for that URL,
+25 seconds after load — which is how it was found, as a side effect of D83.
+
+The call exists only to make the server set the signed `miab-anon` cookie, so discarding the
+payload is correct; discarding it *without releasing the stream* was the defect. The body is
+now cancelled and the request carries an `AbortSignal`.
+
+### D85 - No opacity modifier is safe on a text token, and the P1 line is 3:1
+
+Measured worst-case contrast per (token, opacity) across both themes and all five
+backgrounds — the page, the raised surface, the solid surface, the composited glass panel and
+the composited overlay:
+
+| token | 100% (dark / light) | worst modifier still under 3:1 |
+|---|---|---|
+| `text-gold` | 9.69 / 6.07 | ≤ 65 |
+| `text-gold-light` | 17.45 / 15.58 | ≤ 45 |
+| `text-gold-muted` | 13.28 / 9.32 | ≤ 55 |
+| `text-ink-3` | 6.69 / 5.30 | ≤ 70 |
+
+Every token clears AA at **100%** on every background. So 100% is the only passing value, and
+**no opacity modifier on a text token is ever justified** — the modifier is not a subtle
+adjustment, it is the entire colour. This is why D73's 23 repairs were followed by 210 more
+call sites: the pattern was available and nothing stopped it.
+
+91 sites in the P1 band moved to `text-ink-3` — the dimmest token that clears AA in both
+themes, so the intended hierarchy survives instead of captions brightening into body copy.
+The boundary is measured, not chosen: 3:1 is WCAG's floor for content at any size.
+
+The 3:1–4.5:1 band is a real AA shortfall and stays P2. It is **reported, not changed**, and
+`verify-contrast.mjs` warns on it without blocking — a gate that fails for work nobody has
+agreed to gets routinely disabled, and a disabled gate is not a gate. To finish the job: move
+`FLOOR` to 4.5 in that script and repair what it lists; nothing else changes.
+
+`verify-contrast.mjs` also grew from 11 token pairs to 33. The 22 missing were the gold tokens
+and the two translucent surfaces, which are only colours once composited over `--bg-0` — and
+the glass panel is where most body copy actually sits. It now scans `src/` for opacity
+modifiers on text colours, including `hover:`, `focus:`, `placeholder:` and `marker:`
+variants. It runs inside `build:cf`. Verified by re-breaking one class: exit 1, then exit 0.
+
+### D86 - The keyboard inventory disagreeing with the Tab walk is a broken instrument
+
+`focusOffInventory` was recorded on every combination and read by nobody — the worst place for
+a number, because it looks like diligence in the JSON and contributes nothing to the report.
+Non-zero now raises a **P0 harness failure**, on the same reasoning as `harnessFailure`: the
+two halves disagree about the page, so every keyboard verdict for that combination is
+unreliable. "0 keyboard gaps" derived from an inventory that never matched would be
+indistinguishable from a genuinely perfect page.
+
+### D87 - A defect is closed when its cause is removed, and the report must remember that
+
+`docs/audit/fixes.json` is hand-written: cause, what changed, impact, and the guard that
+should stop it returning. The crawler renders it into `AUDIT-UI.md` with before/after evidence
+from `docs/audit/before/screenshots/` and `docs/audit/screenshots/`, and **checks each watched
+finding id against the current run**, so a closed defect that reappears is reported as a
+regression rather than quietly reappearing in the table.
+
+Ids are matched as substrings because the crawler's own ids are derived from evidence
+(`console:<70 chars>`, `contrast:<selector>:<ratio>`) and are not stable enough to hard-code.
+Where a closure has no watchable id — D84 surfaced as an audit failure, not a finding — the
+report says so instead of implying a guard that does not exist.
+
+### D88 - Mojibake is renderable, so nothing else will ever catch it
+
+337 lines across 11 component files held Arabic that had been saved after a **cp1252 round
+trip**: UTF-8 bytes decoded as cp1252, then written back as if that were the text. Every
+character of every word landed in U+00C0–U+00FF instead of the Arabic block.
+
+Every quality check this project owns passed straight over it, and that is not a gap in any
+one of them — it is the nature of the defect. A mojibake glyph is an ordinary Latin-1 letter,
+so it has a font, a colour, a measured contrast ratio that passes, and a real bounding box.
+The contrast probe found nothing. The clipping probe found nothing. axe found nothing. 433 unit
+tests passed. `/journal` rendered 2398 "characters", every one of them unreadable, which is a
+*healthy* character count.
+
+It surfaced by accident. The clicked-control label in the audit's finding id was itself
+corrupted, and that corrupted label was the only artefact in the whole pipeline that a human
+could read and recognise as wrong.
+
+The general lesson: **a defect class that satisfies every check in the pipeline can only be
+caught by checking the one thing all of those checks assume — that the text is the text it was
+written as.** So the guard is a dedicated gate, not another assertion on top of the existing
+ones.
+
+### D89 - The detector is a round trip, not a character blacklist
+
+The obvious detector — flag the characters mojibake produces — cannot work. It has to include
+characters legitimate copy uses, because cp1252 corruption maps some UTF-8 byte values onto
+typographic characters: em dash, curly quotes, ellipsis, circumflex accent. Those appear in
+ordinary English comments throughout this repository. Blacklisting them flagged **every file**
+in the tree — 100% false positives.
+
+The test is therefore not *"does this line contain a suspicious character"* but:
+
+> take a run of consecutive non-ASCII characters, decode it as cp1252 bytes, and check whether
+> **Arabic** comes out.
+
+This is **self-validating**. A real mojibake run decodes to Arabic by construction. A
+typographic dash, an apostrophe, a curly-quote pair or an accented Latin word decodes to more
+Latin-1 punctuation and not one character from the Arabic block. A false positive is not
+"unlikely to be filtered out" — it is structurally impossible.
+
+The consequence is that this detector has no threshold to tune and no false-positive rate to
+tune it against. Nine false-positive cases (em dash, curly apostrophe, curly quotes,
+ellipsis, circumflex, non-breaking space, French accents, an emoji, and *uncorrupted* Arabic)
+are pinned as unit tests so the property cannot be traded away for convenience later.
+
+### D90 - Node has no cp1252 codec, and reaching for `latin1` reports a clean tree
+
+`Buffer` supports `latin1` but **not** `cp1252`. The two differ in exactly the 0x80–0x9F block:
+cp1252 maps those 32 byte values onto typographic characters, latin1 maps them onto C1
+controls. Since the corruption passed *through* cp1252, the repair must go back *through*
+cp1252.
+
+The first version of the repair reached for `latin1`, which returned a byte the round trip
+never produced, so **every** run decoded to `null` and the tool cheerfully reported a clean
+tree — a detector that reports "no defects" because it is broken is the most dangerous kind.
+The fix is a hand-built reverse table for 0x80–0x9F, ordered so the five C1 controls
+(0x81, 0x8D, 0x8F, 0x90, 0x9D) cannot shadow the real typographic mappings, plus a
+**fatal** `TextDecoder` so malformed bytes cannot masquerade as a successful repair.
+
+Which codec caused it is recoverable from the evidence, not assumed: the corrupted runs
+contain U+02C6 and U+201E, the cp1252 mappings of bytes 0x88 and 0x84. A Latin-1 round trip
+could not have produced them.
+
+### D91 - A literal U+FFFD is invisible in a diff, and an empty string is always `includes`
+
+The irreversible sibling of D88: text decoded **non-fatally**, so the original bytes were
+discarded and replaced by U+FFFD. No codec can bring those back; only a human reading the
+sentence can. It is therefore *reported* by the gate and never auto-repaired — silently
+substituting a plausible character is guessing, and a wrong guess in user-facing copy is
+invisible.
+
+Two traps, both hit:
+
+- Writing U+FFFD **literally** into source puts a character in the file that renders as nothing
+  in an editor and as a placeholder in a diff. It must be spelled `"\uFFFD"`.
+- Writing it as an **empty string** makes `text.includes("")` return `true` always, so every
+  repair was rejected as "contains U+FFFD" by a check that looked correct while doing the
+  opposite of its job.
+
+The same applies to the Arabic-block ranges: they are spelled `\uXXXX` escapes, and
+`scripts/lib/mojibake.mjs` is **pure ASCII** so the gate that detects corruption cannot
+itself be corrupted by whatever wrote it.
+
+### D92 - A gate nobody has seen fail is not a gate
+
+`check-mojibake.mjs` was verified by reinjecting the exact corruption into a real source file
+and asserting: clean tree exits 0, corrupted tree exits 1, the report names the file, the
+report shows the repair, and the repair is **byte-identical** to the pre-corruption file. The
+file is restored afterwards and the tree re-checked clean.
+
+This is the D80 lesson applied deliberately. A gate added in the same session that fixed the
+defect, never observed failing, is indistinguishable from a gate that is quietly broken — which
+is precisely how `fix-mojibake.mjs` shipped a `latin1` decode that found nothing.
+
+### D93 - The source gate and the crawler probe are not redundant
+
+Two detectors for one defect class, because they see different things:
+
+| | `scripts/check-mojibake.mjs` | `probeMojibake()` in the crawler |
+|---|---|---|
+| Sees | source files | the **rendered DOM** |
+| Runs | in `build:cf` | on all 204 combinations of every audit run |
+| Catches | a corrupted string in the repository | a corrupted string from anywhere — a Firestore field, a CMS value, a future refactor |
+
+The crawler probe carries its own hand-written cp1252 table, because the browser has no
+cp1252 codec either, and reports the **corrected** text: that is the half a reader is owed and
+the only half that means anything. It is classified **P0**, not P1 — a page whose every word
+is unreadable is worse than a page that fails to load, because it looks like it worked.
+
+### D94 - Evidence of a defect is never repaired
+
+`docs/audit/` is skipped by the scanner, and `AUDIT-UI.md` is left to be regenerated. Those
+files *record what the broken UI looked like*; they contain the corruption on purpose.
+"Repairing" a before-shot would falsify the record of the defect, which is the one thing
+evidence must never do. The same reasoning excludes `node_modules`, `.next` and the rest:
+they are not ours to fix, and the one failure mode this gate exists to catch is not a
+dependency shipping mojibake.
+
+### D95 - A watch is scoped to findings at least as severe as its fix
+
+`watch: ["contrast:"]` on a P1 closure matched the P2 band too — and the P2 band is
+*deliberately* non-empty, because completing the 3:1–4.5:1 contrast fix to full AA is the
+user's decision and not a silent change. So every run would have reported a closed P1 as
+regressed, on a defect that is knowingly still open.
+
+A guard that cries wolf on every run gets ignored, which is the same as having no guard while
+looking as though the defect is tracked. Regressions now compare severity ranks, so a fix is
+only reported as regressed by a finding at or above its own severity.
+
+### D96 - Each closure names its own before-set
+
+The first run's screenshots predate every defect found after it, so showing them as "before" is
+evidence of nothing. `docs/audit/before/` now holds one preserved crawl per defect
+(`hydration/`, `mojibake/`), and a closure carries `beforeSet`. Each before-set is kept whole,
+because a before-shot is only meaningful as one frame out of a run whose other 203 frames are
+also true.
+
+A closure pointing at a screenshot that does not exist now renders a note saying the evidence
+is missing, rather than a broken image that reads as though evidence were shown.
+
 ### What the terms say
 
 `/terms` gained a section in honest wording: the draw is server-side, the browser never
@@ -1467,20 +1989,73 @@ at each stage.
 - [ ] Regenerate `storage.rules` if you add bucket paths. The current file denies
       everything not explicitly matched, including a catch-all.
 
-### H. Cloudflare environment variables (both must be set, separately)
-- [ ] **Plain text** — inlined into the bundle at build time, so a value set only
-      on Production will be missing from a Preview build:
-  - [ ] `NEXT_PUBLIC_FIREBASE_API_KEY`, `AUTH_DOMAIN`, `PROJECT_ID`,
-        `STORAGE_BUCKET`, `MESSAGING_SENDER_ID`, `APP_ID`, `MEASUREMENT_ID`
-  - [ ] `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
-  - [ ] `NEXT_PUBLIC_SITE_URL`
-- [ ] **Secret** — read at request time only:
-  - [ ] `ANON_SESSION_SECRET`
-  - [ ] `RIDDLE_SIGNING_SECRET` — for the golden-token riddle. ≥32 chars. Distinct
-        from `ANON_SESSION_SECRET` in production even though the code falls back to it.
-  - [ ] `TURNSTILE_SECRET_KEY`
-  - [ ] `FIREBASE_SERVICE_ACCOUNT_JSON`
-- [ ] Re-trigger a build after setting any plain-text variable.
+### H. Cloudflare environment variables
+
+**The authoritative table is below. `npm run check:env` fails the build when a
+Production variable is absent, and it fails on incoherence that a presence check cannot
+see.** Section H's checklist above is retained as the operator's ordering; this table is
+the reference.
+
+Verify before deploying: `npm run check:env` (Production), `npm run check:env:preview`.
+
+#### Plain text — inlined into the bundle at build time
+
+**Marked as a Cloudflare *Secret* these variables are hidden from the build and the
+bundle ships with empty strings.** That is the single most likely way this deployment
+fails: the dashboard shows the name present, the build is green, and `/enter` renders a
+dead form.
+
+| Variable | Public? | Needed at | Environments | Notes |
+|---|---|---|---|---|
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | yes | build | Production, Preview | `AIza.` prefix. `check:keys` fails if any other `AIza.` value is in the bundle. |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | yes | build | Production, Preview | `<project>.firebaseapp.com`. Must contain `PROJECT_ID` or sign-in fails with an opaque auth error — `check:env` catches the mismatch. |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | yes | build | Production, Preview | Also used **server-side** to verify ID tokens (`lib/auth/server.ts`), so it must match the project the service account belongs to. |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | yes | build | Production, Preview | `1:<sender>:web:<hash>`. |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | yes | build | Production, Preview | Needed for premium PDFs. App Engine buckets work; `.firebasestorage.app` is the newer form. |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | yes | build | Production, Preview | Numeric. Required by the Firebase console but not by sign-in. |
+| `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | yes | build | Production, optional | Analytics only. **Deliberately not required**: Analytics is consent-gated and optional, and blocking on it would mean a project that declined Analytics could never authenticate anyone. |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | yes | build | Production, Preview | Public by design — the widget cannot work without it in the browser. Setting it with no matching secret means **every** login is refused (D20, fails closed). `check:env` catches that pair. |
+| `NEXT_PUBLIC_SITE_URL` | yes | build | Production | Canonical URLs, `sitemap.xml`, `robots.txt`. Defaults to `mindinbox-final.pages.dev`. Set it once a custom domain exists. |
+
+#### Secret — read at request time, never inlined
+
+| Variable | Public? | Needed at | Environments | Notes |
+|---|---|---|---|---|
+| `ANON_SESSION_SECRET` | no | runtime | Production, Preview | ≥32 chars. Signs the `miab-anon` cookie, which decides the anonymous quota bucket — a short secret is a **quota bypass**, not just a weak cookie. `check:env` rejects <32. |
+| `TURNSTILE_SECRET_KEY` | no | runtime | Production, Preview | Server-side verification only. Without it `/api/auth/turnstile` returns 403 for every signup — deliberate, not a bug. |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | no | runtime | Production | The whole JSON, one line. Admin APIs and `requireAdmin`. Never `NEXT_PUBLIC_`. |
+| `ADMIN_PAGE_SECRET` | no | runtime | Production | Signs the 15-minute `miab_admin` cookie that makes `/god-mode-admin` 404 (D46/D47). **Must differ from `ANON_SESSION_SECRET`** or a leak from the quota path opens the admin console; `check:env` rejects the pair. |
+| `RIDDLE_SIGNING_SECRET` | no | runtime | Production | Golden-token riddle. Falls back to `ANON_SESSION_SECRET`, which is acceptable locally and not in Production. |
+
+#### Build-time vs runtime
+
+There is no `runtime` column meaning "server-only" — that is the Public column. What
+matters operationally:
+
+- **Build-time** variables are inlined by Next during `next build`. Adding one to an
+  already-deployed site changes nothing until it is **redeployed**. This is the reason
+  "I set the variable and it still fails" is the most common report on this project.
+- **Runtime** secrets are read per request from the Workers environment. These may be
+  changed and take effect on the next request, with no rebuild.
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` is the one variable needed at **both**: inlined into
+  the client bundle, and read server-side to verify ID tokens.
+
+#### What `check:env` checks beyond presence
+
+Presence alone passes these four configurations, all of which fail at runtime with an
+error that names neither the variable nor the cause:
+
+| Check | Configuration it catches |
+|---|---|
+| `auth-domain-matches-project` | `AUTH_DOMAIN` from project A, `PROJECT_ID` from project B. Sign-in fails with an opaque auth error. |
+| `anon-secret-length` | `ANON_SESSION_SECRET` under 32 characters. Lets a client forge a quota cookie. |
+| `admin-page-secret-not-fallback` | `ADMIN_PAGE_SECRET` equal to `ANON_SESSION_SECRET`. One leak opens both. |
+| `turnstile-pair` | Site key set, secret absent. Every login refused, reading as "sign-in is broken". |
+
+**A local `.env` file never satisfies a requirement.** An earlier version accepted file
+values, which meant a developer with a complete `.env.local` got a green gate while the
+deployed site had nothing. A `.env` file can now explain a missing key and never excuse
+one.
 
 ### I. Emulator prerequisites (local only)
 - [ ] Install a JRE (17+). `firebase-tools` needs `java` on PATH; without it

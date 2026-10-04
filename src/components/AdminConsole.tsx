@@ -186,7 +186,7 @@ export function AdminConsole() {
     return (
       <ConsoleShell>
         <div className="mx-auto max-w-md px-5 py-24 text-center">
-          <ShieldCheck className="mx-auto size-9 text-gold/40" aria-hidden="true" />
+          <ShieldCheck className="mx-auto size-9 text-ink-3" aria-hidden="true" />
           <h1 className="gold-text-glow display-arabic mt-6 text-2xl font-bold text-gold-light">
             منطقة ممنوعة
           </h1>
@@ -206,7 +206,7 @@ export function AdminConsole() {
             <h1 className="gold-text-glow display-arabic text-2xl font-bold text-gold-light sm:text-3xl">
               وضع الإله · لوحة الإدارة
             </h1>
-            <p className="display-latin mt-1 text-[11px] tracking-[0.25em] text-gold-muted/50">
+            <p className="display-latin mt-1 text-[11px] tracking-[0.25em] text-ink-3">
               GOD MODE
             </p>
           </div>
@@ -365,7 +365,7 @@ function UserAdmin({ onGrant }: { onGrant: (uid: string, tier: "oracle" | "sanct
               <p className="truncate text-sm text-gold-light">
                 {row.displayName ?? row.email ?? row.id.slice(0, 10)}
               </p>
-              <p className="display-latin truncate text-[10px] text-gold-muted/40">{row.id}</p>
+              <p className="display-latin truncate text-[10px] text-ink-3">{row.id}</p>
             </div>
             <div className="flex items-center gap-2">
               <select
@@ -382,7 +382,7 @@ function UserAdmin({ onGrant }: { onGrant: (uid: string, tier: "oracle" | "sanct
           </li>
         ))}
         {!rows.length && !message && (
-          <li className="py-4 text-center text-xs text-gold-muted/40">لا حسابات بعد.</li>
+          <li className="py-4 text-center text-xs text-ink-3">لا حسابات بعد.</li>
         )}
       </ul>
     </Panel>
@@ -401,7 +401,7 @@ function ConsoleShell({ children }: { children: React.ReactNode }) {
 function Card({ label, value }: { label: string; value: number }) {
   return (
     <div className="panel p-5">
-      <p className="text-xs tracking-widest text-gold-muted/55">{label}</p>
+      <p className="text-xs tracking-widest text-ink-3">{label}</p>
       <p className="display-latin mt-2 text-3xl font-bold text-gold-light">{value}</p>
     </div>
   );
@@ -419,7 +419,7 @@ function Panel({
   return (
     <section className="panel mt-6 p-6 sm:p-7">
       <h2 className="display-arabic text-lg text-gold-light">{title}</h2>
-      {hint && <p className="mt-1.5 text-xs text-gold-muted/50">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs text-ink-3">{hint}</p>}
       <div className="mt-5">{children}</div>
     </section>
   );
@@ -574,7 +574,7 @@ function RemoveButton({ onClick, label }: { onClick: () => void; label: string }
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="shrink-0 self-center rounded-full p-2.5 text-gold-muted/40 transition-colors hover:text-red-300/85"
+      className="shrink-0 self-center rounded-full p-2.5 text-ink-3 transition-colors hover:text-red-300/85"
     >
       <Trash2 className="size-4" />
     </button>

@@ -39,7 +39,7 @@ export function QuotaMeter({
       // `status` so a screen reader announces the change without stealing focus.
       role="status"
       aria-live="polite"
-      className="display-arabic text-center text-xs text-gold-muted/55"
+      className="display-arabic text-center text-xs text-ink-3"
     >
       {loading ? (
         "جارٍ التحقق من محاولاتك…"

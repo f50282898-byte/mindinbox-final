@@ -246,7 +246,7 @@ export function HeatmapGrid({
           );
         })}
       </svg>
-      <figcaption className="display-arabic mt-2 text-xs text-gold-muted/55">
+      <figcaption className="display-arabic mt-2 text-xs text-ink-3">
         {recorded === 0
           ? "لا شيء مسجّل بعد. أول يوم يكفي."
           : `${recorded} يوماً مسجّلاً.`}
@@ -430,7 +430,7 @@ export function HabitEnergyScatter({
         {caption[wording]}
       </figcaption>
       {/* The disclaimer is part of the chart, not a footnote. */}
-      <p className="display-arabic mt-1 text-[0.7rem] leading-relaxed text-gold-muted/40">
+      <p className="display-arabic mt-1 text-[0.7rem] leading-relaxed text-ink-3">
         هذا وصف لما كتبته أنت في يومين، وليس ادعاءً بأن العادة تغيّر الطاقة.
       </p>
     </figure>
@@ -463,7 +463,7 @@ export function WeekStrip({ from, recorded }: { from: string; recorded: Set<stri
                 }`}
                 title={`${date}${on ? "" : " — لا تسجيل"}`}
               />
-              <span className="display-arabic text-[0.6rem] text-gold-muted/55">{names[i]}</span>
+              <span className="display-arabic text-[0.6rem] text-ink-3">{names[i]}</span>
             </div>
           );
         })}

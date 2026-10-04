@@ -15,7 +15,7 @@
     "",
     "THEME PAIRS",
     "  Each artwork was supplied in a light and a dark variant, drawn on parchment",
-    "  and on black respectively. That pairing is not decoration G�� the product ships",
+    "  and on black respectively. That pairing is not decoration G—— the product ships",
     "  a dark default and a light 'Parchment' theme, and a dark-theme illustration on",
     "  parchment reads as a printing error. Both variants are required for an entry",
     "  with `themed: true`; the build fails if only one is present.",

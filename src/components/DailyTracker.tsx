@@ -5,6 +5,10 @@ import { Plus, Trash2 } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db, paths } from "@/lib/firebase";
+import {
+  FirebaseRequired,
+  useFirebaseNotice,
+} from "@/lib/firebase/FirebaseRequired";
 import { useAppStore, type EntryKind } from "@/lib/store";
 import { useSession, useTrackerEntries, writeEntry } from "@/lib/session";
 import { TIER_DEFINITIONS, tierSatisfies, type Tier } from "@/lib/tiers";
@@ -41,6 +45,9 @@ function entryLimitFor(tier: Tier): number | null {
  * holds a mirror purely so the bars paint on first frame.
  */
 export function DailyTracker() {
+  // Console-only diagnosis of an absent Firebase config. See `FirebaseRequired`.
+  useFirebaseNotice("/tracker");
+
   const { state } = useSession();
   const tier = useAppStore((s) => s.tier);
   const entries = useAppStore((s) => s.entries);
@@ -122,7 +129,7 @@ export function DailyTracker() {
     }
   };
 
-  /* ── Session states ──
+  /* â”€â”€ Session states â”€â”€
      `loading` must not fall through to the full tracker: that flashes the
      signed-in surface (and the limit meter) at an anonymous visitor before
      auth has resolved. */
@@ -135,8 +142,20 @@ export function DailyTracker() {
       </div>
     );
   }
+  /*
+     * `unavailable` means Firebase is absent from this build, not that the visitor did
+     * anything wrong. The old copy told the reader to add keys in environment
+     * variables: on a public page that is a map of what is missing, and it reads as an
+     * accusation that the visitor should have configured something. `FirebaseRequired`
+     * states the absence and offers a route that works; the key names go to the console
+     * via `useFirebaseNotice`.
+     */
   if (state === "unavailable") {
-    return <Panel title="متتبع الوعي" empty="المتتبع يحتاج إعداد Firebase. أضف مفاتيحه في متغيرات البيئة." />;
+    return (
+      <FirebaseRequired title="متتبع الوعي">
+        <p>المتتبع غير متاح الآن. ما حفظته سابقاً لن يتأثر.</p>
+      </FirebaseRequired>
+    );
   }
   if (state !== "member") {
     return (
@@ -153,16 +172,16 @@ export function DailyTracker() {
         <h1 className="gold-text-glow display-arabic text-3xl font-bold text-gold-light sm:text-4xl">
           متتبع الوعي
         </h1>
-        <p className="display-latin mt-1 text-[11px] tracking-[0.3em] text-gold-muted/50">
+        <p className="display-latin mt-1 text-[11px] tracking-[0.3em] text-ink-3">
           DAILY TRACKER
         </p>
       </header>
 
-      {/* ── Gold bar chart ── */}
+      {/* â”€â”€ Gold bar chart â”€â”€ */}
       <section className="panel p-6 sm:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs tracking-widest text-gold-muted/55">الأسبوع</p>
+            <p className="text-xs tracking-widest text-ink-3">الأسبوع</p>
             <p className="display-arabic mt-1 text-lg text-gold-light">{total} إدخال</p>
           </div>
           <div className="flex items-center gap-5 text-xs text-gold-muted/65">
@@ -194,7 +213,7 @@ export function DailyTracker() {
                 />
                 <span
                   className={`text-center text-[10px] ${
-                    isToday ? "text-gold-light" : "text-gold-muted/50"
+                    isToday ? "text-gold-light" : "text-ink-3"
                   }`}
                 >
                   {bucket.label.slice(0, 3)}
@@ -205,7 +224,7 @@ export function DailyTracker() {
         </div>
       </section>
 
-      {/* ── Composer ── */}
+      {/* â”€â”€ Composer â”€â”€ */}
       <section className="panel p-6 sm:p-8">
         <div className="mb-5 flex flex-wrap gap-2">
           {KINDS.map((item) => (
@@ -236,7 +255,7 @@ export function DailyTracker() {
           />
 
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[11px] text-gold-muted/45">{text.length} / 500</span>
+            <span className="text-[11px] text-ink-3">{text.length} / 500</span>
             <button type="submit" disabled={!text.trim() || saving} className="btn-gold px-7 py-3">
               <span>
                 <Plus className="me-1 inline size-4" />
@@ -248,10 +267,10 @@ export function DailyTracker() {
 
         {notice && <p className="mt-4 text-xs text-gold/75">{notice}</p>}
         {error && <p role="alert" className="mt-4 text-xs text-red-300/85">{error}</p>}
-        {syncing && <p className="mt-4 text-xs text-gold-muted/50">جارٍ المزامنة…</p>}
+        {syncing && <p className="mt-4 text-xs text-ink-3">جارٍ المزامنة…</p>}
       </section>
 
-      {/* ── Feed ── */}
+      {/* â”€â”€ Feed â”€â”€ */}
       <section className="space-y-3">
         <AnimatePresence initial={false}>
           {entries.slice(0, 40).map((entry) => (
@@ -270,7 +289,7 @@ export function DailyTracker() {
                   </span>
                   <time
                     dateTime={new Date(entry.createdAt).toISOString()}
-                    className="text-[10px] text-gold-muted/40"
+                    className="text-[10px] text-ink-3"
                   >
                     {new Date(entry.createdAt).toLocaleString("ar-EG", {
                       day: "numeric",
@@ -289,7 +308,7 @@ export function DailyTracker() {
                 type="button"
                 onClick={() => void remove(entry.id)}
                 aria-label="حذف الإدخال"
-                className="shrink-0 rounded-full p-2 text-gold-muted/30 opacity-0 transition-all hover:text-red-300/80 focus-visible:opacity-100 group-hover:opacity-100"
+                className="shrink-0 rounded-full p-2 text-ink-3 opacity-0 transition-all hover:text-red-300/80 focus-visible:opacity-100 group-hover:opacity-100"
               >
                 <Trash2 className="size-4" />
               </button>
@@ -298,7 +317,7 @@ export function DailyTracker() {
         </AnimatePresence>
 
         {entries.length === 0 && (
-          <p className="display-arabic py-8 text-center text-sm text-gold-muted/45">
+          <p className="display-arabic py-8 text-center text-sm text-ink-3">
             لا شيء بعد. أول إدخال هو أثقل خطوة.
           </p>
         )}
@@ -310,7 +329,7 @@ export function DailyTracker() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] tracking-widest text-gold-muted/45">{label}</p>
+      <p className="text-[10px] tracking-widest text-ink-3">{label}</p>
       <p className="display-arabic mt-0.5 text-sm text-gold-light">{value}</p>
     </div>
   );

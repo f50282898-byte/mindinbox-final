@@ -104,7 +104,7 @@ export function UtopiaHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="display-latin mt-4 text-[11px] tracking-[0.45em] text-gold-muted/55 sm:text-xs"
+          className="display-latin mt-4 text-[11px] tracking-[0.45em] text-ink-3 sm:text-xs"
         >
           MIND IN A BOX
         </motion.p>
@@ -135,14 +135,14 @@ export function UtopiaHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2, delay: 1.1 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] tracking-[0.3em] text-gold-muted/35"
+          className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] tracking-[0.3em] text-ink-3"
         >
           <span>AESOP</span>
-          <span className="text-gold/25">—</span>
+          <span className="text-ink-3">—</span>
           <span>PLATO</span>
-          <span className="text-gold/25">—</span>
+          <span className="text-ink-3">—</span>
           <span>RUMI</span>
-          <span className="text-gold/25">—</span>
+          <span className="text-ink-3">—</span>
           <span>DOSTOEVSKY</span>
         </motion.div>
       </motion.div>
@@ -156,7 +156,7 @@ export function UtopiaHero() {
         className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2"
       >
         <span className="h-10 w-px bg-gradient-to-b from-transparent to-gold/40" />
-        <span className="text-[9px] tracking-[0.3em] text-gold-muted/30">SCROLL</span>
+        <span className="text-[9px] tracking-[0.3em] text-ink-3">SCROLL</span>
       </motion.div>
     </div>
   );

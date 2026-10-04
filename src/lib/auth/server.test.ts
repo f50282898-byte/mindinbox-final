@@ -23,7 +23,7 @@ async function signJwt(
   opts: { expiresIn?: string | number; issuedAt?: number; issuer?: string; audience?: string } = {}
 ): Promise<string> {
   // `exp` defaults to one hour out. It is a REQUIRED claim in the verifier, so
-  // a token minted without one is correctly rejected � which is exactly what
+  // a token minted without one is correctly rejected — which is exactly what
   // the "rejects garbage" cases rely on.
   const expiresIn = opts.expiresIn ?? "1h";
 

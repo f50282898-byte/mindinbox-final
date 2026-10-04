@@ -1,0 +1,146 @@
+{
+  "_readme": "Closed P0/P1 defects from the UI audit, with the evidence for each closure. Written by hand rather than inferred, because 'the finding stopped appearing' is not the same as 'the cause was understood and removed' — and only the second is worth reading six months from now. scripts/audit/crawl.ts renders this into AUDIT-UI.md and fails if a watched id reappears at the same severity or worse, so a regression is loud. `watch` holds substrings matched against generated finding ids, which are derived from evidence and therefore not stable enough to hard-code whole; a finding *below* the fix's severity does not count as a regression, because the 3:1–4.5:1 contrast band is deliberately left open pending a decision. Slugs name files under a `beforeSet` directory and under docs/audit/screenshots/; the format is `${route with / replaced by _}__${viewport}__${theme}__${locale}`, with the landing page written `root`. Each before-set is a whole preserved crawl, because a before-shot is only meaningful as one frame out of a run whose other 203 frames are also true.",
+
+  "fixes": [
+    {
+      "id": "hydration-signin:/enter",
+      "severity": "P0",
+      "beforeSet": "before/hydration/screenshots",
+      "title": "لا أحد يستطيع تسجيل الدخول",
+      "titleEn": "Sign-in was impossible for every visitor",
+      "cause": "src/lib/firebase/config.ts read its keys as process.env[key] — a computed index. Next.js substitutes the *text* of process.env.NEXT_PUBLIC_FOO into client bundles, one literal expression at a time. A computed index is not that expression, so nothing was substituted, the lookup ran against an empty object in the browser, and isFirebaseConfigured() answered false while the server said true. lib/firebase.ts, which builds firebaseConfig with static reads, was inlining correctly at the same time: one build, two contradictory answers.",
+      "fix": "One literal process.env.NEXT_PUBLIC_FIREBASE_* read per key, in a single readFirebaseEnv(). src/lib/firebase/config.test.ts now reads that file's source text and fails if a computed process.env[ reappears.",
+      "impact": "On a correctly configured deploy the server rendered the sign-in form into the HTML and the browser threw it away (React #418/#423), re-rendering the sign-in-unavailable state. The journal, the tracker, /account and /god-mode-admin all sat behind the same broken answer. All 12 /enter combinations logged the mismatch. Every behavioural test in the repository passed throughout: under vitest process.env is a real object, so the broken path is indistinguishable from the working one, which is why the guard reads source text rather than behaviour.",
+      "regression": "src/lib/firebase/config.test.ts",
+      "watch": [
+        "console:[pageerror] Minified React error #418",
+        "console:[pageerror] Minified React error #423"
+      ],
+      "shots": [
+        {
+          "before": "_enter__desktop-1440__dark__ar",
+          "after": "_enter__desktop-1440__dark__ar",
+          "caption": "Both screenshots look plausible. Only the console told them apart, which is why a hydration mismatch is classified as an error here and not a warning."
+        }
+      ]
+    },
+    {
+      "id": "mojibake-arabic-copy:src-wide",
+      "severity": "P0",
+      "beforeSet": "before/mojibake/screenshots",
+      "title": "كل النصوص العربية المعروضة كانت حروفاً لاتينية",
+      "titleEn": "Every displayed Arabic string rendered as Latin letters",
+      "cause": "337 lines across 11 component files held Arabic that had been saved after a cp1252 round trip: UTF-8 bytes decoded as cp1252 and written back as if that were the text. Every character of every word landed in U+00C0–U+00FF instead of the Arabic block. The codec is pinned to cp1252 rather than Latin-1 by the U+02C6 and U+201E characters in the corrupted runs — those are the cp1252 mappings of bytes 0x88 and 0x84, and a Latin-1 round trip could not have produced them. The mechanism that wrote them is not recorded anywhere in the repository; what is recorded is the exact inverse, which is why the repair is a decode and not a reconstruction.",
+      "fix": "Decoded back, losslessly, by scripts/fix-mojibake.mjs. Every line is verified before it is written: the bytes must decode as valid UTF-8 under a fatal decoder, the result must contain Arabic, and the ASCII skeleton of the line must be byte-identical — the last is what stops a bad decode from editing code that sits beside a corrupted string. 337 of 337 lines repaired; none needed a human.",
+      "impact": "Every user-facing Arabic string on the journal, the account panel, the dialogue, the wisdom panel, the quotes, the tracker, the membership page, the riddle dialog, the persona cards and the shell navigation — the button labels, the notices, the empty states, the aria-labels, the error messages. Nothing detected it. The characters are real Latin-1 letters, so each corrupted glyph had a font, a colour, a passing contrast ratio and a real bounding box: the contrast probe passed, the clipping probe passed, axe passed, and 433 unit tests passed. The character count was even healthy — /journal rendered 2398 characters, every one of them unreadable. It surfaced only by accident, because one clicked control's label became a finding id and the corrupted label was finally legible.",
+      "regression": "scripts/check-mojibake.mjs, inside build:cf, plus 20 unit tests in scripts/lib/mojibake.test.mjs and a new crawler probe (`mojibake:`) that decodes the rendered DOM. The source gate detects it in a file; the crawler probe detects it on a page, so a corrupted string arriving from anywhere — a database field, a CMS value, a future refactor — is caught by the audit too.",
+      "watch": ["mojibake:"],
+      "shots": [
+        {
+          "before": "_journal__desktop-1440__dark__ar",
+          "after": "_journal__desktop-1440__dark__ar",
+          "caption": "The journal, in Arabic, at full width. Before: 2398 characters, all of them Latin-1 letters. Nothing in the layout moved, so a layout diff would show no change at all."
+        },
+        {
+          "before": "_account__desktop-1440__dark__ar",
+          "after": "_account__desktop-1440__dark__ar",
+          "caption": "The account panel. Before: the verification button, the notice and the error messages were all mojibake. The corrupted label of that button is what the first run reported as a finding id."
+        },
+        {
+          "before": "_wisdom__desktop-1440__dark__ar",
+          "after": "_wisdom__desktop-1440__dark__ar",
+          "caption": "The wisdom panel, including its opening question. Before: Latin-1 letters with correct contrast and correct spacing."
+        },
+        {
+          "before": "_membership__desktop-1440__dark__ar",
+          "after": "_membership__desktop-1440__dark__ar",
+          "caption": "The membership page, where the corruption also dragged a stray Â§ through the middle dot: \"MEMBERSHIP Â· …\" became \"MEMBERSHIP · …\"."
+        }
+      ]
+    },
+    {
+      "id": "contrast-illegible:src-wide",
+      "severity": "P1",
+      "beforeSet": "before/hydration/screenshots",
+      "title": "نص غير مقروء في 91 موضعاً",
+      "titleEn": "Illegible text at 91 call sites",
+      "cause": "Every token in the text ramp cleared WCAG AA at 100% — --gold 9.69:1 dark / 6.07:1 light, --gold-light 17.45/15.58, --gold-muted 13.28/9.32, --text-3 6.69/5.30. Then 210 call sites appended an opacity modifier, and the modifier became the whole story: text-gold-muted/55, the same token dimmed, shipped at 2.87:1. The lowest were text-gold/25 at 1.44:1 and text-gold-muted/30 at 1.69:1, on the landing hero, the sign-in panel, the quote cards and the journal.",
+      "fix": "The P1 band — worst-case under 3:1 — moved to text-ink-3, the dimmest token that clears AA in both themes, which preserves the intended hierarchy instead of brightening captions into body copy. 91 sites across 24 files. The band boundary was measured rather than chosen: below 3:1 text cannot be read at any size, which is WCAG's own floor for content.",
+      "impact": "Text the reader was meant to read rendered at 1.44:1–2.90:1. This was invisible to verify-contrast.mjs, which checked 11 token *pairs* and never looked at a single *class*. Both checks were necessary; neither was sufficient.",
+      "regression": "scripts/verify-contrast.mjs — now also scans src/ for opacity modifiers on text colours, resolves the worst case across both themes and all five backgrounds, fails below 3:1, and reports the 3:1–4.5:1 band without blocking. Its pair list grew from 11 to 33, adding the gold tokens and the composited glass and overlay panels. It runs inside build:cf.",
+      "watch": ["contrast:"],
+      "shots": [
+        {
+          "before": "_quotes__desktop-1440__dark__ar",
+          "after": "_quotes__desktop-1440__dark__ar",
+          "caption": "The source locator under each quote, and the theme chips, at 2.87:1."
+        },
+        {
+          "before": "_paths__desktop-1440__dark__ar",
+          "after": "_paths__desktop-1440__dark__ar",
+          "caption": "The tier numerals and the Latin tier names on the comparison grid, at 1.87:1 and 2.10:1."
+        },
+        {
+          "before": "_enter__desktop-1440__dark__ar",
+          "after": "_enter__desktop-1440__dark__ar",
+          "caption": "The guest-access note and the separator on the sign-in panel, at 2.94:1."
+        }
+      ]
+    },
+    {
+      "id": "contrast-light-scrim:GreekColumns",
+      "severity": "P1",
+      "beforeSet": "before/mojibake/screenshots",
+      "title": "بقعة سوداء على الصفحة الفاتحة تكسر التباين",
+      "titleEn": "A black blob on the light theme broke contrast",
+      "cause": "GreekColumns.tsx drew its readability scrim as a literal rgba(5,5,5,0.86) — a hardcoded near-black with no theme branch. The sibling component art/ArtLayer builds the same scrim from the volcanic token and carries the rule in its header comment: #050505 in the dark theme and #f4efe4 in Parchment, so one declaration serves both. Two lines below the scrim, GreekColumns already used from-volcanic; only the radial gradient was hardcoded. The result was a near-black ellipse painted over cream parchment, and since the text tokens had correctly flipped to their light-theme values, dark text landed on dark artwork.",
+      "fix": "All three literal colours in the component now read the token: the scrim from rgb(var(--volcanic)/…) and the two gold veils from rgb(var(--gold)/…).",
+      "impact": "In Parchment the landing hero's decorative letter measured 1.95:1 against a 3:1 floor, and on /wisdom and /dialogue the persona name, the dates and the description measured 1.48:1 and 2.03:1 against a 4.5:1 floor — 42 combinations each. All dark-theme combinations were unaffected, which is why the defect survived a run that looked at both themes and reported the light one as clean.",
+      "regression": "scripts/verify-contrast.mjs measures the composited result, and the crawler's contrast probe runs in both themes against all five background layers. The probe is what caught this; the token change is what closed it.",
+      "watch": ["contrast:"],
+      "shots": [
+        {
+          "before": "root__desktop-1440__light__ar",
+          "after": "root__desktop-1440__light__ar",
+          "caption": "The landing hero in Parchment. Before: a near-black ellipse over cream paper, with the hero letter at 1.95:1."
+        },
+        {
+          "before": "_wisdom__desktop-1440__light__ar",
+          "after": "_wisdom__desktop-1440__light__ar",
+          "caption": "The wisdom panel in Parchment. Before: the philosopher's Latin name, the dates and the Arabic description, all at 1.48:1–2.03:1."
+        }
+      ]
+    },
+    {
+      "id": "null-user-crash:/account",
+      "severity": "P1",
+      "beforeSet": "before/mojibake/screenshots",
+      "title": "زر إعادة الفحص كان يرمي استثناءً قاتلاً",
+      "titleEn": "The re-check button threw an uncaught exception",
+      "cause": "AccountPanel called isEmailVerified(a!.currentUser!) — two non-null assertions on a value that is null whenever no one is signed in, and also null when Firebase is not configured at all. Inside isEmailVerified, the missing null check turned into a two-step failure that read like a network problem: user.reload() threw a TypeError, the catch swallowed it, and the exception that actually escaped was the user.emailVerified read on the line *after*. The swallow made a missing user look like a failed reload.",
+      "fix": "isEmailVerified now accepts User | null | undefined and returns false for a missing user, which is the honest answer to the question the caller is asking, and the caller drops both assertions. The reload failure is still swallowed, on purpose, because a stale cached answer beats an unhandled rejection.",
+      "impact": "Clicking the verification re-check button on /account raised a page error and left the panel unchanged. Because the button's label was itself mojibake at the time, the finding id was unreadable too — which is how this and the copy corruption turned out to be the same investigation.",
+      "regression": "The crawler's interaction pass clicks every control and records page errors, so any future throw on a click reappears as a finding. The TypeError was not reproducible in a unit test because the argument's type said it could not be null.",
+      "watch": ["click-console-error:"],
+      "shots": [
+        {
+          "before": "_account__desktop-1440__dark__ar",
+          "after": "_account__desktop-1440__dark__ar",
+          "caption": "The account panel before and after. The visual change is the button label: it was corrupted, and in the before frame it is a run of Latin-1 letters."
+        }
+      ]
+    },
+    {
+      "id": "unread-response-body:AppShell",
+      "severity": "P1",
+      "title": "طلب معلّق في كل صفحة لزائر غير مسجّل",
+      "titleEn": "A hung request on every page for an anonymous visitor",
+      "cause": "AppShell fired void fetch(\"/api/ai\").catch(() => undefined) on every page for an anonymous visitor and never read the response body. An unread body keeps the loader alive: the browser holds the connection open indefinitely and never reuses it. Playwright's requestfinished never fired for that URL, 25 seconds after load, which is how it was found.",
+      "fix": "The body is now cancelled explicitly, and the request carries an AbortSignal so it is released if the component unmounts. The call exists only to make the server set the signed miab-anon cookie, so discarding the payload is correct; discarding it without releasing the stream was the defect.",
+      "impact": "One permanently-held connection per anonymous page view. It also made the audit's own readiness wait unreachable, which is how it surfaced: the instrument was failing for a reason that was not the instrument.",
+      "regression": "scripts/audit/crawl.ts waits on html[data-hydrated] rather than networkidle, so a long-lived connection can no longer be mistaken for a slow page.",
+      "watch": [],
+      "shots": []
+    }
+  ]
+}
