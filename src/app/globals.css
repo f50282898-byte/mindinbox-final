@@ -117,9 +117,9 @@
     --radius-pill: 999px;
 
     /* Type scale (1.250 major third, fluid via clamp) */
-    --font-ui: var(--font-cairo), "Cairo", system-ui, sans-serif;
-    --font-display-ar: var(--font-amiri), var(--font-cairo), serif;
-    --font-display-lat: var(--font-playfair), "Playfair Display", Georgia, serif;
+    --font-ui: "Cairo", system-ui, sans-serif;
+    --font-display-ar: "Amiri", "Cairo", serif;
+    --font-display-lat: "Playfair Display", Georgia, serif;
 
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;

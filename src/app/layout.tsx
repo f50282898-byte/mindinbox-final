@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import { Amiri, Cairo, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ShellChrome } from "@/components/ShellChrome";
 import { AppShell } from "@/components/AppShell";
@@ -9,37 +8,6 @@ import { ThemeProvider, THEME_BOOTSTRAP_SCRIPT } from "@/components/ThemeProvide
 import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
 import { SITE_URL } from "@/lib/seo";
-
-/* ── fonts ─────────────────────────────────────────────────────────────────
-   next/font self-hosts these at build time: no Google request at runtime,
-   no layout shift from a late font swap, and `display: swap` keeps text
-   readable while the face loads. Subsets are declared per script so Arabic
-   glyphs are actually shipped rather than silently falling back.
-   -------------------------------------------------------------------------- */
-
-// Latin philosophical display — Playfair Display
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-playfair",
-});
-
-// Arabic + Latin UI face — Cairo
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-cairo",
-});
-
-// Arabic naskh display face — Amiri (philosophical headings)
-const amiri = Amiri({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "700"],
-  display: "swap",
-  variable: "--font-amiri",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -126,10 +94,17 @@ export default async function RootLayout({
       dir="rtl"
       // `dark` is the default; the Parchment theme is opt-in via [data-theme="light"].
       data-theme="dark"
-      className={`${cairo.variable} ${playfair.variable} ${amiri.variable}`}
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* The App Router root layout is the document-level font entry point. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         {/*
           Both bootstraps run before first paint so neither the theme nor the
           text direction flashes. Kept as inline strings rather than components

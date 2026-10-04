@@ -54,7 +54,7 @@ export function middleware(request: NextRequest) {
   const csp = renderCsp({
     nonce,
     // Development only. Present here, absent in production — see the note above.
-    extra: isDev ? { "script-src-attr": ["'unsafe-eval'"] } : {},
+    extra: isDev ? { "script-src": ["'unsafe-eval'"] } : {},
   });
 
   // On the request, so Next can read the nonce and apply it to its own tags.

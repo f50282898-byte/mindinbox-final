@@ -47,9 +47,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-cairo)", "system-ui", "sans-serif"],
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
-        naskh: ["var(--font-amiri)", "var(--font-cairo)", "serif"],
+        sans: ["Cairo", "system-ui", "sans-serif"],
+        serif: ["Playfair Display", "Georgia", "serif"],
+        naskh: ["Amiri", "Cairo", "serif"],
       },
       transitionTimingFunction: {
         silk: "cubic-bezier(0.22, 1, 0.36, 1)",

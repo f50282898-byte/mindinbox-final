@@ -95,6 +95,7 @@ function moduleSources(source) {
     "frame-src": read("FRAME_SRC"),
     "img-src": read("IMG_SRC"),
     "font-src": read("FONT_SRC"),
+    "style-src": read("STYLE_SRC"),
   };
 }
 

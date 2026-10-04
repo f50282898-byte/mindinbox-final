@@ -26,7 +26,6 @@ const ROUTES = [
   "/privacy",
   "/terms",
   "/refund",
-  "/god-mode-admin",
 ] as const;
 
 /**

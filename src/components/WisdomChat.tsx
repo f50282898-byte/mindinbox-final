@@ -131,7 +131,7 @@ export function WisdomChat() {
     }
   }, [active?.messages, status]);
 
-  const _send = useCallback(
+  const send = useCallback(
     async (textOverride?: string, opts?: { replaceMessageId?: string }) => {
       const text = (textOverride ?? draft).trim();
       if (!text || status === "streaming") return;
@@ -654,7 +654,6 @@ export function WisdomChat() {
 
                 {!isUser && message.content && (
                   <MessageActions
-                    
                     content={message.content}
                     copied={copiedId === message.id}
                     busy={status === "streaming"}
@@ -667,7 +666,9 @@ export function WisdomChat() {
                         .slice(0, index)
                         .reverse()
                         .find((m) => m.role === "user");
-                      if (prior) void sendLive(prior.content);
+                      if (prior) {
+                        void send(prior.content, { replaceMessageId: message.id });
+                      }
                     }}
                     onSave={() => void saveToJournal(active, message.content)}
                   />
@@ -820,7 +821,6 @@ function SendIcon() {
 }
 
 function MessageActions({
-  
   content,
   copied,
   busy,
@@ -828,7 +828,6 @@ function MessageActions({
   onRegenerate,
   onSave,
 }: {
-  
   content: string;
   copied: boolean;
   busy: boolean;
@@ -1042,7 +1041,6 @@ function Header({
 function ConversationList({
   conversations,
   uid,
-  
   renaming,
   renameValue,
   onOpen,
@@ -1053,7 +1051,6 @@ function ConversationList({
 }: {
   conversations: Conversation[];
   uid: string | null;
-  
   renaming: string | null;
   renameValue: string;
   onOpen: (c: Conversation) => void;

@@ -19,14 +19,6 @@ describe("anon-session", () => {
     vi.useRealTimers();
   });
 
-  function _makeRequest(cookieValue?: string): Request {
-    const headers: Record<string, string> = {};
-    if (cookieValue) {
-      headers.cookie = ANON_COOKIE_NAME + "=" + cookieValue;
-    }
-    return new Request("https://example.com/api/ai", { headers });
-  }
-
   it("returns fresh session when no cookie present", async () => {
     const session = await readSession(new Request("https://example.com/api/ai"), TEST_SECRET);
     expect(session.used).toBe(0);

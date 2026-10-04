@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Dialogue } from "@/components/Dialogue";
 import { ArtLayer } from "@/components/art/ArtLayer";
-
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {

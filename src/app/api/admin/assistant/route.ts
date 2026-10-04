@@ -6,11 +6,8 @@ import { log } from "@/lib/log";
 import { recordWrite } from "@/lib/admin/audit";
 import {
   ASSISTANT_SYSTEM_PROMPT_AR,
-  buildAssistantBrief,
   sanitiseProposals,
-  type AssistantInput,
 } from "@/lib/admin/assistant";
-import { readPublished } from "@/lib/admin/site-store";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
 
 export const runtime = "edge";
@@ -95,24 +92,7 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400, headers: NO_STORE });
   }
 
-  const [funnel, published] = await Promise.all([readFunnel(parsed.days, now), readPublished()]);
-
-  const cards = published.ok ? published.content.pricing : [];
-  const input: AssistantInput = {
-    questionAr: parsed.questionAr,
-    funnel,
-    providers: Object.entries(funnel)
-      .filter(([key]) => key.startsWith("provider:"))
-      .map(([key, requests]) => ({ id: key.slice("provider:".length), requests, errors: 0 })),
-    pricing: cards.map((c) => ({
-      tier: c.tier,
-      priceAr: c.price.ar,
-      taglineAr: c.tagline.ar,
-    })),
-    banners: [],
-  };
-
-  // const brief = buildAssistantBrief(input);
+  const funnel = await readFunnel(parsed.days, now);
 
   // Whether a model is reachable is decided here, not assumed. With none configured the
   // route says so rather than answering from nothing.

@@ -176,6 +176,9 @@ const ALLOWED_FOREIGN_ORIGINS = [
   "securetoken.googleapis.com",
   "www.googleapis.com",
   "firebaseinstallations.googleapis.com",
+  // Static typography assets explicitly loaded by the root layout.
+  "fonts.googleapis.com",
+  "fonts.gstatic.com",
 ];
 
 function isAllowedForeign(url: string): boolean {

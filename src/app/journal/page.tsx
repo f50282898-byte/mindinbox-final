@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { JournalApp } from "@/components/journal/JournalApp";
-import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -23,10 +22,5 @@ export const metadata: Metadata = {
  * the content is theirs, and it is already local.
  */
 export default function JournalPage() {
-  return (
-    <div className="relative">
-      <ArtLayer id="hourglass" />
-      <JournalApp />
-    </div>
-  );
+  return <JournalApp />;
 }

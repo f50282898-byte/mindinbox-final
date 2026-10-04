@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { validateAllPaths, validatePath } from "@/lib/paths/schema";
+import { validateAllPaths } from "@/lib/paths/schema";
 import { verifiedQuote } from "@/lib/paths/quotes";
 import { PERSONAS } from "@/lib/ai/personas";
 import type { Path } from "@/lib/paths/schema";
@@ -43,10 +43,6 @@ import type { Path } from "@/lib/paths/schema";
  */
 
 const personaIds = PERSONAS.map((p) => p.id);
-
-function validate(input: unknown): Path {
-  return validatePath(input, { quote: verifiedQuote, personaIds });
-}
 
 /* ── الرواقية ───────────────────────────────────────────────────────────── */
 

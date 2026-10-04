@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { WisdomChat } from "@/components/WisdomChat";
-import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -16,10 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function WisdomPage() {
-  return (
-    <div className="relative">
-      <ArtLayer id="cityscape" />
-      <WisdomChat />
-    </div>
-  );
+  return <WisdomChat />;
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 import { FALLBACK_SITE_CONFIG } from "@/lib/site-config";
 
@@ -37,9 +36,7 @@ const DEEP_LINKS = [
 
 export default function PathsPage() {
   return (
-    <div className="relative min-h-[80vh]">
-      <ArtLayer id="astrolabe" />
-      <div className="relative mx-auto w-full max-w-4xl px-5 py-10 sm:py-14">
+    <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:py-14">
       <header className="mb-10">
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           المسارات
@@ -110,7 +107,6 @@ export default function PathsPage() {
           مقارنة تفصيلية بين المستويات
         </Link>
       </p>
-      </div>
     </div>
   );
 }

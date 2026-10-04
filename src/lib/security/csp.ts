@@ -81,9 +81,9 @@ const IMG_SRC = [
   "https://yt3.ggpht.com",
 ].join(" ");
 
-const FONT_SRC = ["'self'", "data:"].join(" ");
+const FONT_SRC = ["'self'", "data:", "https://fonts.gstatic.com"].join(" ");
 
-const STYLE_SRC = ["'self'", "'unsafe-inline'"].join(" ");
+const STYLE_SRC = ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"].join(" ");
 
 /**
  * The nonce directives.

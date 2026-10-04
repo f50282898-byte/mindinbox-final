@@ -14,7 +14,6 @@ import {
 } from "@/lib/auth/client";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/errors";
 import { firebaseConfigured } from "@/lib/firebase";
-import { useLocale } from "@/lib/i18n";
 import { Turnstile } from "@/components/Turnstile";
 
 type Mode = "signin" | "signup" | "forgot" | "reset";

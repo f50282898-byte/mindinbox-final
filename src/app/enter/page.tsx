@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { AuthPanel } from "@/components/AuthPanel";
-import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
 
@@ -20,12 +19,10 @@ export default function EnterPage() {
   const free = TIER_DEFINITIONS.free;
 
   return (
-    <div className="relative min-h-[80vh]">
-      <ArtLayer id="gate" />
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center gap-12 px-5 py-12 sm:py-16 lg:flex-row lg:items-start lg:gap-16">
-        <div className="flex w-full flex-col items-center lg:order-2 lg:pt-6">
-          <AuthPanel />
-        </div>
+    <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-12 px-5 py-12 sm:py-16 lg:flex-row lg:items-start lg:gap-16">
+      <div className="flex w-full flex-col items-center lg:order-2 lg:pt-6">
+        <AuthPanel />
+      </div>
 
       {/* Why an account, stated without pressure. */}
       <div className="w-full lg:order-1">
@@ -63,7 +60,6 @@ export default function EnterPage() {
           </p>
         </section>
       </div>
-    </div>
     </div>
   );
 }

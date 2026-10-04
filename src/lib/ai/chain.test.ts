@@ -37,7 +37,7 @@ function fakeProvider(
     id,
     label: id,
     configured: () => true,
-    async stream(_call: ProviderCall): Promise<ProviderStream> {
+    async stream(call: ProviderCall): Promise<ProviderStream> {
       if (behaviour.failOpen) throw new Error(`${id} responded 503`);
 
       let aborted = false;

@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { SignJWT, exportJWK, generateKeyPair, type JWK, type JWTVerifyGetKey } from "jose";
+import { SignJWT, generateKeyPair, type JWTVerifyGetKey } from "jose";
 import { verifyIdToken, bearerFromHeaders, resetJwksCache } from "@/lib/auth/server";
 
 /**
@@ -17,14 +17,13 @@ const OTHER_PROJECT = "attacker-project-9999";
 
 let privateKey: CryptoKey;
 let publicKey: CryptoKey;
-// let publicJwk: JWK;
 
 async function signJwt(
   claims: Record<string, unknown>,
   opts: { expiresIn?: string | number; issuedAt?: number; issuer?: string; audience?: string } = {}
 ): Promise<string> {
   // `exp` defaults to one hour out. It is a REQUIRED claim in the verifier, so
-  // a token minted without one is correctly rejected — which is exactly what
+  // a token minted without one is correctly rejected ï¿½ which is exactly what
   // the "rejects garbage" cases rely on.
   const expiresIn = opts.expiresIn ?? "1h";
 
@@ -45,7 +44,6 @@ beforeAll(async () => {
   const pair = await generateKeyPair("RS256", { extractable: true });
   privateKey = pair.privateKey;
   publicKey = pair.publicKey;
-  publicJwk = { ...(await exportJWK(pair.publicKey)), kid: "test-kid", alg: "RS256", use: "sig" };
 });
 
 beforeEach(() => {
