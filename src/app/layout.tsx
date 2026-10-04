@@ -4,6 +4,7 @@ import "./globals.css";
 import { ShellChrome } from "@/components/ShellChrome";
 import { AppShell } from "@/components/AppShell";
 import { Shortcuts } from "@/components/Shortcuts";
+import { ThemeColorUpdater } from "@/components/ThemeColorUpdater";
 import { ThemeProvider, THEME_BOOTSTRAP_SCRIPT } from "@/components/ThemeProvider";
 import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
@@ -135,6 +136,7 @@ export default async function RootLayout({
                 {/* AppShell owns auth, the paywall Gate, telemetry and overlays. */}
                 <AppShell>
                   <Shortcuts />
+                  <ThemeColorUpdater />
                   {/*
                     `.shell-content` insets the content past the fixed rail on
                     desktop; see the comment on that rule in globals.css for

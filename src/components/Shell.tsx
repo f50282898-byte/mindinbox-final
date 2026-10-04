@@ -9,6 +9,7 @@ import { useLocale } from "@/lib/i18n";
 import { useShell } from "@/lib/shell-config";
 import { NAV_GROUPS, groupItems, isActive, type NavItem } from "@/lib/nav";
 import { useTheme } from "@/components/ThemeProvider";
+import { Logo } from "@/components/Logo";
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ shared bits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
@@ -176,10 +177,10 @@ function DesktopRail() {
       <div className="flex items-center gap-3 px-3 pt-5 pb-4">
         <Link
           href="/"
-          aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box â€” home" })}
+          aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box — home" })}
           className="gold-glow flex size-10 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-black/60 text-gold-light transition-colors hover:border-gold/70"
         >
-          <span className="display-arabic text-lg font-bold leading-none">ع</span>
+          <Logo size={24} />
         </Link>
         <AnimatePresence initial={false}>
           {!railCollapsed && (

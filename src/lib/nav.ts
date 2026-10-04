@@ -25,8 +25,10 @@ export interface NavItem {
   short: NavLabel;
   /** Lucide icon name, resolved in the shell. */
   icon: string;
-  /** Shown in the bottom bar on mobile. */
+  /** Shown in the bottom bar on mobile (first 5). */
   primaryMobile?: boolean;
+  /** Shown in the desktop rail (first 6). */
+  primaryDesktop?: boolean;
   /** Minimum tier. */
   requires: "free" | "oracle" | "sanctum";
   /** Where this belongs in the sidebar. */
@@ -50,18 +52,11 @@ export const NAV_GROUPS: NavGroup[] = [
 /**
  * Shipped default. Ordered; the first five `primaryMobile` items become the
  * mobile bottom bar, and the rest are folded into the "More" sheet.
+ *
+ * Desktop rail shows the first six items with `primaryDesktop: true`.
+ * Mobile bottom bar shows the first five items with `primaryMobile: true`.
  */
 export const FALLBACK_NAV: NavItem[] = [
-  {
-    id: "enter",
-    href: "/enter",
-    label: { ar: "المدخل", en: "Enter" },
-    short: { ar: "المدخل", en: "Enter" },
-    icon: "DoorOpen",
-    primaryMobile: true,
-    requires: "free",
-    group: "practice",
-  },
   {
     id: "wisdom",
     href: "/wisdom",
@@ -69,6 +64,7 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "الحكمة", en: "Wisdom" },
     icon: "Sparkles",
     primaryMobile: true,
+    primaryDesktop: true,
     requires: "free",
     group: "practice",
   },
@@ -79,6 +75,7 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "الحوار", en: "Dialogue" },
     icon: "MessagesSquare",
     primaryMobile: true,
+    primaryDesktop: true,
     requires: "free",
     group: "practice",
   },
@@ -89,6 +86,7 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "المفكرة", en: "Journal" },
     icon: "NotebookPen",
     primaryMobile: true,
+    primaryDesktop: true,
     requires: "free",
     group: "practice",
   },
@@ -99,17 +97,9 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "المتتبع", en: "Tracker" },
     icon: "Activity",
     primaryMobile: true,
+    primaryDesktop: true,
     requires: "free",
     group: "practice",
-  },
-  {
-    id: "paths",
-    href: "/paths",
-    label: { ar: "المسارات", en: "Paths" },
-    short: { ar: "المسارات", en: "Paths" },
-    icon: "Compass",
-    requires: "free",
-    group: "library",
   },
   {
     id: "quotes",
@@ -117,8 +107,32 @@ export const FALLBACK_NAV: NavItem[] = [
     label: { ar: "الأقوال", en: "Quotes" },
     short: { ar: "الأقوال", en: "Quotes" },
     icon: "Quote",
+    primaryMobile: true,
+    primaryDesktop: true,
     requires: "free",
     group: "library",
+  },
+  {
+    id: "paths",
+    href: "/paths",
+    label: { ar: "المسارات", en: "Paths" },
+    short: { ar: "المسارات", en: "Paths" },
+    icon: "Compass",
+    primaryMobile: false,
+    primaryDesktop: true,
+    requires: "free",
+    group: "library",
+  },
+  {
+    id: "enter",
+    href: "/enter",
+    label: { ar: "المدخل", en: "Enter" },
+    short: { ar: "المدخل", en: "Enter" },
+    icon: "DoorOpen",
+    primaryMobile: false,
+    primaryDesktop: false,
+    requires: "free",
+    group: "practice",
   },
   {
     id: "pricing",
@@ -211,9 +225,20 @@ export function mobilePrimary(items: NavItem[]): NavItem[] {
   return items.filter((i) => i.primaryMobile).slice(0, 5);
 }
 
+/** The six items shown in the desktop rail. */
+export function desktopPrimary(items: NavItem[]): NavItem[] {
+  return items.filter((i) => i.primaryDesktop).slice(0, 6);
+}
+
 /** Everything that does not fit the bottom bar, for the "More" sheet. */
 export function mobileOverflow(items: NavItem[]): NavItem[] {
   const primary = new Set(mobilePrimary(items).map((i) => i.id));
+  return items.filter((i) => !primary.has(i.id));
+}
+
+/** Everything that does not fit the desktop rail, for the "More" sheet (desktop). */
+export function desktopOverflow(items: NavItem[]): NavItem[] {
+  const primary = new Set(desktopPrimary(items).map((i) => i.id));
   return items.filter((i) => !primary.has(i.id));
 }
 

@@ -31,7 +31,7 @@
     "pages:deploy": "npm run pages:build && npx wrangler pages deploy .vercel/output/static",
     "check:keys": "node scripts/check-no-keys.mjs",
     "check:no-riddle-leak": "node scripts/check-no-riddle-leak.mjs",
-    "build:cf": "npm run check:edge && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run pages:build && npm run check:no-riddle-leak && npm run check:env"
+    "build:cf": "npm run check:env && npm run check:edge && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run pages:build && npm run check:no-riddle-leak"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
