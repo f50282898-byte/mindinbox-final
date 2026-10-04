@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-04T14:35:37.214Z",
+  "generatedAt": "2026-10-04T14:49:59.806Z",
   "art": {
     "colonnade": {
       "aspect": "21:9",
@@ -206,6 +206,50 @@
           "/art/cityscape-light-768.avif",
           "/art/cityscape-light-1280.avif",
           "/art/cityscape-light-1920.avif"
+        ]
+      }
+    },
+    "astrolabe": {
+      "aspect": "21:9",
+      "fit": "cover",
+      "focal": "50% 62%",
+      "opacity": 0.24,
+      "scrim": "vertical",
+      "parallax": 0.1,
+      "role": "background",
+      "surface": "paths",
+      "dark": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/astrolabe-dark-768.webp",
+          "/art/astrolabe-dark-1280.webp",
+          "/art/astrolabe-dark-1920.webp"
+        ],
+        "avif": [
+          "/art/astrolabe-dark-768.avif",
+          "/art/astrolabe-dark-1280.avif",
+          "/art/astrolabe-dark-1920.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/astrolabe-light-768.webp",
+          "/art/astrolabe-light-1280.webp",
+          "/art/astrolabe-light-1920.webp"
+        ],
+        "avif": [
+          "/art/astrolabe-light-768.avif",
+          "/art/astrolabe-light-1280.avif",
+          "/art/astrolabe-light-1920.avif"
         ]
       }
     }

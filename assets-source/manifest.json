@@ -15,7 +15,7 @@
     "",
     "THEME PAIRS",
     "  Each artwork was supplied in a light and a dark variant, drawn on parchment",
-    "  and on black respectively. That pairing is not decoration — the product ships",
+    "  and on black respectively. That pairing is not decoration G�� the product ships",
     "  a dark default and a light 'Parchment' theme, and a dark-theme illustration on",
     "  parchment reads as a printing error. Both variants are required for an entry",
     "  with `themed: true`; the build fails if only one is present.",
@@ -131,6 +131,25 @@
       "scrim": "vertical",
       "parallax": 0.18,
       "note": "The arched cityscape for /wisdom. Extremely wide: it is two hillsides meeting at a bridge, so a 4:3 crop would show either one city or empty centre. Served as a band at the foot of the page, not as a full-bleed field."
+    },
+    {
+      "id": "astrolabe",
+      "source": "astrolabe-dark.jpg",
+      "themed": true,
+      "role": "background",
+      "widths": [
+        768,
+        1280,
+        1920
+      ],
+      "surface": "paths",
+      "aspect": "21:9",
+      "fit": "cover",
+      "focal": "50% 62%",
+      "opacity": 0.24,
+      "scrim": "vertical",
+      "parallax": 0.1,
+      "note": "Astrolabe and neural diagram for the curriculum paths. The lowest opacity of the set: /paths is dense with lesson cards, and this is the one surface where decoration must lose to content."
     }
   ]
 }
