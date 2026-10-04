@@ -1,0 +1,47 @@
+# Security contact disclosure
+#
+# Format: RFC 9116 (https://www.rfc-editor.org/rfc/rfc9116.html)
+#
+# Read by humans and by vulnerability scanners, so it must be reachable without a
+# CSP exception and must not require a login.
+#
+# Before publishing: replace every placeholder. A security.txt that names a mailbox
+# nobody reads is worse than none — it converts "nobody found this" into "somebody
+# found this and told a black hole".
+
+Contact: mailto:security@mindinbox.app
+Contact: mailto:membership@mindinbox.app
+Expires: 2027-10-04T00:00:00.00Z
+Preferred-Languages: ar, en
+Canonical: https://mindinbox.app/.well-known/security.txt
+Policy: https://mindinbox.app/terms
+
+# What counts as a vulnerability, stated plainly so a reporter knows whether to bother.
+# The exclusion list matters as much as the inclusion list: "we do not consider X a
+# vulnerability" is the sentence that ends a report without a reply.
+#
+# In scope:
+#   - An unauthenticated party reading or altering another reader's data.
+#   - An unauthenticated party reaching an admin API or the admin console.
+#   - XSS that executes against a reader or an administrator.
+#   - A bypass of entitlements: paid content served to a non-subscriber.
+#   - A forged or replayed prize, grant, or session token.
+#
+# Explicitly NOT vulnerabilities:
+#   - Finding the public Firebase web API key. It is public by design; the protection
+#     is Security Rules plus App Check, as Google's own documentation states.
+#   - Learning the probability of the golden-token riddle, or its winning odds. No
+#     amount of rolling improves them, which is the design.
+#   - Copying text a reader has already chosen to copy on a free page.
+#   - Denial of service that requires traffic you bought.
+#   - Missing security headers on a route that serves no user data.
+
+# What a reporter will get, so the expectation is set before they spend a day:
+#   - Acknowledgement within 3 working days.
+#   - An assessment within 14 working days.
+#   - A fix or a mitigation plan within 30 working days of confirmation.
+#
+# There is no bug bounty and no paid reward. Say so rather than letting a reporter
+# assume one exists.
+Encryption: none
+HackerOne: no

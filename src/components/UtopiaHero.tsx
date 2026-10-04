@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useRef } from "react";
 import { GreekColumns } from "@/components/GreekColumns";
+import { ArtLayer } from "@/components/art/ArtLayer";
 import { GoldDust } from "@/components/GoldDust";
 
 /**
@@ -41,16 +42,21 @@ export function UtopiaHero() {
       <div aria-hidden="true" className="absolute inset-0 void-vignette" />
 
       {/*
-        Two motion layers plus the colonnade, which carries its own parallax.
-        Depth order, back to front: horizon glow (slowest) → colonnade → dust.
-        Three layers is the budget; a fourth buys nothing visible and costs
+        Depth order, back to front: horizon glow (slowest) → the artwork colonnade →
+        gold dust. Three layers is the budget; a fourth buys nothing visible and costs
         paint time on a mid-range phone.
+
+        The colonnade was procedural CSS (`.greek-column`) and is now the real
+        engraving. `ArtLayer` renders the CSS version as its `fallback` until
+        `npm run art:build` has produced the files, so dropping the artwork in changes
+        the page from "acceptable" to "intended" without ever leaving it broken — and
+        without two scrims stacked over one composition.
       */}
       <motion.div aria-hidden="true" style={{ y: farY }} className="absolute inset-0">
         <div className="absolute inset-x-0 top-1/2 h-[46vh] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.09),transparent_70%)]" />
       </motion.div>
       <motion.div aria-hidden="true" style={{ y: midY }} className="absolute inset-0">
-        <GreekColumns />
+        <ArtLayer id="colonnade" fallback={<GreekColumns />} />
       </motion.div>
 
       <GoldDust count={52} />

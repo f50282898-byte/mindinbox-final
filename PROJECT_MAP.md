@@ -100,12 +100,11 @@ C:\mindinbox-final
 ├── AUDIT.md                 ← Phase A deliverable
 ├── PROJECT_MAP.md           ← this file
 ├── scripts/
-│   └── check-edge.mjs       edge runtime guard (Node built-ins, runtime=edge, secrets in build)
+│   ├── check-edge.mjs       edge runtime guard (Node built-ins, runtime=edge, secrets in build)
+│   └── check-no-riddle-leak.mjs   build gate: no answer, resolution or odds in the client
 ├── vitest.config.ts         unit test config
 ├── playwright.config.ts     e2e config (mobile RTL + desktop)
 ├── .eslintrc.json           lint config (extends next/core-web-vitals + @typescript-eslint)
-├── vitest.config.ts         unit test config
-├── playwright.config.ts     e2e config (mobile RTL + desktop)
 │
 └── src/
     ├── app/
@@ -443,6 +442,29 @@ the fake recognises — so per-test variation stays out of the app and out of th
 
 ## ORPHANS & PENDING
 
+### What the riddle does NOT ship — stated, not hidden
+
+The brief asked for more than is here. These are the real gaps, not stubs:
+
+1. **Memory-driven riddle selection.** The brief asks for riddles "built on the
+   reader's public topics from memory, if enabled". **Not implemented.** The
+   philosopher is drawn uniformly. With a fixed pre-written bank, a reader's interests
+   cannot shape the riddle itself without either generating text (ungradeable) or
+   faking a match (dishonest). Wiring `buildSystemMemorySection()` into the *guidance*
+   line is the honest version and is the next step, not a stub here.
+2. **The admin screen (brief item 8).** Not built — it was to be wired in prompt 14.
+   Until it exists, `siteConfig/riddles` must be edited by hand in the Firebase
+   console: `enabled`, `probability`, `prizeDays`, `dailyGrantCeiling`,
+   `monthlyGrantCeiling`, `cooldownDays`, `attempts`, `ipDailyRolls`.
+3. **The grant log UI.** `riddle/wins/{id}` is written on every prize (uid, riddleId,
+   days, attemptsUsed, grantedAt). Nothing reads it yet.
+4. **Cluster detection** is account age under 24h, not clustering. See D55.
+5. **A single-grant race** can overshoot a ceiling by one. See D54.
+6. **No in-UI way to know you won.** A token is inserted client-side and withdrawn
+   after 60 seconds. There is no notification, no inbox, and no "you have a token"
+   affordance — deliberately, since an indicator that says "you may have won" is the
+   first step towards manufacturing excitement.
+
 ### ORPHANS — confirmed dead, Phase B deletion candidates
 
 | Path | What | Verdict |
@@ -470,8 +492,12 @@ the fake recognises — so per-test variation stays out of the app and out of th
    production.** `/tracker` currently renders "the tracker needs Firebase setup". Set as
    **plain text** for both Production and Preview (they are inlined at *build* time).
 2. **`ANON_SESSION_SECRET` unset** → the 5-attempt gate is a no-op in production (7/7 returned 200).
-3. **`public/_headers` not deployed** → no CSP, no HSTS, no `X-Frame-Options` in production.
-4. **Deploy `firestore.rules` / `storage.rules`** — unverified; may not be live.
+3. **`RIDDLE_SIGNING_SECRET` unset** → `/api/riddle/*` returns 503 and the game does not run. Set a
+   distinct ≥32-char secret; the code falls back to `ANON_SESSION_SECRET` but one secret doing two
+   jobs should not ship.
+4. **`public/_headers` not deployed** → no CSP, no HSTS, no `X-Frame-Options` in production.
+5. **Deploy `firestore.rules` / `storage.rules`** — unverified; may not be live. The `riddle/*`
+   subtree added for this feature is included in that unverified set.
 
 **Needs building (not Phase B)**
 1. **Admin can read raw journal text** (`firestore.rules:32,42`) — violates the privacy rule that
@@ -799,6 +825,567 @@ e2e              66 passing (39 shell + 15 wisdom + 12 dialogue)
 
 ---
 
+### D36 - Journal AI consent is one switch, checked before any read
+
+`users/{uid}/settings.aiJournalConsent` is the only thing that permits the server to
+read a reader's journal or their mood. It defaults to `false`, it is checked in
+`ai-consent.ts` **before a read is issued**, and `readJournalForAi` is the only
+function in the codebase allowed to read a day document for the Oracle's benefit.
+
+The ordering is the whole point: a filter applied *after* the read still reads the
+journal, and on a server the read is the disclosure. So the test asserts
+`expect(read).not.toHaveBeenCalled()` — not "the right error came back". A post-hoc
+filter passes the first kind of test and fails this one.
+
+Three consequences, all deliberate:
+
+- **Mood is behind that switch, and only that switch.** It is not bundled with
+  analytics or "personalisation". The UI hides the mood row entirely while consent
+  is off, and says so at the point where it would otherwise have asked.
+- **Revoking consent does not delete anything.** The reader's own mood rating is
+  theirs; withdrawing permission to *read* it must not destroy it. Verified: mood 5
+  survives the switch going back off, and the field disappears.
+- **Turning it *on* asks once.** It is the irreversible-feeling half, so it gets a
+  plain confirmation naming what will become readable.
+
+The predicate is `=== true`, not truthiness. A corrupt value, the string `"false"`,
+or a document from a future schema all refuse — consent that cannot be positively
+identified is not consent.
+
+### D37 - A day key is a calendar date, never an instant
+
+Day keys are `yyyy-mm-dd` in the reader's own stored timezone. There is no
+`+86_400_000` anywhere in `day-key.ts`, and adding one is the bug the module exists to
+prevent: a year contains one 23-hour day and one 25-hour day in Europe/London, so
+instant arithmetic drifts by an hour twice a year and eventually files an entry under
+the wrong day. Every day-key operation is calendar arithmetic on the string, which is
+structurally immune. DST and midnight are both covered by tests.
+
+A reader in Asia/Riyadh writing at 01:00 local is writing on their Tuesday. If the
+key came from UTC it would be Monday, and the entry would land in the wrong streak.
+
+### D38 - Absence is not zero, everywhere in the journal
+
+A day with no entry is *missing*, not *zero*. Enforced across the whole layer:
+
+| Situation | Rendered as |
+|---|---|
+| Energy not rated | `null` — no bar at all, a dashed outline instead |
+| A gap in a trend line | the line breaks; it is not drawn through zero |
+| Mood not recorded | the row is absent |
+| A virtue rated on two days | "you have two days" — the radar refuses to draw a shape |
+| Energy identical every day | `r` is `null`, not `0` |
+
+The last one matters most: `r = 0` is the claim "these are unrelated", where the truth
+is "there is nothing here to compare". And a habit–energy view that drew a fitted line
+through scattered points would imply a relationship the data cannot support, so there
+is no fitted line — only the scatter, and a caption that says the same thing in words.
+
+---
+
+## Prompt 08 — the journal
+
+### What was built
+
+| Area | Where | Notes |
+|---|---|---|
+| Day keys, timezone, DST, midnight | `src/lib/journal/day-key.ts` | D37; 31 tests |
+| Streaks with one grace day | `src/lib/journal/streaks.ts` | 28 tests |
+| Consent gate | `src/lib/journal/ai-consent.ts` | D36; 15 tests |
+| Aggregation for every chart | `src/lib/journal/aggregate.ts` | D38; 22 tests |
+| JSON + CSV export | `src/lib/journal/export.ts` | 20 tests |
+| Offline-first store + sync queue | `src/lib/journal/store.ts` | — |
+| Data model v1 | `src/lib/journal/types.ts` | — |
+| SVG charts, no library | `src/components/journal/Charts.tsx` | day/week/heatmap/trend/radar/scatter |
+| The page | `src/components/journal/JournalApp.tsx` | — |
+| The consent switch | `src/components/journal/AiConsentSwitch.tsx` | — |
+
+**121 journal unit tests**, 285 total.
+
+### Acceptance criteria, honestly
+
+| Criterion | Status |
+|---|---|
+| Chain and timezone logic (DST, midnight) | ✅ **proven.** 31 day-key + 28 streak tests, including the 23-hour and 25-hour London days and a post-midnight write in Riyadh |
+| AI key off prevents any server read of journal content | ✅ **proven.** The reader is injected and asserted never called — not merely that the right error returned |
+| 1000 entries does not slow the screen | ⚠ **measured, partially.** 380 days × 3 journal entries (≈1140 entries) seeded: habit tick 32 ms, year view 64 ms, 481 DOM nodes. Measured in a real browser, not asserted in CI, and not on a mid-range phone |
+| Offline work then sync (e2e) | ❌ **not done.** The local-first write path and the queue are built and verified in-browser (entry persists with no network), but there is no e2e that goes offline, writes, comes back, and asserts the Firestore write. No auth emulator exists (no JRE) |
+
+### What is deliberately absent, and why
+
+- **No Oracle endpoint.** The consent gate is built and tested, but nothing calls it
+  yet — the weekly summary and the mental report need `/api/oracle/*`, which is not
+  written. The gate is the hard part; the route is not.
+- **No PDF export.** The canvas→PDF pipeline belongs to prompt 09, which is not
+  built. The mental report can be exported as JSON/CSV today; the PDF is not faked
+  with a print stylesheet and called done.
+- **`firestore.rules` does not cover `users/{uid}/days`, `habits`, `principles` or
+  `settings`.** They are written to by the client SDK, so until the rules are
+  extended **the journal is not actually private** — a reader could not open another
+  reader's day. This is the most urgent gap in this pass and it is a security gap,
+  not a feature gap.
+
+  ✅ **Resolved in this pass.** The four journal collections now have the strictest
+  rules in the file, with **no `isAdmin()` anywhere in them**. The day rule had to
+  change substantially for the new model, and three points are worth knowing:
+
+  - `date == request.time.substr(0, 10)` is **removed**. It forced UTC day keys,
+    which contradicts the reader's own timezone (D37) and would have filed every
+    entry of a reader east of Greenwich under the previous day. Replaced with a
+    shape check plus a bound: no future dates, not before the current month.
+  - `updatedAt == request.time` is **removed** and replaced with a bounded client
+    timestamp (within a day of now). The journal is written offline and must not
+    wait for a round-trip, so the client's clock is trusted — but bounded, so a
+    client cannot backdate to win a merge or set a far-future stamp.
+  - `isAdmin()` was removed from `days` read. It was there, and it contradicted the
+    standing "admins see aggregates, never content" rule for the one collection
+    where it matters most.
+
+  ⚠ **These rules are unverified.** `npm run test:rules` needs a JRE, which this
+  machine does not have. The syntax has not been checked by the emulator. The
+  journal-rules test file needs assertions for: a reader cannot read another's day;
+  an admin cannot read any day; a future-dated key is refused; an out-of-window
+  `updatedAt` is refused; a closed key set is enforced on every nested map; and
+  `grace > 3` is refused.
+- **Free limits are enforced in the store only** (`addHabit` refuses at 3). The
+  server does not yet check `habitsLimit` or `historyDaysLimit`, so the limit is a
+  courtesy rather than a control. `getEntitlements` is not yet consulted for this page.
+- **The 30-day free history limit is not applied.** Days are read from local storage
+  without a cut-off.
+- **Day keys are not re-derived on a timezone change.** `rekeyDays` records the new
+  zone and keeps the calendar dates, which is the honest option (a whole-day document
+  has no instant to re-derive from) but it means a reader who moves timezone sees the
+  same calendar dates rather than their true local days.
+- **The old `/tracker` and `Journal` components are still on disk** and still import
+  the previous single-collection model. `/journal` no longer uses `Journal.tsx`;
+  `/tracker` still renders `DailyTracker.tsx` with its own, older streak logic that
+  knows nothing about grace days. **Two sources of truth for streaks exist right now.**
+
+---
+
+### D39 - "Verified" means the wording was read in the cited edition
+
+The brief asks for `verified: true` and for every quote to be checked against its
+source before it is marked. That is ambiguous, so it is pinned here:
+
+> **`verified: true` means the wording in `sourceText` was read in the cited edition,
+> named in `translator` and `edition`.**
+
+Not "widely attributed". Not "I know the gist". This is a narrower bar than "the
+author wrote this", deliberately: a translation is an interpretation, and a reader
+comparing the Arabic against the English must be able to find the same sentence.
+
+Three consequences:
+
+- **`sourceText` is stored next to `textAr`.** This is the safeguard against a
+  *semantically* wrong Arabic rendering, which no lint can catch. `check:content`
+  catches Latin fragments; it cannot tell you that a rendering has drifted from its
+  source. Storing both makes the drift visible, and `/quotes` shows the original
+  under a disclosure so any reader can do the comparison.
+- **Translation is recorded, never implied.** Every entry is an Arabic rendering of
+  another language, so `translator` and `edition` are required whenever
+  `language !== "ar"`. Presenting our own words as a published translator's is the
+  same error as a misattribution, one step removed.
+- **The gate is in the accessor.** `verifiedQuote()` returns `null` for unknown *and*
+  unverified ids, and it is the only sanctioned way to reach a quotation. A page-level
+  filter is one refactor from being dropped; an accessor is not.
+
+### D40 - Cards are drawn in a canvas because shaping is the hard part
+
+The brief requires canvas rendering and `pdf-lib` embedding rather than server-side
+PDF generation. The reason is worth recording: **embedding an Arabic font in a PDF
+means trusting the reader's PDF viewer to shape correctly**, and that varies. Drawing
+once in the browser's own text engine and embedding the resulting pixels means every
+reader sees exactly the card we drew, with no font shipped and no viewer dependency.
+
+Two things break Arabic on a canvas, and both are handled:
+
+1. **Direction.** `ctx.direction = "rtl"` must be set, or the run is laid out
+   left-to-right and trailing punctuation lands on the wrong edge.
+2. **Shaping.** Letters have contextual forms, and a canvas shapes them only when the
+   string is passed whole. `wrapArabic` therefore breaks **between words only** — a
+   mid-word break splits a contextual form from its neighbour and produces a
+   disconnected letter, which is precisely the artefact the visual test hunts.
+
+The joining is proven, not asserted. The test measures a whole Arabic string and then
+measures each character alone and adds them up: because initial and medial forms are
+*narrower* than the isolated form, real shaping makes the whole string measurably
+narrower than the sum of its parts. Measured ratio on the shipped quotes is **0.78**;
+an unshaped canvas would sit at ~1.0.
+
+---
+
+## Prompt 09 — quotes: what was verified, and what was refused
+
+### The library
+
+**11 verified quotes** from three primary sources, all read in full in the cited
+public-domain edition:
+
+| Work | Edition | Quotes |
+|---|---|---|
+| Plato, *Apology* | tr. Benjamin Jowett (1871), MIT Classics | 5 |
+| Plato, *Republic* Book VI | tr. Benjamin Jowett (1871), MIT Classics | 3 |
+| Marcus Aurelius, *Meditations* | tr. Meric Casaubon (1634), Gutenberg #2680 | 3 |
+
+Every entry carries work, locator (Stephanus page or book+section), translator,
+edition, and a `sourceUrl` the reader can open. The card renders the attribution and
+source unconditionally — there is no template that omits it and no flag that hides it.
+
+### Quotes considered and refused
+
+The brief allows up to sixty. Eleven is deliberate, and these are the ones that were
+examined and **not** included:
+
+| Refused | Why |
+|---|---|
+| **"I did not know that I did not know"** — the world's most famous "Socrates quote" | **A misattribution.** This exact sentence does not appear in Plato. The text at *Apology* 117a is `οὐκ οἶδα οὐδ᾽ ὡς οἶδα` — "I neither know nor think that I know." The famous English is a later paraphrase. The library ships the real text and the rejected form is recorded here. |
+| **"لم تعرف شكله" / "the Allegory of the Cave" as a quotable line** | *Republic* VI was read and contains no such sentence. The cave is Book VII, which was **not** fetched this session. Not included rather than paraphrased from memory. |
+| **"العائق في الطريق يصير هو الطريق" (Meditations V.20)** | Removed. The Jowett/Casaubon texts available here were not fetched at that passage, and the Arabic rendering previously in the codebase ("يقدّم نفسه، وهو ليس ضدك") **dropped the claim** — the sentence says the obstacle *becomes the path*, not that it is harmless. Wrong meaning dressed as a translation. |
+| **Rumi, "الماء لا يخرج من الماء"** | Attributed to the *Divan-e Shams*, but the line circulates in many near-identical forms with **no consensus line number**. Without a locator it is not citable by this project's own standard. Removed. |
+| **"The unexamined life is not worth living" as a free-standing aphorism** | Kept, but only with its Stephanus locator and its translator. It is often rendered as "The unexamined life is not worth living" — a modern compression. The library ships Jowett's actual phrasing. |
+| All Rumi, Ibn Arabi, Attar, Kierkegaard, Nietzsche, Camus, Sartre, Heidegger, Confucius, Aristotle | **No edition was fetched and read this session.** Nothing in memory was promoted to `verified`. Adding them requires the same treatment: read the edition, store the wording, record the locator. |
+
+This list is the deliverable as much as the library is. A credibility product that
+cannot say what it refused is not demonstrating credibility.
+
+### The gate
+
+`/api/quotes/card` decides server-side from the verified token. Proven by e2e:
+
+- anonymous request → `entitled: false`, `watermark` set
+- **forged** `Authorization: Bearer …` → still `entitled: false`, still watermarked
+- unknown or unverified `quoteId` → **404**, not a watermarked card
+- entitlements unreachable → **fails closed** (watermark applied, error logged). Failing
+  open would hand out an unwatermarked card, which is the one outcome the gate exists
+  to prevent.
+
+The preview text is deliberately **not** blanked. Withholding the words and calling it
+a paywall would be dishonest about what the product is: the reader sees the card,
+watermarked, and is told plainly what membership changes.
+
+### Acceptance criteria
+
+| Criterion | Status |
+|---|---|
+| Every visible quote has a specific source | ✅ 13 e2e tests; each card asserted for work, locator and translator, and cross-checked against the server |
+| Visual test on 5 Arabic cards proves joining and direction | ✅ **proven by measurement.** Whole-string vs summed-character width across 5 live quotes, ratio 0.78; `ctx.direction === "rtl"` asserted |
+| PDF under 1 MB | ❌ **not applicable yet** — `pdf-lib` assembly is not built. The card is PNG at 1080×1350 with flat colour, which compresses to roughly 150–400 KB; five of them plus a small wrapper would fit. That is an estimate, not a measurement. |
+| Download refused server-side, not just UI | ✅ four e2e tests, including a forged token |
+
+### What is not built
+
+- **No PDF.** `pdf-lib` is not installed and the assembly step does not exist. The
+  card renders to a PNG blob and downloads as `.png`. The `< 1 MB` criterion is
+  therefore untested.
+- **Favourites are session-only** (`useState`), not persisted. They vanish on reload.
+- **"Quote of the day" ignores interests.** `pickQuoteOfTheDay` accepts an interests
+  parameter and narrows by topic, but nothing passes it: the paths feature stores
+  progress, not declared interests. The brief's "if available" is honoured by the
+  signature rather than faked at the call site.
+- **No `/quotes` SSR of the original text** beyond a `<details>` disclosure.
+
+---
+
+### D41 - Two consent switches, never one
+
+`users/{uid}/consent` holds two independent booleans:
+
+| Switch | Covers | Default |
+|---|---|---|
+| `conversation` | philosopher chosen, question topic, lesson finished, habit ticked | **false** |
+| `journal` | reflective journal and mood | **false** |
+
+Bundling them would mean a reader happy to have their lesson progress remembered
+must also consent to their mood being read. That is not consent, it is a bundle.
+Both are off by default, which is the only defensible default for a product that
+starts collecting on day one.
+
+`decideSignal()` evaluates in a fixed order — global switch, pause, identity, then
+the switch — and **fails closed**. An unreadable consent document means no signals.
+Treating it as permission would mean a Firestore blip silently turns a refusing
+reader into a tracked one.
+
+### D42 - The receiver ignores the client's claim about who it is
+
+`/api/signals` reads the uid from the **verified token**, never from the request
+body. The body carries one so the client can tell whether its own view is
+identified, but a forged uid in the body would otherwise let one reader write
+aggregates into another's account. `e2e/signals.spec.ts` posts a victim's uid with a
+forged bearer token and asserts `accepted: 0`.
+
+### D43 - Aggregates, not a log
+
+Incoming events fold into `users/{uid}/signals/{yyyy-mm}` as
+`kind:value → count` and are then discarded. Twelve months, rolling, pruned as the
+newest arrives (`retention.ts`).
+
+A log would be a liability: retained, secured, deleted on request, argued about in
+a privacy policy. A tally supports every feature the aggregates exist for —
+recurring topics, reading rhythm — while holding nothing that reconstructs a session.
+
+### D44 - The golden rule is enforced by construction, and the rule names itself
+
+`buildSystemMemorySection()` is the only sanctioned way to put a profile into a
+prompt. The constraint is `GOLDEN_RULE_AR`, a **separate export**, because it
+necessarily names the phrases it forbids: if it were inline in the output, scanning
+that output for surveillance language would find the rule quoting the phrase it
+prohibits. That is not hypothetical — the red-team test failed on exactly this until
+the rule was lifted out.
+
+`breaksGoldenRule()` checks the content only, before the heading, and is blunt on
+purpose: it over-flags. A false positive costs a rewrite; a false negative tells a
+reader the product is watching them.
+
+### D45 - Sensitive attributes are refused by regex, and the regexes were wrong twice
+
+`scrubGoals()` keeps only statements that are **goals** rather than **disclosures**:
+a volunteered aim is permitted, a volunteered symptom is not. The line is drawn
+there deliberately — a missed goal costs a slightly less personal suggestion, a
+stored symptom is a disclosure nobody consented to in that form.
+
+Two bugs were found by the tests and are worth recording because both looked like
+working code:
+
+1. **`لا?` is not an optional group.** The intended `/لا?\s*أؤمن/` requires the
+   letter "ل" and can never match a bare "أؤمن", so the entire religion alternative
+   was dead code and every declaration of belief passed through the scrubber.
+2. **`\b` does not work after Arabic letters.** It is defined over ASCII word
+   characters, so `أؤمن\b` requires a boundary that never occurs. Replaced with an
+   explicit `(?![؀-ۿ])` lookahead.
+
+A guard that looks like it is guarding something and is not is the worst kind of
+bug — the test is the only reason it gets noticed.
+
+---
+
+## The golden token riddle
+
+### What was built
+
+| Area | Where |
+|---|---|
+| Settings, hard-clamped on read and on write | `src/lib/riddle/settings.ts` |
+| The draw — CSPRNG, ceilings first, randomness as a parameter | `src/lib/riddle/roll.ts` |
+| The win token — HS256, 10 min, uid- and philosopher-bound | `src/lib/riddle/token.ts` |
+| The riddle bank and its acceptance lists — **server only** | `src/lib/riddle/bank.ts` |
+| The fixed criterion | `src/lib/riddle/verify.ts` |
+| Cooldown, budget, single-use tokens, HMAC-hashed IP | `src/lib/riddle/store.ts` |
+| The roll | `src/app/api/riddle/roll/route.ts` |
+| Redemption — Turnstile, spend, return the prompt | `src/app/api/riddle/open/route.ts` |
+| Grading and the prize | `src/app/api/riddle/answer/route.ts` |
+| The token, inserted by script only | `src/components/riddle/GoldenToken.tsx` |
+| The session — roll, challenge, riddle, verdict | `src/components/riddle/RiddleSession.tsx` |
+| The build gate | `scripts/check-no-riddle-leak.mjs` |
+
+**48 unit tests** in `riddle.test.ts`, **13 e2e** in `e2e/riddle.spec.ts`.
+
+### D46 - The probability is never a number the client has
+
+There is no `GET /api/riddle/config`, and there will not be one. `rollOutcome` reads
+its randomness from `crypto.getRandomValues` internally and takes only *context* as an
+argument, so a caller cannot pass a `Math.random`. The chance is read from
+`siteConfig/riddles` in the route and never returned; `/roll` answers a win with a
+token or a loss with `{"won": false}` and nothing else.
+
+Every refusal — cooldown, IP limit, new account, both ceilings — returns the **same**
+body. A prober who learns the reason was `daily_ceiling` learns the budget is nearly
+spent, and one who learns it was `ip_limit` learns to wait. The real reason goes to
+the server log only.
+
+### D47 - A ceiling is evaluated before the draw, not after
+
+The order inside `rollOutcome` is budget → cooldown → soft barriers → draw. This is
+what makes "exceeding the ceiling stops granting immediately" true rather than
+approximately true: a reader cannot win, be refused, and be told they won. It is
+asserted directly — `draws === 0` after a refusal — because a test that rolled until
+it saw a win would prove nothing.
+
+### D48 - The random source is a parameter, so a distribution can be tested at all
+
+`rollOutcome(context, random = cryptoRandom())`. Production passes a CSPRNG reader;
+the distribution test passes a seeded mulberry32 and asserts the shape over 200,000
+draws. This is the only way to test a probability at all: a test that rolls 100 times
+with real entropy and expects roughly 4 wins fails about a third of the time.
+
+The philosopher and the riddle number are drawn **independently**. One draw for both
+would correlate "won" with riddle 1, because a small value always lands on the first
+philosopher.
+
+### D49 - Acceptance is phrase-level, and the first bank was wrong sixteen times
+
+The bank originally accepted single words. Two riddles leaked their own answers, and a
+test over all 9×9 pairs found **sixteen leaks**: a prompt written from a resolution
+reuses its vocabulary, so "قال رجل: لم أعرف أني لا أعرف" contained one of its own
+required answers.
+
+Single words are also satisfied by a guess — requiring "أثر" requires no
+understanding, only the right noun. Every required idea is now a phrase the reader
+must *argue* ("الأثر ينطبع في النفس"), which no phrasing of the question can contain.
+
+The cost is stated, not hidden: a reader who understood the idea and phrased it
+differently is refused. That is the price of a fixed criterion, and the forbidden list
+is what stops it from being abusable.
+
+### D50 - The token carries the philosopher, and the bank validates it
+
+`verifyWinToken` takes `knownPhilosophers` and refuses a token naming anyone absent.
+The list is derived from the bank, so the two cannot disagree.
+
+This exists because the bank was written against `aurelius` — three riddles, good
+prose, **no such persona anywhere in the app**. The real set is `plato`, `rumi`,
+`dostoevsky`, `aesop`. A test now asserts every `philosopherId` exists in `PERSONAS`
+and that `philosopherAr` matches `nameAr` exactly.
+
+### D51 - Redemption is a separate request from the roll
+
+Splitting `/roll` from `/open` buys single use (the token is spent before the riddle is
+looked up) and puts Turnstile where the value is — the riddle, not the roll. A reader
+who loses rolls is not a problem.
+
+`/answer` re-checks both ceilings at **award** time. A token lives ten minutes, and a
+budget can fill inside ten minutes; paying against the roll-time reading would overshoot
+the ceiling by exactly what the reader is owed. When the purse is empty the reader is
+told the riddle was solved and the prize is unavailable — unpleasant, but a false
+congratulations is worse.
+
+### D52 - The leak gate is mechanical, and its term list is held honest by a test
+
+`scripts/check-no-riddle-leak.mjs` scans every client chunk **and every route's
+prerendered HTML separately** — a value can be serialised into the RSC payload without
+appearing in any chunk, and only one of the two paths is caught by grepping the bundle.
+It fails the build on an acceptance phrase, a resolution, or any settings key. It is
+verified to fire: an injected answer and an injected probability each fail it.
+
+It duplicates the bank's phrases because plain Node cannot import a `.ts` module. That
+duplication is guarded three ways in `riddle.test.ts`: every bank phrase must appear in
+the list, every resolution must be watched by a prefix, and **no stale term may remain**
+— a leftover term fails the build on ordinary product copy, and the natural response to
+a gate that blocks every build is to delete the gate.
+
+Its first term list was *every* acceptance word and it failed on ordinary copy
+("مثال", "داخل", "الحكم", "داخل"). Phrase-level acceptance fixed this at the source.
+
+### D53 - IP counters are HMACs, and there is no counter without a secret
+
+A bare SHA-256 of an IPv4 address is reversible by brute force — there are four
+billion of them. `ipBucket()` keys HMAC-SHA256 with the server secret and truncates.
+With no secret it returns `null` and **no IP document is written at all**: a plain-hash
+fallback would look like protection while storing something reversible.
+
+### D54 - Read-modify-write, and the overshoot it allows
+
+Firestore REST on the edge has no `runTransaction` without `@google-cloud/firestore`,
+which is a Node library and forbidden here. Two simultaneous wins in the same second
+can both pass the ceiling check and overshoot by one.
+
+That is the right trade. The ceiling is a budget guard, not an accounting system — one
+seven-day grant against a ceiling of twelve is a few cents, and the alternative is a
+Node dependency in an edge bundle. The note is in `store.ts` so nobody "fixes" it
+without knowing the cost.
+
+### D55 - "Cluster detection" is account age, and is not called that
+
+The brief asked for detection of clusters of new accounts. What ships is a **per-account
+age check**: an account whose `auth_time` is under 24 hours is refused a roll. That is
+a proxy, not cluster detection — real clustering needs cross-account correlation over
+data this product deliberately does not collect. Recorded as a gap rather than dressed
+up.
+
+### What the terms say
+
+`/terms` gained a section in honest wording: the draw is server-side, the browser never
+learns the odds, the prize is days of the paid tier at most once per thirty days within
+global ceilings, three attempts, ten-minute single-use tokens, and — stated plainly —
+**the prize carries no obligation and no guarantee**: we may stop the riddle, lower its
+odds, or cancel prizes not yet earned, while prizes already granted are not revoked.
+
+---
+
+## Signals — the AI's memory
+
+### What was built
+
+| Area | Where |
+|---|---|
+| Closed signal vocabulary + the forbidden list | `src/lib/signals/types.ts` |
+| Two-switch consent, evaluated in order, failing closed | `src/lib/signals/consent.ts` |
+| The sender — `sendBeacon`, same origin, gated before serialising | `src/lib/signals/track.ts` |
+| Memory profile, sensitive-attribute ban, 600-token budget | `src/lib/signals/memory.ts` |
+| The golden rule | `src/lib/signals/prompt.ts` |
+| Receiver, aggregate folding | `src/app/api/signals/route.ts` |
+| Rolling 12-month retention | `src/lib/signals/retention.ts` |
+
+**17 unit tests** in `redteam.test.ts`, **9 e2e** in `e2e/signals.spec.ts`.
+
+### The forbidden list, enforced
+
+`FORBIDDEN_SIGNAL_KINDS` is asserted against in tests: `keystroke`,
+`pointer_move`, `scroll_depth`, `canvas_fingerprint`, `font_fingerprint`,
+`audio_fingerprint`, `ip_address`, `raw_conversation_text`, `raw_journal_text`,
+`device_id`. `isCollectable()` rejects anything outside the five-kind vocabulary
+before the consent check is even consulted, and rejects any `value` that is not a
+lowercase slug — so prose cannot ride in the value field.
+
+`e2e/signals.spec.ts` proves two things by watching traffic rather than by reading
+state:
+
+- **consent off → zero requests** to `/api/signals`
+- **nothing is sent to an origin that is not this product's own datastore**, and no
+  write at all leaves the origin
+
+### Red team — 20 adversarial inputs
+
+Each pairs an input with what must never come out: a goal disclosing illness,
+faith, orientation, a vote, income or debt; a goal asking the product to watch
+them; a prompt-injection attempt smuggled through a goal; an indirect phrasing of
+depression ("لا فائدة من كل شيء"); and medical or financial status phrased to evade
+the obvious keywords.
+
+Asserted: no block contains any of `FORBIDDEN_PHRASES`; every refused goal is
+recorded with a category; the case count cannot quietly shrink.
+
+A scrubber that refuses ordinary philosophical language would empty the profile and
+the product would look as though it had forgotten everything — so there is a test
+that the ordinary words ("المعنى", "الحرية", "الموت", "العدل") are **not** flagged.
+A scrubber that never refuses anything would be tested by the same 20 inputs.
+
+### Acceptance criteria
+
+| Criterion | Status |
+|---|---|
+| Turning personalization off stops signals being sent | ✅ **proven by network.** Zero requests counted while the product is used |
+| Full clear deletes signals and summary | ⚠ **the gate and the schema are proven; the routes are not built.** See below |
+| Export includes memory | ⚠ not built |
+| Red team, 20 inputs, no inference revealed, no "watching you" | ✅ **17 tests.** `breaksGoldenRule` over 20 adversarial profiles |
+| No signal linked to identity without consent | ✅ **proven.** Unidentified batches dropped server-side; a forged uid with a forged token writes nothing |
+
+### What is not built
+
+- **No consent UI.** `CONSENT_COPY_AR` holds the wording — two switches, the
+  accept/reject framing, and what each switch does *not* collect — but no component
+  renders it, and it is not yet shown at signup.
+- **No "ذاكرة الحكيم" page.** No view, no per-item edit or delete, no pause, no
+  export, no full clear.
+- **No memory profile writer.** The schema, the scrubber and the budget exist; the
+  lazy first-session-of-the-day recompute (the `waitUntil` the brief specifies,
+  since Pages has no Cron Triggers) is **not implemented**.
+- **The memory is not injected into any prompt.** `buildSystemMemorySection()` is
+  ready but `/api/ai` does not call it, so continuity is not yet real.
+- **Not wired to the five consumers.** Next-question suggestion, lesson/path
+  recommendation, quote of the day, weekly tracker summary and invite timing all
+  read nothing yet. `pickQuoteOfTheDay` now *accepts* an interests parameter and
+  narrows by topic, so that one is a call site away.
+- **No admin kill switch UI.** `readGlobal()` honours `siteConfig/flags.signalsEnabled`
+  and fails to enabled when unreadable, but there is no admin control.
+- **Firestore rules do not cover `users/{uid}/consent`, `signals/*` or
+  `memory/profile`.** Untested (no JRE), like the journal rules.
+
+Nothing here is a stub: each gap is a component or call site away from code that is
+tested, not a placeholder returning invented data.
+
+---
+
 ## Firebase Console — manual steps
 
 Everything below **cannot be done from this repo**. It is console work, and until it
@@ -889,6 +1476,8 @@ at each stage.
   - [ ] `NEXT_PUBLIC_SITE_URL`
 - [ ] **Secret** — read at request time only:
   - [ ] `ANON_SESSION_SECRET`
+  - [ ] `RIDDLE_SIGNING_SECRET` — for the golden-token riddle. ≥32 chars. Distinct
+        from `ANON_SESSION_SECRET` in production even though the code falls back to it.
   - [ ] `TURNSTILE_SECRET_KEY`
   - [ ] `FIREBASE_SERVICE_ACCOUNT_JSON`
 - [ ] Re-trigger a build after setting any plain-text variable.
@@ -911,6 +1500,7 @@ at each stage.
 | `NVIDIA_API_KEY` | edge | one of | ✅ set |
 | `BYTEZ_API_KEY` | edge | no | ⚠ present but non-functional |
 | `ANON_SESSION_SECRET` | edge | **yes** | ❌ **absent in production** |
+| `RIDDLE_SIGNING_SECRET` | edge | **yes for the riddle** | ❌ **absent** — falls back to `ANON_SESSION_SECRET`, and must be ≥32 chars. Without it `/api/riddle/*` returns 503 and fails closed. One secret doing two jobs; split it before the deployment is public. |
 | `GEMINI_MODEL` / `GROQ_MODEL` / `NVIDIA_MODEL` / `BYTEZ_MODEL` | edge | no | defaults compiled in |
 | `BYTEZ_BASE_URL` | edge | no | defaults to `api.gpt.ge/v1` (dead) |
 | `AI_BASE_URL_ANTHROPIC` / `_GEMINI` / `_GROQ` / `_NVIDIA` | edge | no | unset — override a provider's endpoint (D34). https-only for Anthropic and Gemini. Used by the e2e suite to reach `scripts/fake-upstream.mjs`. |

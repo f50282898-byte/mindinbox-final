@@ -7,14 +7,24 @@ rules_version = '2';
  * below says so explicitly. There is no catch-all `allow` anywhere.
  *
  * Collections (v1):
- *   users/{uid}               profile
- *   users/{uid}/days/{date}   one document per calendar day
- *   subscriptions/{uid}       billing record       — SERVER ONLY
- *   usage/{uid}               metering counters     — SERVER ONLY
- *   grants/{id}               comps / promotions    — SERVER ONLY
- *   admins/{uid}              admin roster          — SERVER READ for members
- *   siteConfig/{doc}          editable copy         — public read, admin write
- *   metrics/{day}             daily aggregates      — SERVER ONLY
+ *   users/{uid}                    profile          - self + admin read (see note)
+ *   users/{uid}/days/{date}        the journal      - SELF ONLY, never admin
+ *   users/{uid}/habits/{habitId}   habit definitions- SELF ONLY
+ *   users/{uid}/principles         stated values    - SELF ONLY
+ *   users/{uid}/settings           zone + consent   - SELF ONLY
+ *   subscriptions/{uid}            billing record   - SERVER ONLY
+ *   usage/{uid}                    metering counters- SERVER ONLY
+ *   grants/{id}                    comps / promotions- SERVER ONLY
+ *   admins/{uid}                   admin roster     - self-read only
+ *   siteConfig/{doc}               editable copy    - public read, admin write
+ *   metrics/{day}                  daily aggregates - SERVER ONLY
+ *
+ * The journal collections (days/habits/principles/settings) are deliberately the
+ * strictest in this file: **no `isAdmin()` anywhere in them.** A journal is the
+ * most sensitive thing the product holds, and the standing rule is that an admin
+ * sees aggregates and never content. The legacy collections below still grant
+ * admins a read, which is a known gap admitted in /privacy; the new ones do not
+ * extend it.
  *
  * Legacy collections kept so existing data does not become unreachable:
  *   users/{uid}/entries, users/{uid}/events, users/{uid}/puzzles
@@ -92,31 +102,201 @@ service cloud.firestore {
       // first. A client cannot orphan subcollections by deleting the parent.
       allow delete: if false;
 
-      /* ── users/{uid}/days/{date} ─────────────────────────────────────── */
+      /* ── users/{uid}/days/{date} — the journal (prompt 08) ─────────────── */
 
       match /days/{date} {
-        allow read: if isSelf(uid) || isAdmin();
-        allow delete: if isSelf(uid) || isAdmin();
+        // Own days only. NOT isAdmin(): a journal is the most sensitive thing in
+        // the product, and the standing rule is that an admin sees aggregates and
+        // never content. Letting an admin read this would quietly break that rule
+        // for the one collection where it matters most.
+        allow read: if isSelf(uid);
+        allow delete: if isSelf(uid);
 
-        // Closed key set, bounded strings, server-stamped date. `date` is
-        // checked against the document id, so a client cannot file today under
-        // yesterday to reset a streak.
+        /*
+         * The day key is the reader's LOCAL calendar date, so it is deliberately
+         * not compared against `request.time` (which is UTC). Forcing them equal
+         * would file every entry of a reader east of Greenwich under yesterday.
+         *
+         * Instead the key is checked for shape, and bounded against now: a reader
+         * may write today or a past day, never a future one, and never absurdly far
+         * back. A future-dated key would let someone pre-fill a streak.
+         */
+        function isPlausibleDayKey(key) {
+          return key.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && key <= request.time.substr(0, 10)
+            && key >= request.time.substr(0, 8) + '01';   // not before the current month
+        }
+
+        /*
+         * `updatedAt` is the CLIENT's clock, because the journal is written
+         * offline and must not wait for a server round-trip. That is a real trust
+         * trade, so it is bounded rather than trusted: within a day either side of
+         * now. A client cannot backdate to win a merge against another device, nor
+         * set a far-future stamp to make its edit look permanently newer.
+         */
+        function isClientTimestamp(ts) {
+          return ts is int && ts >= request.time - 86400000 && ts <= request.time + 86400000;
+        }
+
+        function isRating(v) {
+          return v is int && v >= 1 && v <= 5;
+        }
+
+        function isRatingMap(v) {
+          return v is map
+            && v.keys().hasOnly(['energy', 'focus', 'mood'])
+            && (!('energy' in v) || isRating(v.energy))
+            && (!('focus'  in v) || isRating(v.focus))
+            && (!('mood'   in v) || isRating(v.mood));
+        }
+
         allow create, update: if isSelf(uid)
-          && isValidDateKey(date)
-          && date == request.time.substr(0, 10)
+          && isPlausibleDayKey(date)
           && request.resource.data.keys().hasOnly([
-               'date', 'mood', 'note', 'habits', 'updatedAt', 'createdAt'
+               'date', 'timeZone', 'habits', 'checkIn', 'practice',
+               'virtues', 'journal', 'updatedAt', 'lastWriter'
              ])
           && request.resource.data.date == date
-          && request.resource.data.mood is int
-          && request.resource.data.mood >= 1
-          && request.resource.data.mood <= 5
-          && (!('note' in request.resource.data)
-              || (request.resource.data.note is string
-                  && request.resource.data.note.size() <= 2000))
-          && (!('habits' in request.resource.data) || request.resource.data.habits is list)
-          && request.resource.data.createdAt == request.time
-          && request.resource.data.updatedAt == request.time;
+          && request.resource.data.timeZone is string
+          && request.resource.data.timeZone.size() <= 64
+          && isClientTimestamp(request.resource.data.updatedAt)
+          && (!('checkIn' in request.resource.data)
+              || (request.resource.data.checkIn is map
+                  && request.resource.data.checkIn.keys().hasOnly(['energy', 'focus', 'mood', 'tags'])
+                  && (!('energy' in request.resource.data.checkIn)
+                      || isRating(request.resource.data.checkIn.energy))
+                  && (!('focus' in request.resource.data.checkIn)
+                      || isRating(request.resource.data.checkIn.focus))
+                  && (!('mood' in request.resource.data.checkIn)
+                      || isRating(request.resource.data.checkIn.mood))
+                  && (!('tags' in request.resource.data.checkIn)
+                      || (request.resource.data.checkIn.tags is list
+                          && request.resource.data.checkIn.tags.size() <= 12))))
+          && (!('virtues' in request.resource.data)
+              || (request.resource.data.virtues is map
+                  && request.resource.data.virtues.keys()
+                       .hasOnly(['wisdom', 'courage', 'temperance', 'justice'])
+                  && request.resource.data.virtues.values().all(isRating)))
+          && (!('practice' in request.resource.data)
+              || (request.resource.data.practice is map
+                  && request.resource.data.practice.keys().hasOnly(['read', 'applied', 'reflected', 'note'])
+                  && (!('read' in request.resource.data.practice)
+                      || request.resource.data.practice.read is bool)
+                  && (!('applied' in request.resource.data.practice)
+                      || request.resource.data.practice.applied is bool)
+                  && (!('reflected' in request.resource.data.practice)
+                      || request.resource.data.practice.reflected is bool)
+                  && (!('note' in request.resource.data.practice)
+                      || (request.resource.data.practice.note is string
+                          && request.resource.data.practice.note.size() <= 2000))))
+          && (!('journal' in request.resource.data)
+              || (request.resource.data.journal is list
+                  && request.resource.data.journal.size() <= 40
+                  && request.resource.data.journal.all(b,
+                      b is map
+                      && b.keys().hasOnly(['template', 'text', 'prompt', 'updatedAt'])
+                      && b.template in ['morning', 'evening', 'question', 'free']
+                      && b.text is string
+                      && b.text.size() <= 8000
+                      && (!('prompt' in b) || (b.prompt is string && b.prompt.size() <= 2000))
+                      && isClientTimestamp(b.updatedAt))))
+          && (!('habits' in request.resource.data)
+              || (request.resource.data.habits is map
+                  && request.resource.data.habits.size() <= 20
+                  && request.resource.data.habits.keys().all(k, k.size() <= 64)
+                  && request.resource.data.habits.values().all(t,
+                      t is map
+                      && t.keys().hasOnly(['done', 'note', 'updatedAt'])
+                      && t.done is bool
+                      && (!('note' in t) || (t.note is string && t.note.size() <= 2000))
+                      && isClientTimestamp(t.updatedAt))))
+          && (!('lastWriter' in request.resource.data)
+              || (request.resource.data.lastWriter is string
+                  && request.resource.data.lastWriter.size() <= 64));
+      }
+
+      /* ── users/{uid}/habits/{habitId} ──────────────────────────────────── */
+
+      match /habits/{habitId} {
+        allow read, delete: if isSelf(uid);
+
+        allow create, update: if isSelf(uid)
+          && habitId.size() <= 64
+          && request.resource.data.keys().hasOnly([
+               'id', 'title', 'intention', 'weekdays', 'everyNDays',
+               'grace', 'archived', 'category', 'createdAt', 'updatedAt', 'order'
+             ])
+          && request.resource.data.id == habitId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 120
+          && (!('intention' in request.resource.data)
+              || (request.resource.data.intention is string
+                  && request.resource.data.intention.size() <= 500))
+          // `grace` is capped at 3. One is the design; a habit with an unlimited
+          // grace has a streak that cannot be lost, which is not a streak.
+          && request.resource.data.grace is int
+          && request.resource.data.grace >= 0
+          && request.resource.data.grace <= 3
+          && request.resource.data.weekdays is list
+          && request.resource.data.weekdays.size() <= 7
+          && request.resource.data.weekdays.all(d, d is int && d >= 0 && d <= 6)
+          && request.resource.data.archived is bool
+          && request.resource.data.order is int
+          && request.resource.data.order >= 0
+          && request.resource.data.order <= 1000;
+      }
+
+      /* ── users/{uid}/principles — the reader's own stated values ───────── */
+
+      match /principles {
+        allow read: if isSelf(uid);
+
+        allow create, update: if isSelf(uid)
+          && request.resource.data.keys().hasOnly(['items'])
+          && request.resource.data.items is list
+          && request.resource.data.items.size() <= 50
+          && request.resource.data.items.all(p,
+              p is map
+              && p.keys().hasOnly(['id', 'text', 'createdAt'])
+              && p.id is string
+              && p.id.size() <= 64
+              && p.text is string
+              && p.text.size() > 0
+              && p.text.size() <= 500
+              && p.createdAt is int);
+      }
+
+      /* ── users/{uid}/settings ──────────────────────────────────────────── */
+
+      match /settings {
+        allow read: if isSelf(uid);
+
+        /*
+         * The reader writes their own timezone and their own consent flag — both are
+         * genuinely theirs, and refusing them would make the app unusable.
+         *
+         * Note there is no server-written field here. `getEntitlements` derives the
+         * tier from `subscriptions`, so there is nothing in this document a client
+         * could set to gain access. `aiJournalConsent` only ever *restricts* what
+         * the server may read, so a client that sets it to `true` grants itself
+         * nothing it did not already have.
+         */
+        allow create, update: if isSelf(uid)
+          && request.resource.data.keys().hasOnly([
+               'timeZone', 'aiJournalConsent', 'habitsLimit', 'historyDaysLimit'
+             ])
+          && request.resource.data.timeZone is string
+          && request.resource.data.timeZone.size() <= 64
+          && request.resource.data.aiJournalConsent is bool
+          && (!('habitsLimit' in request.resource.data)
+              || (request.resource.data.habitsLimit is int
+                  && request.resource.data.habitsLimit >= 0
+                  && request.resource.data.habitsLimit <= 1000))
+          && (!('historyDaysLimit' in request.resource.data)
+              || (request.resource.data.historyDaysLimit is int
+                  && request.resource.data.historyDaysLimit >= 0
+                  && request.resource.data.historyDaysLimit <= 100000));
       }
 
       /* ── legacy user subcollections ───────────────────────────────────── */
@@ -161,8 +341,92 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    /* ── grants — SERVER ONLY ──────────────────────────────────────────── */
+    /* ── grants — SERVER ONLY ─────────────────────────────────────────────
+       The prize a riddle pays. Written only by `/api/riddle/answer`, readable by
+       nobody from a client — `getEntitlements` reads it server-side, so a client
+       that could read it would learn another reader's tier by guessing ids.
+       -------------------------------------------------------------------- */
     match /grants/{grantId} {
+      allow read, write: if false;
+    }
+
+    /* ── riddle — SERVER ONLY ────────────────────────────────────────────
+       Every collection here is state the server alone may touch:
+
+         players/{uid}  cooldown, roll counters, attempts
+         budget/{key}   global wins per UTC day and month
+         tokens/{jti}   the single-use record that makes a win token non-replayable
+         wins/{id}      the admin grant log
+         ip/{bucket}    a *hash* of an address, never the address
+
+       Denying client writes is not a formality here. If a reader could increment
+       `budget`, they would decide their own odds; if they could write `players`,
+       they could reset their own cooldown; if they could create `tokens`, they
+       could mark a replayed token spent before replaying it. Each of those is the
+       whole game, so there is no client-allowed path into this subtree at all.
+
+       `ip` is called out because it is the one collection a future contributor
+       might reasonably assume is safe: the document id is an HMAC, not an address,
+       but the count is still state, and still not the reader's to change.
+       -------------------------------------------------------------------- */
+    match /riddle/{collectionName}/{docId} {
+      allow read, write: if false;
+    }
+
+    /* ── auditLog — SERVER ONLY, and append-only ──────────────────────────
+       Every admin write lands here with actor, action, target, before and after.
+
+       Reads are denied to admins as well as to readers, deliberately. An audit
+       trail that admins can edit is not an audit trail: the guarantee here is not
+       "admins should behave" but "admins *cannot* remove the record". If a review
+       surface is ever wanted, it must be built as a separate, append-only view
+       rather than by opening this collection.
+
+       `before` and `after` are why this is closed to clients. They hold the full
+       document as it was — including any admin-authored copy — and Firestore rules
+       cannot inspect a nested field's *absence*. A rule that tried to filter on
+       "no reader text in this map" would be trivially bypassed by moving the same
+       text one key deeper, so the honest control is that only the server writes it,
+       and only the server can be trusted to keep reader content out of it.
+
+       The privacy boundary that protects a reader is upstream: `recordWrite` has no
+       way to be handed a reader's text, because the routes that call it pass site
+       documents and uids, and the journal and chat documents are not readable by
+       this process at all.
+       -------------------------------------------------------------------- */
+    match /auditLog/{entryId} {
+      allow read, write: if false;
+    }
+
+    /* ── siteContent ───────────────────────────────────────────────────────
+       `published` is public: the whole point is that the site reads it.
+
+       `draft` and `history` are server-only. A client that could write the draft
+       would be able to install arbitrary navigation and pricing copy and then ask
+       for a publish — turning "an admin edits the site" into "anyone edits the
+       site". Drafts are not sensitive enough to hide from readers, but they are
+       not allowed to be *written* by anyone but the server, and read access is
+       closed for the same reason: a draft shows unpublished copy, and an
+       unannounced pricing change visible to a reader is a pricing change.
+       -------------------------------------------------------------------- */
+    match /siteContent/published {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /siteContent/draft {
+      allow read, write: if false;
+    }
+    match /siteContent/history/{versionId} {
+      allow read, write: if false;
+    }
+
+    /* ── assistantProposals — SERVER ONLY ────────────────────────────────
+       A proposal is a draft change that nobody has approved. If a client could
+       write one, the assistant panel could be made to render arbitrary text into
+       an admin's screen as though the model had proposed it — a convincing
+       surface wearing the assistant's name.
+       -------------------------------------------------------------------- */
+    match /assistantProposals/{proposalId} {
       allow read, write: if false;
     }
 

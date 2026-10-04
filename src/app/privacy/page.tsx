@@ -100,8 +100,8 @@ const SECTIONS: LegalSection[] = [
         en: "Here is the principle we hold ourselves to: administration must not read raw journal or tracker text line by line, and its access is limited to aggregates.",
       },
       {
-        ar: "إقرار صريح: النسخة المنشورة حالياً لا تطبّق هذا المبدأ بالكامل. يجب إصلاح ذلك قبل أي إطلاق عام؛ وإلى أن يتم، عامل مفكرتك على أنها قد تكون مرئية للمشغّل.",
-        en: "Explicit disclosure: the currently deployed build does not fully enforce that principle. It must be fixed before any public launch; until then, treat your journal as potentially visible to the operator.",
+        ar: "إقرار صريح: القاعدة أعلاه مطبَّقة بالكامل على المفكرة الجديدة — أيامك وعاداتك ومبادئك وإعداداتك محجوبة عن الإدارة عند مستوى قاعدة البيانات، ولا يستطيع أي مشرف قراءتها. لكنها ليست مطبَّقة على المجموعات القديمة (entries وevents وpuzzles) بعد، لأنها كانت موجودة قبل هذا المبدأ. يجب إصلاح ذلك قبل أي إطلاق عام.",
+        en: "Explicit disclosure: the rule above is fully enforced for the current journal — your days, habits, principles and settings are closed to administration at the database level, and no operator can read them. It is not yet enforced for the older collections (entries, events, puzzles), which predate the rule. That must be fixed before any public launch.",
       },
     ],
   },

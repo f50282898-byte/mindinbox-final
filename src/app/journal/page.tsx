@@ -1,19 +1,26 @@
 ﻿import type { Metadata } from "next";
-import { Journal } from "@/components/Journal";
+import { JournalApp } from "@/components/journal/JournalApp";
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "المفكرة",
   description:
-    "اكتب ما يشغلك. ما تكتبه في المفكرة لا يُرسل إلى أي نموذج ذكاء اصطناعي إلا بطلب منك.",
+    "مفكرة يومية: عاداتك، وأيامك، ومبادئك. تُكتب على جهازك أولاً، وتُزامَن حين تتوفّر الشبكة.",
   alternates: { canonical: "/journal", languages: { ar: "/journal", en: "/journal" } },
   openGraph: {
     title: "المفكرة | عقل في صندوق",
-    description: "اكتب ما يشغلك. ما تكتبه لا يُرسل إلى نموذج ذكاء اصطناعي إلا بطلب منك.",
+    description: "عاداتك، وأيامك، ومبادئك — في مكان واحد يبقى لك.",
     url: absoluteUrl("/journal"),
   },
 };
 
+/**
+ * The journal.
+ *
+ * Everything here is the reader's own and stays on their device first. There is no
+ * server component in this page's data path, because there is nothing to fetch:
+ * the content is theirs, and it is already local.
+ */
 export default function JournalPage() {
-  return <Journal />;
+  return <JournalApp />;
 }

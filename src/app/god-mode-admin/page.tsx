@@ -1,31 +1,39 @@
 ﻿import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { hasAdminSession, adminSessionUid } from "@/lib/admin/session";
+import { AdminGate } from "@/components/admin/AdminGate";
 
 /**
- * Admin shell — structure only, per the current brief.
+ * `notFound()` rather than a redirect, and rather than a client-side gate.
  *
- * A hand-written page rather than a redirect, because the route has to exist
- * and resolve before the console itself is built. It says plainly that it is
- * not built instead of showing a fake dashboard.
+ * A redirect to `/enter` confirms the route exists, and a client-side gate returns
+ * **200 with the console markup** to anyone who asks — hiding that with CSS is not
+ * security. Here, a request without a valid admin page session gets a genuine 404: as
+ * far as an unauthorised caller is concerned, this page does not exist.
+ *
+ * The APIs are the real boundary and they are unchanged — every one re-verifies the
+ * Firebase ID token and re-reads `admins/{uid}`. The cookie only decides whether the
+ * page renders.
  */
+
 export const metadata: Metadata = {
   title: "لوحة الإدارة",
-  robots: { index: false, follow: false, nocache: true },
+  robots: { index: false, follow: false, nocache: true, noarchive: true },
+  // Belt and braces: a `noindex` meta tag is advisory to crawlers that ignore it.
+  alternates: { canonical: "/admin" },
 };
 
-export default function GodModeAdminPage() {
+export const dynamic = "force-dynamic";
+
+export default async function GodModeAdminPage() {
+  const session = await hasAdminSession();
+  if (!session) notFound();
+
+  const uid = await adminSessionUid();
+
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center justify-center px-5 text-center">
-      <p className="display-latin text-xs tracking-[0.3em] text-gold-muted/40">GOD MODE</p>
-      <h1 className="display-arabic mt-3 text-3xl font-bold text-gold-light">لوحة الإدارة</h1>
-      <p className="display-arabic mt-5 leading-loose text-gold-muted">
-        هذا الهيكل جاهز، ولم تُبنَ لوحة الإدارة بعد.
-      </p>
-      <p className="mt-3 leading-relaxed text-gold-muted/70">
-        This shell exists; the console itself has not been built yet.
-      </p>
-      <p className="mt-8 text-xs text-gold-muted/45">
-        عند بنائها ستُحمى المطالبة برمز تحقّق، ولا تُعرض بيانات المستخدم الخام.
-      </p>
+    <div className="mx-auto w-full max-w-6xl px-5 py-10">
+      <AdminGate uid={uid} />
     </div>
   );
 }

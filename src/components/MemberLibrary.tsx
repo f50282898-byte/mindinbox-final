@@ -21,6 +21,7 @@ import { useAppStore } from "@/lib/store";
 import { TIER_DEFINITIONS, tierSatisfies, type Tier } from "@/lib/tiers";
 import { PremiumShield } from "@/components/PremiumShield";
 import { GreekColumns } from "@/components/GreekColumns";
+import { ArtLayer } from "@/components/art/ArtLayer";
 
 interface LibraryItem {
   title: string;
@@ -453,7 +454,8 @@ function Shell({
   const definition = TIER_DEFINITIONS[requiredTier];
   return (
     <div className="relative min-h-screen">
-      <GreekColumns density="sparse" />
+      {/* The gate engraving, with the procedural colonnade as its placeholder. */}
+      <ArtLayer id="gate" fallback={<GreekColumns density="sparse" />} />
       <div className="relative">{children}</div>
       <footer className="display-arabic pb-10 text-center text-[11px] text-gold-muted/35">
         {definition.name} · {definition.latin}

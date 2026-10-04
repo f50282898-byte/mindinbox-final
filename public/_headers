@@ -1,19 +1,40 @@
-# Cloudflare Pages — response headers
-# Applied by the Pages edge to every response from this project.
+# Cloudflare Pages response headers.
+#
+# This is the STATIC fallback. `src/middleware.ts` sets the real policy, because a
+# Content Security Policy needs a per-request nonce to authorise Next's inline
+# scripts, and a nonce cannot live in a static file.
+#
+# Two consequences worth knowing before editing:
+#
+#   1. This file cannot use a nonce, so it cannot fully replace `'unsafe-inline'`
+#      without breaking every page. `scripts/check-headers.mjs` asserts this file
+#      and `src/lib/security/csp.ts` agree on every directive name and origin, so
+#      the two cannot drift into disagreeing about what is allowed.
+#   2. `'unsafe-eval'` is absent here. A production Next build does not need it, and
+#      allowing `eval` in production allows turning a string into code.
+#
+# If you change a policy, change `src/lib/security/csp.ts` too, and the check will
+# tell you if you forgot.
 
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Referrer-Policy: strict-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  X-DNS-Prefetch-Control: off
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://www.youtube-nocookie.com https://www.gstatic.com https://apis.google.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://challenges.cloudflare.com https://api.paddle.com https://api.lemonsqueezy.com; frame-src 'self' https://challenges.cloudflare.com https://www.youtube-nocookie.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
 
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
 /_next/image*
   Cache-Control: public, max-age=31536000, immutable
+
+/*
+  The security contact document. Referenced by humans, not fetched automatically,
+  so it must be reachable without a CSP exception.
+*/

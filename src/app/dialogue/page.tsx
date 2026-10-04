@@ -21,5 +21,13 @@ export const metadata: Metadata = {
  * `api/dialogue`, from the verified entitlement. This page only asks and renders.
  */
 export default function DialoguePage() {
-  return <Dialogue />;
+  /* `relative` gives the agora engraving a positioned ancestor. `ArtLayer` renders
+     nothing until `npm run art:build` has run, so this costs the page nothing until
+     the artwork exists. */
+  return (
+    <div className="relative">
+      <ArtLayer id="agora" />
+      <Dialogue />
+    </div>
+  );
 }

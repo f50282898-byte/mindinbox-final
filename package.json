@@ -22,7 +22,8 @@
     "pages:build": "npx @cloudflare/next-on-pages@1",
     "pages:deploy": "npm run pages:build && npx wrangler pages deploy .vercel/output",
     "check:keys": "node scripts/check-no-keys.mjs",
-    "build:cf": "npm run check:edge && npm run check:contrast && npm run check:content && npm run check:keys && npm run typecheck && npm run lint && npm run test && npm run pages:build"
+    "check:no-riddle-leak": "node scripts/check-no-riddle-leak.mjs",
+    "build:cf": "npm run check:edge && npm run check:contrast && npm run check:content && npm run check:keys && npm run typecheck && npm run lint && npm run test && npm run pages:build && npm run check:no-riddle-leak"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -62,11 +62,23 @@ function checkFile(file) {
   const content = readFileSync(file, "utf-8");
   const rel = relative(ROOT, file);
 
+  // A test file is never bundled for the edge — vitest runs it in Node, and reading a
+  // fixture off disk is the point of several of them (the leak-scanner drift tests
+  // read `scripts/check-no-riddle-leak.mjs` precisely so the gate cannot rot). So the
+  // Node-built-in rule skips them.
+  //
+  // Deliberately narrow: it keys on the `.test.` infix, not on a directory, and it
+  // skips rule 1 only. Rules 2 and 3 still run, so a test that declared a route
+  // handler or read a `NEXT_PUBLIC_` secret would still be caught.
+  const isTest = /\.test\.(ts|tsx|mjs|js)$/.test(file);
+
   // 1. Node built-in imports
-  for (const match of content.matchAll(NODE_BUILTIN_REGEX)) {
-    const mod = match[1];
-    if (NODE_BUILTINS.has(mod)) {
-      errors.push(`${rel}: imports Node built-in "${mod}" — not allowed in Edge runtime`);
+  if (!isTest) {
+    for (const match of content.matchAll(NODE_BUILTIN_REGEX)) {
+      const mod = match[1];
+      if (NODE_BUILTINS.has(mod)) {
+        errors.push(`${rel}: imports Node built-in "${mod}" — not allowed in Edge runtime`);
+      }
     }
   }
 

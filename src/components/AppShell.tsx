@@ -1,13 +1,34 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState, type ReactNode } from "react";
 import { auth, db, paths } from "@/lib/firebase";
 import { useSession, useSessionTelemetry } from "@/lib/session";
 import { useAppStore } from "@/lib/store";
 import { sanitizePricing } from "@/lib/tiers";
 import { doc, getDoc } from "firebase/firestore";
-import { MembershipBanner } from "@/components/MembershipBanner";
-import { GoldenSymbols } from "@/components/GoldenSymbols";
+
+/**
+ * Both of these are decorative or conditional, and both pull in `framer-motion`.
+ * Loaded eagerly they cost every reader on every route — including the landing page,
+ * where neither ever appears.
+ *
+ * `ssr: false` is correct here rather than merely convenient: both render `null` or
+ * pure decoration until after mount, so there is nothing to server-render, and
+ * server-rendering them would only delay first paint on the route that does need them.
+ *
+ * `ssr: false` is not allowed in a Server Component, so this file stays a client
+ * component — which it already was.
+ */
+const MembershipBanner = dynamic(
+  () => import("@/components/MembershipBanner").then((m) => m.MembershipBanner),
+  { ssr: false }
+);
+
+const GoldenSymbols = dynamic(
+  () => import("@/components/GoldenSymbols").then((m) => m.GoldenSymbols),
+  { ssr: false }
+);
 
 /**
  * Client shell.

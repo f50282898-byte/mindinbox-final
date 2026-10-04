@@ -8,6 +8,7 @@ import { AI_DISCLOSURE_AR, buildSystemPrompt } from "@/lib/ai/prompts";
 import { applyRemoteAiSettings, resolveAiSettings, type AiSettings } from "@/lib/ai/settings";
 import { frameDone, frameEvent } from "@/lib/ai/sse";
 import { buildMessages } from "@/lib/ai/safety/injection";
+import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
 import { crisisReply, detectCrisis, type CrisisSeverity } from "@/lib/ai/safety/wellbeing";
 import type { AiRole, ChatMessage, StreamErrorCode, StreamEvent } from "@/lib/ai/types";
 import { bearerFromHeaders, verifyIdToken } from "@/lib/auth/server";
@@ -173,10 +174,14 @@ export async function POST(request: Request) {
   const startedAt = Date.now();
 
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    parsed = bodySchema.parse(await request.json());
-  } catch {
-    return jsonError({ error: "طلب غير صالح." }, 400);
+  {
+    // Bounded *before* parsing. zod bounds fields, not the body — without this a
+    // single oversized `messages` array is fully materialised before validation.
+    const body = await readJsonBody(request, bodySchema, "ai");
+    if (!body.ok) {
+      return jsonError({ error: BODY_REJECTED_MESSAGE }, bodyErrorStatus(body));
+    }
+    parsed = body.value;
   }
 
   const settings: AiSettings = applyRemoteAiSettings(resolveAiSettings(), null);
