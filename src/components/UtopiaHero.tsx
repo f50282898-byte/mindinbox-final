@@ -53,6 +53,7 @@ export function UtopiaHero() {
         without two scrims stacked over one composition.
       */}
       <motion.div aria-hidden="true" style={{ y: farY }} className="absolute inset-0">
+        <ArtLayer id="colonnade" opacity={0.6} />
         <div className="absolute inset-x-0 top-1/2 h-[46vh] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.09),transparent_70%)]" />
       </motion.div>
       <motion.div aria-hidden="true" style={{ y: midY }} className="absolute inset-0">

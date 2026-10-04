@@ -26,32 +26,29 @@
     "  bridge out entirely and leave an empty band. `fit` is how the browser is told to",
     "  fill: these are wide, sparse compositions meant to bleed off the edges."
   ],
-
   "defaults": {
     "outputDir": "public/art",
     "sourceDir": "assets-source",
-    "formats": ["webp", "avif"],
-    "quality": { "webp": 72, "avif": 55 }
+    "formats": [
+      "webp",
+      "avif"
+    ],
+    "quality": {
+      "webp": 72,
+      "avif": 55
+    }
   },
-
   "art": [
     {
-      "id": "emblem",
-      "source": "emblem-dark.png",
-      "themed": false,
-      "role": "mark",
-      "widths": [160, 320, 640],
-      "note": "The hexagonal monogram. Used as the product mark on the landing and in the account header. Not a background — it is the logo, so it is rendered at intrinsic aspect and never cropped.",
-      "aspect": "1:1",
-      "fit": "contain",
-      "focal": "50% 50%"
-    },
-    {
       "id": "colonnade",
-      "source": "colonnade-dark.png",
+      "source": "colonnade-dark.jpg",
       "themed": true,
       "role": "background",
-      "widths": [768, 1280, 1920],
+      "widths": [
+        768,
+        1280,
+        1920
+      ],
       "surface": "landing-horizon",
       "aspect": "21:9",
       "fit": "cover",
@@ -63,10 +60,13 @@
     },
     {
       "id": "gate",
-      "source": "gate-dark.png",
+      "source": "gate-dark.jpg",
       "themed": true,
       "role": "background",
-      "widths": [640, 1280],
+      "widths": [
+        640,
+        1280
+      ],
       "surface": "member-library",
       "aspect": "16:9",
       "fit": "cover",
@@ -78,10 +78,13 @@
     },
     {
       "id": "hourglass",
-      "source": "hourglass-dark.png",
+      "source": "hourglass-dark.jpg",
       "themed": true,
       "role": "background",
-      "widths": [640, 1280],
+      "widths": [
+        640,
+        1280
+      ],
       "surface": "journal",
       "aspect": "16:9",
       "fit": "cover",
@@ -93,10 +96,14 @@
     },
     {
       "id": "agora",
-      "source": "agora-dark.png",
+      "source": "agora-dark.jpg",
       "themed": true,
       "role": "background",
-      "widths": [768, 1280, 1920],
+      "widths": [
+        768,
+        1280,
+        1920
+      ],
       "surface": "dialogue",
       "aspect": "16:9",
       "fit": "cover",
@@ -108,10 +115,14 @@
     },
     {
       "id": "cityscape",
-      "source": "cityscape-dark.png",
+      "source": "cityscape-dark.jpg",
       "themed": true,
       "role": "background",
-      "widths": [768, 1280, 1920],
+      "widths": [
+        768,
+        1280,
+        1920
+      ],
       "surface": "wisdom",
       "aspect": "32:9",
       "fit": "cover",
@@ -120,21 +131,6 @@
       "scrim": "vertical",
       "parallax": 0.18,
       "note": "The arched cityscape for /wisdom. Extremely wide: it is two hillsides meeting at a bridge, so a 4:3 crop would show either one city or empty centre. Served as a band at the foot of the page, not as a full-bleed field."
-    },
-    {
-      "id": "astrolabe",
-      "source": "astrolabe-dark.png",
-      "themed": true,
-      "role": "background",
-      "widths": [768, 1280, 1920],
-      "surface": "paths",
-      "aspect": "21:9",
-      "fit": "cover",
-      "focal": "50% 62%",
-      "opacity": 0.24,
-      "scrim": "vertical",
-      "parallax": 0.1,
-      "note": "Astrolabe and neural diagram for the curriculum paths. The lowest opacity of the set: /paths is dense with lesson cards, and this is the one surface where decoration must lose to content."
     }
   ]
 }

@@ -1,0 +1,213 @@
+{
+  "generatedAt": "2026-10-04T14:35:37.214Z",
+  "art": {
+    "colonnade": {
+      "aspect": "21:9",
+      "fit": "cover",
+      "focal": "50% 100%",
+      "opacity": 0.5,
+      "scrim": "vertical",
+      "parallax": 0.22,
+      "role": "background",
+      "surface": "landing-horizon",
+      "dark": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/colonnade-dark-768.webp",
+          "/art/colonnade-dark-1280.webp",
+          "/art/colonnade-dark-1920.webp"
+        ],
+        "avif": [
+          "/art/colonnade-dark-768.avif",
+          "/art/colonnade-dark-1280.avif",
+          "/art/colonnade-dark-1920.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/colonnade-light-768.webp",
+          "/art/colonnade-light-1280.webp",
+          "/art/colonnade-light-1920.webp"
+        ],
+        "avif": [
+          "/art/colonnade-light-768.avif",
+          "/art/colonnade-light-1280.avif",
+          "/art/colonnade-light-1920.avif"
+        ]
+      }
+    },
+    "gate": {
+      "aspect": "16:9",
+      "fit": "cover",
+      "focal": "50% 78%",
+      "opacity": 0.34,
+      "scrim": "radial",
+      "parallax": 0,
+      "role": "background",
+      "surface": "member-library",
+      "dark": {
+        "widths": [
+          640,
+          1280
+        ],
+        "webp": [
+          "/art/gate-dark-640.webp",
+          "/art/gate-dark-1280.webp"
+        ],
+        "avif": [
+          "/art/gate-dark-640.avif",
+          "/art/gate-dark-1280.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          640,
+          1280
+        ],
+        "webp": [
+          "/art/gate-light-640.webp",
+          "/art/gate-light-1280.webp"
+        ],
+        "avif": [
+          "/art/gate-light-640.avif",
+          "/art/gate-light-1280.avif"
+        ]
+      }
+    },
+    "hourglass": {
+      "aspect": "16:9",
+      "fit": "cover",
+      "focal": "50% 82%",
+      "opacity": 0.3,
+      "scrim": "radial",
+      "parallax": 0,
+      "role": "background",
+      "surface": "journal",
+      "dark": {
+        "widths": [
+          640,
+          1280
+        ],
+        "webp": [
+          "/art/hourglass-dark-640.webp",
+          "/art/hourglass-dark-1280.webp"
+        ],
+        "avif": [
+          "/art/hourglass-dark-640.avif",
+          "/art/hourglass-dark-1280.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          640,
+          1280
+        ],
+        "webp": [
+          "/art/hourglass-light-640.webp",
+          "/art/hourglass-light-1280.webp"
+        ],
+        "avif": [
+          "/art/hourglass-light-640.avif",
+          "/art/hourglass-light-1280.avif"
+        ]
+      }
+    },
+    "agora": {
+      "aspect": "16:9",
+      "fit": "cover",
+      "focal": "50% 72%",
+      "opacity": 0.26,
+      "scrim": "vertical",
+      "parallax": 0.14,
+      "role": "background",
+      "surface": "dialogue",
+      "dark": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/agora-dark-768.webp",
+          "/art/agora-dark-1280.webp",
+          "/art/agora-dark-1920.webp"
+        ],
+        "avif": [
+          "/art/agora-dark-768.avif",
+          "/art/agora-dark-1280.avif",
+          "/art/agora-dark-1920.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/agora-light-768.webp",
+          "/art/agora-light-1280.webp",
+          "/art/agora-light-1920.webp"
+        ],
+        "avif": [
+          "/art/agora-light-768.avif",
+          "/art/agora-light-1280.avif",
+          "/art/agora-light-1920.avif"
+        ]
+      }
+    },
+    "cityscape": {
+      "aspect": "32:9",
+      "fit": "cover",
+      "focal": "50% 88%",
+      "opacity": 0.28,
+      "scrim": "vertical",
+      "parallax": 0.18,
+      "role": "background",
+      "surface": "wisdom",
+      "dark": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/cityscape-dark-768.webp",
+          "/art/cityscape-dark-1280.webp",
+          "/art/cityscape-dark-1920.webp"
+        ],
+        "avif": [
+          "/art/cityscape-dark-768.avif",
+          "/art/cityscape-dark-1280.avif",
+          "/art/cityscape-dark-1920.avif"
+        ]
+      },
+      "light": {
+        "widths": [
+          768,
+          1280,
+          1920
+        ],
+        "webp": [
+          "/art/cityscape-light-768.webp",
+          "/art/cityscape-light-1280.webp",
+          "/art/cityscape-light-1920.webp"
+        ],
+        "avif": [
+          "/art/cityscape-light-768.avif",
+          "/art/cityscape-light-1280.avif",
+          "/art/cityscape-light-1920.avif"
+        ]
+      }
+    }
+  }
+}

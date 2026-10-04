@@ -1,5 +1,6 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { MemberLibrary } from "@/components/MemberLibrary";
+import { ArtLayer } from "@/components/art/ArtLayer";
 
 export const metadata: Metadata = {
   title: "العرّاف — The Oracle",
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function OraclePage() {
-  return <MemberLibrary requiredTier="oracle" />;
+  return (
+    <div className="relative">
+      <ArtLayer id="gate" />
+      <MemberLibrary requiredTier="oracle" />
+    </div>
+  );
 }

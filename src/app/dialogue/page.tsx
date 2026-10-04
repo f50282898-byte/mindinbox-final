@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Dialogue } from "@/components/Dialogue";
+import { ArtLayer } from "@/components/art/ArtLayer";
+
 import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ export default function DialoguePage() {
      the artwork exists. */
   return (
     <div className="relative">
-      <div className="art-layer" id="agora" />
+      <ArtLayer id="agora" />
       <Dialogue />
     </div>
   );
