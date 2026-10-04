@@ -2,7 +2,7 @@ import { z } from "zod";
 import { NextResponse } from "next/server";
 import { authenticatedUser, requireAdmin } from "@/lib/auth/guards";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
-import { recordWrite } from "@/lib/admin/audit";
+// import { recordWrite } from "@/lib/admin/audit";
 import { checkPricingConsistency } from "@/lib/admin/site-store";
 
 export const runtime = "edge";

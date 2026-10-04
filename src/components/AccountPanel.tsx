@@ -6,7 +6,6 @@ import {
   AuthActionError,
   changeEmail,
   changePassword,
-  deleteAuthAccount,
   isEmailVerified,
   sendVerification,
   signOutUser,

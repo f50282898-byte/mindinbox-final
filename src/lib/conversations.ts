@@ -21,7 +21,6 @@
  */
 
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,

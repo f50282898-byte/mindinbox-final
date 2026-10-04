@@ -2,10 +2,8 @@
 
 import {
   collection,
-  deleteDoc,
   doc,
   getCountFromServer,
-  getDoc,
   limit,
   onSnapshot,
   orderBy,

@@ -5,12 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AuthActionError,
-  changeEmail,
-  changePassword,
   confirmReset,
   continueAsGuest,
   requestPasswordReset,
-  sendVerification,
   signInWithEmail,
   signInWithGoogle,
   signUp,
@@ -37,7 +34,6 @@ const FREE_ATTEMPTS = 5;
  */
 export function AuthPanel() {
   const router = useRouter();
-  const { t } = useLocale();
   const [mode, setMode] = useState<Mode>("signin");
 
   const [email, setEmail] = useState("");

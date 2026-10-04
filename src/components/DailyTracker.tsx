@@ -57,7 +57,7 @@ export function DailyTracker() {
   const limit = entryLimitFor(tier);
   const unlocked = tierSatisfies(tier, "oracle");
 
-  const days = useMemo(() => lastSevenDays(Date.now()), [entries.length]);
+  const days = useMemo(() => lastSevenDays(Date.now()), []);
 
   const buckets = useMemo(
     () =>

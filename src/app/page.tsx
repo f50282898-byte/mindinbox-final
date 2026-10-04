@@ -1,6 +1,6 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { UtopiaHero } from "@/components/UtopiaHero";
-import { absoluteUrl, SITE_URL } from "@/lib/seo";
+import { SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "عقل في صندوق",

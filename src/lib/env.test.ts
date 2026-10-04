@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { getEnv, env, envLike, type Env } from "@/lib/env";
+import { getEnv, env, envLike } from "@/lib/env";
 
 const originalEnv = { ...process.env };
 

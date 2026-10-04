@@ -19,7 +19,7 @@ describe("anon-session", () => {
     vi.useRealTimers();
   });
 
-  function makeRequest(cookieValue?: string): Request {
+  function _makeRequest(cookieValue?: string): Request {
     const headers: Record<string, string> = {};
     if (cookieValue) {
       headers.cookie = ANON_COOKIE_NAME + "=" + cookieValue;

@@ -4,9 +4,9 @@ import {
   evaluateTrial,
   TIER_ORDER,
   TIER_DEFINITIONS,
-  TRIAL_DAYS,
+
   sanitizePricing,
-  type Tier,
+
 } from "@/lib/tiers";
 
 describe("tiers", () => {

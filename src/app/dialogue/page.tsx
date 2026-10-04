@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Dialogue } from "@/components/Dialogue";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -26,7 +26,7 @@ export default function DialoguePage() {
      the artwork exists. */
   return (
     <div className="relative">
-      <ArtLayer id="agora" />
+      <div className="art-layer" id="agora" />
       <Dialogue />
     </div>
   );

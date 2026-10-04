@@ -5,7 +5,7 @@ import { jsonError } from "@/lib/ai/http";
 import { log } from "@/lib/log";
 import { isCollectable, type SignalKind } from "@/lib/signals/types";
 import { monthKeyOf } from "@/lib/signals/months";
-import { RETENTION_MONTHS } from "@/lib/signals/retention";
+import { /* RETENTION_MONTHS */ } from "@/lib/signals/retention";
 import {
   DEFAULT_GLOBAL,
   decideSignal,

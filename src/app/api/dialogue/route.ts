@@ -20,7 +20,7 @@ import { recordUsage } from "@/lib/metrics";
 import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
 import {
   FULL_ROUNDS,
-  PREVIEW_ROUNDS,
+  // PREVIEW_ROUNDS,
   roundCap,
   summaryAllowed,
   terminalFor,

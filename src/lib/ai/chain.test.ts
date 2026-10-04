@@ -37,7 +37,7 @@ function fakeProvider(
     id,
     label: id,
     configured: () => true,
-    async stream(call: ProviderCall): Promise<ProviderStream> {
+    async stream(_call: ProviderCall): Promise<ProviderStream> {
       if (behaviour.failOpen) throw new Error(`${id} responded 503`);
 
       let aborted = false;
@@ -88,12 +88,12 @@ function dyingProvider(id: string, parts: string[]): ProviderAdapter {
     id,
     label: id,
     configured: () => true,
-    async stream(call: ProviderCall): Promise<ProviderStream> {
-      let sent = 0;
+    async stream(_call: ProviderCall): Promise<ProviderStream> {
+      // let sent = 0;
       const chunks = (async function* () {
         for (const part of parts) {
           yield part;
-          sent += 1;
+          // sent += 1;
         }
         throw new Error(`${id} connection reset`);
       })();

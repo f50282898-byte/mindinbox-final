@@ -112,7 +112,7 @@ export async function POST(request: Request): Promise<Response> {
     banners: [],
   };
 
-  const brief = buildAssistantBrief(input);
+  // const brief = buildAssistantBrief(input);
 
   // Whether a model is reachable is decided here, not assumed. With none configured the
   // route says so rather than answering from nothing.

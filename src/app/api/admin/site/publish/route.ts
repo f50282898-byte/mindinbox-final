@@ -6,7 +6,6 @@ import {
   publishDraft,
   readDraft,
   readPublished,
-  undoLastPublish,
 } from "@/lib/admin/site-store";
 
 export const runtime = "edge";
