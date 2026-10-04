@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { UtopiaHero } from "@/components/UtopiaHero";
 import { SITE_URL } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "عقل في صندوق",
   description:

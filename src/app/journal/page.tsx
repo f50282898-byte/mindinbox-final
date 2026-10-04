@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { JournalApp } from "@/components/journal/JournalApp";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "المفكرة",
   description:

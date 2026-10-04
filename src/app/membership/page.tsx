@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 
+export const runtime = "edge";
+
 /**
  * `/membership` was the old tier ladder. `/pricing` replaced it with honest,
  * bilingual column copy; this redirect keeps existing links and bookmarks

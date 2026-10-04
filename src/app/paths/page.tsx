@@ -3,6 +3,8 @@ import Link from "next/link";
 import { absoluteUrl } from "@/lib/seo";
 import { FALLBACK_SITE_CONFIG } from "@/lib/site-config";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "المسارات",
   description: "المسارات الثلاثة: الزائر، العرّاف، المحراب — وما يفتحه كل مسار.",

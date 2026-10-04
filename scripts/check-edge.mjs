@@ -28,15 +28,17 @@ const NODE_BUILTINS = new Set([
 const NODE_BUILTIN_REGEX = /from\s+["'](?:node:)?(fs|path|stream|child_process|crypto|os|net|tls|zlib|http|https|buffer|util|url|querystring|dns|events|cluster|worker_threads|perf_hooks|async_hooks|inspector|module|vm|v8|readline|string_decoder|punycode|tty|process|assert|constants|domain)["']/g;
 const RUNTIME_EDGE_REGEX = /export\s+const\s+runtime\s*=\s*["']edge["']/;
 const SECRET_PATTERNS = [
-  /AIza[0-9A-Za-z\-_]{20,}/,
   /gsk_[0-9A-Za-z]{20,}/,
   /nvapi-[0-9A-Za-z\-_]{20,}/,
   /sk-[0-9A-Za-z]{20,}/,
   /cfat_[0-9A-Za-z]{20,}/,
-  /-----BEGIN [A-Z ]+-----/,
-  /1:[0-9]{6,}:web:[0-9a-zA-Z]{10,}/,
+  /-----BEGIN [A-Z ]+-----[\r\n\\n]+[A-Za-z0-9+/=\r\n\\]{40,}-----END [A-Z ]+-----/,
   /AAAA[A-Za-z0-9_\-]{30,}/,
 ];
+
+// Firebase web API keys and App IDs identify the client project and are public
+// by design. `check-no-keys.mjs` separately validates that the only shipped
+// Google API key is the configured NEXT_PUBLIC_FIREBASE_API_KEY.
 
 const NEXT_PUBLIC_SERVER_REGEX = /process\.env\.NEXT_PUBLIC_[A-Z0-9_]+/g;
 

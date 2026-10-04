@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Compass } from "lucide-react";
 
+export const runtime = "edge";
+
 /**
  * 404.
  *

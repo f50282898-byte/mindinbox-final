@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { hasAdminSession, adminSessionUid } from "@/lib/admin/session";
 import { AdminGate } from "@/components/admin/AdminGate";
 
+export const runtime = "edge";
+
 /**
  * `notFound()` rather than a redirect, and rather than a client-side gate.
  *

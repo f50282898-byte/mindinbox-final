@@ -2,6 +2,8 @@
 import { AccountPanel } from "@/components/AccountPanel";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "الحساب",
   description: "بيانات حسابك، ولغتك، ومظهرك، وتصدير بياناتك، وحذف حسابك.",

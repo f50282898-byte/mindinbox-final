@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { WisdomChat } from "@/components/WisdomChat";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "اسأل الحكيم",
   description:

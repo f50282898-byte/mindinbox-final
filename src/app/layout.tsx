@@ -9,6 +9,8 @@ import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
 import { SITE_URL } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {

@@ -3,6 +3,8 @@ import { AuthPanel } from "@/components/AuthPanel";
 import { absoluteUrl } from "@/lib/seo";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "المدخل",
   description:

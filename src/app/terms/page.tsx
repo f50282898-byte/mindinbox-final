@@ -2,6 +2,8 @@
 import { LegalDocument, type LegalSection } from "@/components/LegalDocument";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "شروط الاستخدام",
   description: "شروط استخدام عقل في صندوق: طبيعة الخدمة، وحدود استخدامها، ومسؤولية المستخدم.",

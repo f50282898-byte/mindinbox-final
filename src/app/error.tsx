@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { log } from "@/lib/log";
 
+export const runtime = "edge";
+
 /**
  * Route-level error boundary.
  *

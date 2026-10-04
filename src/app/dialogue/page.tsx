@@ -3,6 +3,8 @@ import { Dialogue } from "@/components/Dialogue";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "الحوار",
   description:
