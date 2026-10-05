@@ -56,7 +56,7 @@ function PersonaCard({
       className={`group flex items-start gap-4 rounded-2xl border p-4 text-start transition-colors ${
         selected
           ? "border-gold/55 bg-gold/[0.08]"
-          : "border-gold/15 bg-[#0A0A0A]/50 hover:border-gold/35 hover:bg-[#0A0A0A]/75"
+          : "border-gold/15 bg-gold/[0.04] hover:border-gold/35 hover:bg-gold/[0.07]"
       }`}
     >
       {/* Fixed square so the mark cannot reflow the row as cards differ. */}

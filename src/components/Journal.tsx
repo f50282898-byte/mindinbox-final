@@ -116,7 +116,7 @@ export function Journal() {
           rows={4}
           maxLength={4000}
           dir="auto"
-          className="panel-inset mt-3 w-full resize-y text-gold-muted placeholder:text-ink-3 focus:outline-none"
+          className="panel-inset mt-3 w-full resize-none text-gold-muted placeholder:text-ink-3 focus:outline-none"
           placeholder={t({
             ar: "اكتب هنا. لا أحد يقرأ هذا إلا أنت.",
             en: "Write here. No one reads this but you.",

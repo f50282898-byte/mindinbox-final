@@ -765,7 +765,7 @@ function JournalBlock({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="اكتب…"
-            className="field w-full resize-y py-3 text-[0.95rem] leading-loose"
+            className="field w-full resize-none py-3 text-[0.95rem] leading-loose"
           />
           <button type="submit" disabled={!draft.trim()} className="btn-ghost mt-3 px-5 py-2.5 text-xs disabled:opacity-35">
             حفظ

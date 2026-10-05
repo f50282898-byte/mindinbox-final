@@ -100,23 +100,6 @@ function ThemeToggle({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function LocaleToggle() {
-  const { locale, toggle, t } = useLocale();
-  const next = locale === "ar" ? "English" : "العربية";
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={t({ ar: "تبديل اللغة", en: "Switch language" })}
-      title={t({ ar: "تبديل اللغة", en: "Switch language" })}
-      className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
-      dir="ltr"
-    >
-      <Icons.Languages className="size-4" />
-      <span>{next}</span>
-    </button>
-  );
-}
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ desktop rail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
@@ -226,7 +209,6 @@ function DesktopRail() {
       {/* Footer: toggles + collapse */}
       <div className="border-t border-gold/10 p-3">
         <div className={railCollapsed ? "flex flex-col items-center gap-2" : "flex flex-col gap-2"}>
-          <LocaleToggle />
           <ThemeToggle compact={railCollapsed} />
           <button
             type="button"
@@ -348,7 +330,6 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
               })}
             </ul>
             <div className="mt-5 flex justify-center gap-3">
-              <LocaleToggle />
               <ThemeToggle compact />
             </div>
           </motion.div>

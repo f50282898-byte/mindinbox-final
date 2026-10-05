@@ -34,6 +34,10 @@ export function UtopiaHero() {
   const contentOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
 
   const title = "عقل في صندوق";
+  // Word-level reveal, never per-character: splitting Arabic into isolated
+  // characters breaks cursive joining and the word renders disconnected.
+  // Words stay intact (joining preserved); the stagger runs across words.
+  const words = title.split(" ");
 
   return (
     <div
@@ -81,22 +85,23 @@ export function UtopiaHero() {
           className="gold-text-glow display-arabic max-w-3xl text-5xl font-bold leading-tight text-gold-light sm:text-7xl lg:text-8xl"
           aria-label={title}
         >
-          {Array.from(title).map((ch, i) => (
+          {words.map((word, i) => (
             <motion.span
-              key={`${ch}-${i}`}
+              key={`${word}-${i}`}
               aria-hidden="true"
               initial={{ opacity: 0, y: 26 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.7,
-                // 90ms stagger: the word assembles left-to-right in reading
+                // 120ms stagger across words: the line assembles in reading
                 // order without the whole line feeling slow.
-                delay: 0.15 + i * 0.09,
+                delay: 0.15 + i * 0.12,
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="inline-block"
             >
-              {ch === " " ? " " : ch}
+              {word}
+              {i < words.length - 1 ? " " : ""}
             </motion.span>
           ))}
         </h1>
@@ -146,18 +151,6 @@ export function UtopiaHero() {
           <span className="text-ink-3">—</span>
           <span>DOSTOEVSKY</span>
         </motion.div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.4 }}
-        style={{ opacity: contentOpacity }}
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-2"
-      >
-        <span className="h-10 w-px bg-gradient-to-b from-transparent to-gold/40" />
-        <span className="text-[9px] tracking-[0.3em] text-ink-3">SCROLL</span>
       </motion.div>
     </div>
   );

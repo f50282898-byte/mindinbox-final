@@ -62,7 +62,7 @@ export const FALLBACK_NAV: NavItem[] = [
     href: "/wisdom",
     label: { ar: "الحكمة", en: "Wisdom" },
     short: { ar: "الحكمة", en: "Wisdom" },
-    icon: "Sparkles",
+    icon: "BookOpen",
     primaryMobile: true,
     primaryDesktop: true,
     requires: "free",

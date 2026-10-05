@@ -168,9 +168,6 @@ export function GoldenSymbols({
           >
             <span className="relative block">
               <Glyph id={symbol.id} />
-              {!isSolved(symbol.id) && (
-                <span className="absolute inset-0 animate-ping rounded-full bg-gold/10" />
-              )}
             </span>
           </button>
         ))}
