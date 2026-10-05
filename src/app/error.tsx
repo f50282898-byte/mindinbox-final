@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { log } from "@/lib/log";
+import { Logo } from "@/components/Logo";
 
 export const runtime = "edge";
 
@@ -26,6 +27,7 @@ export default function Error({
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center justify-center px-5 text-center">
+      <Logo size={72} className="mb-5" />
       <p className="display-latin text-xs tracking-[0.3em] text-ink-3">ERROR</p>
       <h1 className="display-arabic mt-4 text-3xl font-bold text-gold-light">
         حدث خطأ في هذه الصفحة

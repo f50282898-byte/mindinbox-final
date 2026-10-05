@@ -62,6 +62,7 @@ const JSON_LD = {
       "@id": `${SITE_URL}/#org`,
       name: "عقل في صندوق",
       url: SITE_URL,
+      logo: `${SITE_URL}/images/Logo_representing_philosophical___2K_20260922065211.webp`,
     },
   ],
 };

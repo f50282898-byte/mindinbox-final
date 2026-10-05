@@ -22,6 +22,7 @@ import { TIER_DEFINITIONS, tierSatisfies, type Tier } from "@/lib/tiers";
 import { PremiumShield } from "@/components/PremiumShield";
 import { GreekColumns } from "@/components/GreekColumns";
 import { ArtLayer } from "@/components/art/ArtLayer";
+import { Logo } from "@/components/Logo";
 
 interface LibraryItem {
   title: string;
@@ -457,8 +458,9 @@ function Shell({
       {/* The gate engraving, with the procedural colonnade as its placeholder. */}
       <ArtLayer id="gate" fallback={<GreekColumns density="sparse" />} />
       <div className="relative">{children}</div>
-      <footer className="display-arabic pb-10 text-center text-[11px] text-ink-3">
-        {definition.name} Â· {definition.latin}
+      <footer className="display-arabic flex flex-col items-center gap-3 pb-10 text-center text-[11px] text-ink-3">
+        <Logo size={38} />
+        <span>{definition.name} · {definition.latin}</span>
       </footer>
     </div>
   );

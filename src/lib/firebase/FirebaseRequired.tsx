@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Logo } from "@/components/Logo";
 import {
   firebaseConfigReport,
   isFirebaseConfigured,
@@ -93,6 +94,7 @@ export function FirebaseRequired({
       aria-labelledby="fb-required-heading"
     >
       <div className="glass p-7">
+        <Logo size={56} className="mb-5" />
         <h1
           id="fb-required-heading"
           className="display-arabic text-2xl font-bold text-gold-light"

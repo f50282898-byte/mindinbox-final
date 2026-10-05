@@ -324,9 +324,12 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             className="glass-strong absolute inset-x-0 bottom-0 rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
           >
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gold/25" aria-hidden="true" />
-            <h2 id={titleId} className="display-arabic mb-4 text-lg text-gold-light">
-              {t({ ar: "المزيد", en: "More" })}
-            </h2>
+            <div className="mb-4 flex items-center gap-3">
+              <Logo size={34} ariaLabel={t({ ar: "عقل في صندوق", en: "Mind in a Box" })} />
+              <h2 id={titleId} className="display-arabic text-lg text-gold-light">
+                {t({ ar: "المزيد", en: "More" })}
+              </h2>
+            </div>
             <ul className="grid grid-cols-2 gap-2">
               {overflow.map((item) => {
                 const Icon = iconFor(item.icon);

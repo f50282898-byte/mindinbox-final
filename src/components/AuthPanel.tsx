@@ -19,6 +19,7 @@ import {
   useFirebaseNotice,
 } from "@/lib/firebase/FirebaseRequired";
 import { Turnstile } from "@/components/Turnstile";
+import { Logo } from "@/components/Logo";
 
 type Mode = "signin" | "signup" | "forgot" | "reset";
 
@@ -386,6 +387,7 @@ function Card({
 }) {
   return (
     <div className="glass w-full max-w-md p-7">
+      <Logo size={52} className="mb-5" />
       <h1 className="display-arabic text-2xl font-bold text-gold-light">{title}</h1>
       {subtitle && (
         <p className="display-arabic mt-2 text-sm leading-relaxed text-gold-muted/70">{subtitle}</p>

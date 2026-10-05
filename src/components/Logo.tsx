@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/components/ThemeProvider";
+import Image from "next/image";
 
 export interface LogoProps {
   /** Visual size of the logo mark. */
@@ -14,16 +14,8 @@ export interface LogoProps {
 }
 
 /**
- * Brand logo — a geometric mark derived from the "box" concept.
- *
- * The mark is a square with an inner glow suggesting "mind in a box".
- * Two colour variants:
- * - Dark theme: gold mark on dark surface
- * - Light (Parchment) theme: dark mark on gold surface
- *
- * This replaces the temporary Arabic letter "ع" that was used as a placeholder.
- * When a finalised SVG/WebP logo lands in `assets-source/logo-{dark,light}.svg`,
- * swap this component to render `<Image>` instead.
+ * Official supplied mark. The artwork includes its ivory ground, so it remains
+ * legible in both themes without recolouring the source.
  */
 export function Logo({
   size = 32,
@@ -31,13 +23,6 @@ export function Logo({
   className = "",
   ariaLabel,
 }: LogoProps) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
-  const markColor = isDark ? "#D4AF37" : "#050505";
-  const bgColor = isDark ? "#050505" : "#D4AF37";
-  const glowColor = isDark ? "rgba(212, 175, 55, 0.6)" : "rgba(5, 5, 5, 0.4)";
-
   const defaultAriaLabel = `عقل في صندوق${withWordmark ? " — Mind in a Box" : ""}`;
 
   return (
@@ -45,53 +30,15 @@ export function Logo({
       className={`inline-flex items-center gap-2 ${className}`}
       aria-hidden={withWordmark ? "true" : undefined}
     >
-      <svg
+      <Image
+        src="/images/Logo_representing_philosophical___2K_20260922065211.webp"
+        alt={withWordmark ? "" : ariaLabel ?? defaultAriaLabel}
         width={size}
         height={size}
-        viewBox="0 0 64 64"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label={ariaLabel ?? defaultAriaLabel}
-        className="shrink-0"
-      >
-        {/* Outer box */}
-        <rect
-          x="4"
-          y="4"
-          width="56"
-          height="56"
-          rx="10"
-          stroke={markColor}
-          strokeWidth="3"
-          fill="none"
-        />
-        {/* Inner glow square */}
-        <rect
-          x="16"
-          y="16"
-          width="32"
-          height="32"
-          rx="6"
-          fill={markColor}
-          filter="url(#innerGlow)"
-        />
-        {/* Central dot - the "mind" */}
-        <circle
-          cx="32"
-          cy="32"
-          r="6"
-          fill={bgColor}
-        />
-        <defs>
-          <filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feFlood floodColor={glowColor} result="glow" />
-            <feComposite in="glow" in2="blur" operator="in" result="glow" />
-            <feComposite in="SourceGraphic" in2="glow" operator="over" />
-          </filter>
-        </defs>
-      </svg>
+        sizes={`${size}px`}
+        unoptimized
+        className="shrink-0 rounded-full bg-[#f8f4e8] object-contain"
+      />
 
       {withWordmark && (
         <span className="display-arabic font-bold text-lg leading-none text-gold-light">

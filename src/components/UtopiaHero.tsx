@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { GreekColumns } from "@/components/GreekColumns";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { GoldDust } from "@/components/GoldDust";
+import { Logo } from "@/components/Logo";
 
 /**
  * The landing.
@@ -71,7 +72,7 @@ export function UtopiaHero() {
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="gold-glow display-arabic mb-10 flex size-24 items-center justify-center rounded-full border border-gold/30 bg-black/70 text-gold-light backdrop-blur-md"
         >
-          <span className="text-4xl font-bold leading-none">ع</span>
+          <Logo size={68} ariaLabel="شعار عقل في صندوق" />
         </motion.div>
 
         {/* Per-character reveal. Letters are marked aria-hidden and the word is
