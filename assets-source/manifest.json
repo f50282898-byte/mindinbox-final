@@ -41,7 +41,7 @@
   "art": [
     {
       "id": "colonnade",
-      "source": "colonnade-dark.jpg",
+      "source": "colonnade-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [
@@ -60,7 +60,7 @@
     },
     {
       "id": "gate",
-      "source": "gate-dark.jpg",
+      "source": "gate-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [
@@ -78,7 +78,7 @@
     },
     {
       "id": "hourglass",
-      "source": "hourglass-dark.jpg",
+      "source": "hourglass-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [
@@ -96,7 +96,7 @@
     },
     {
       "id": "agora",
-      "source": "agora-dark.jpg",
+      "source": "agora-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [
@@ -115,7 +115,7 @@
     },
     {
       "id": "cityscape",
-      "source": "cityscape-dark.jpg",
+      "source": "cityscape-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [
@@ -134,7 +134,7 @@
     },
     {
       "id": "astrolabe",
-      "source": "astrolabe-dark.jpg",
+      "source": "astrolabe-dark.webp",
       "themed": true,
       "role": "background",
       "widths": [

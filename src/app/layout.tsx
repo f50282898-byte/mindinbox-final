@@ -21,6 +21,16 @@ export const metadata: Metadata = {
   description:
     "ملاذك الفلسفي للذكاء الاصطناعي. اسأل، تأمّل، وابنِ وعيك — في بيئة معزولة عن ضجيج العالم.",
   applicationName: "عقل في صندوق",
+  manifest: "/favicon/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   keywords: [
     "فلسفة",
     "ذكاء اصطناعي",
@@ -60,13 +70,27 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
+  icons: {
+    icon: [
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180" }],
+    other: [
+      {
+        rel: "manifest",
+        url: "/favicon/site.webmanifest",
+      },
+    ],
+  },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#050505" },
-    { media: "(prefers-color-scheme: light)", color: "#f4efe4" },
+    { media: "(prefers-color-scheme: light)", color: "#f8f4e8" },
   ],
   colorScheme: "dark light",
   width: "device-width",
