@@ -1,0 +1,5081 @@
+[
+ {
+  "route": "/",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "root-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "11px",
+    "lineHeight": "16.5px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "root-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "11px",
+    "lineHeight": "16.5px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "root-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "18px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "root-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "18px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "root-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "18px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "root-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "MIND IN A BOX",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "لا تسأل لتجد الإجابة، بل تساءل لترتقي بو",
+    "fontSize": "18px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "wisdom-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "wisdom-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 6,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "wisdom-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "wisdom-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 6,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "wisdom-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/wisdom",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "wisdom-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ASK THE WISE",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تر",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اسأل الحكيم",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "ASK THE WISE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 6,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(2) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(3) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .flex-wrap.items-baseline.gap-x-2 > .tracking-widest.display-latin.text-\\[10px\\]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".border-gold\\/15.bg-\\[\\#0A0A0A\\]\\/50.hover\\:border-gold\\/35:nth-child(4) > .min-w-0.flex-1 > .mt-1\\.5.text-\\[0\\.7rem\\].block"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 1.47 (foreground color: #6b6152, background color: #7f7d77, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "dialogue-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "dialogue-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "dialogue-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "dialogue-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "dialogue-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/dialogue",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "dialogue-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيب",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "يمكنك قراءة جولة كاملة مجاناً قبل أن نطل",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحوار",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "DIALOGUE",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "اسأل سؤالاً واحداً، واختر فيلسوفين ليجيبا عنه. سيتبادلان ثلاث جولات، ثم تأتي خلا",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "journal-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "journal-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "journal-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "journal-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "journal-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/journal",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "journal-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا",
+    "fontSize": "12px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "كلماتك أنت. تظهر مع كل يوم.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "كل ما هنا اختياري. اترك ما لا ينطبق.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "المزاج لا يُطلب هنا. إن أردت تسجيله، فعّ",
+    "fontSize": "11.2px",
+    "lineHeight": "18.2px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تنوي فعله اليوم، ولماذا يهمّ؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "ما الذي تغيّر اليوم، وما الذي تعلّمته؟",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "سؤال واحد. اتركه فارغاً إن لم يكن هناك س",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "اكتب ما يحتملك. لا أحد يقرأ هذا سواك.",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المفكرة",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 24
+   },
+   {
+    "tag": "p",
+    "text": "JOURNAL",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 60
+   },
+   {
+    "tag": "h2",
+    "text": "هل يقرأ الذكاء مفكرتك؟",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-1 text-sm font-semibold",
+    "top": 121
+   },
+   {
+    "tag": "p",
+    "text": "لا. لا يقرأ الذكاء أي شيء كتبته هنا — لا نصّك، ولا مزاجك، ولا تقييماتك. كل ما تر",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mb-4 text-xs leading-loose",
+    "top": 145
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "tracker-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "tracker-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 2,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"wisdom\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #7c766c, background color: #fdfbf4, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"dialogue\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #7c766c, background color: #fdfbf4, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "tracker-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 124
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "tracker-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 124
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "tracker-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 124
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/tracker",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "tracker-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ ف",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "متتبع الوعي",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "gold-text-glow display-arabic text-center text-3xl",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mx-auto mt-8 max-w-md",
+    "top": 124
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "paths-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 82
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 126
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "paths-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 82
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 126
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 6,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"wisdom\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"dialogue\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".mt-1"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li:nth-child(3) > article > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "a[href$=\"sanctum\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "paths-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 144
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "paths-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 144
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 4,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".mt-1"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li:nth-child(3) > article > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "a[href$=\"sanctum\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "paths-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 144
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/paths",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "paths-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "الدائرة الخاصة: مجتمع، ومحاضرات، وتحليل ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "مقارنة تفصيلية بين المستويات",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "المسارات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Paths",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فق",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 max-w-2xl leading-loose",
+    "top": 144
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 4,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".mt-1"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li:nth-child(3) > article > .mt-6.flex-wrap.gap-3 > .underline-offset-4.hover\\:underline[href$=\"oracle\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "a[href$=\"sanctum\"]"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "quotes-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "quotes-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 16,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"wisdom\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"dialogue\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#quote-search"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.84 (foreground color: #1a1712, background color: #62605b, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(2)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-2.flex-wrap > .py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(3)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-not-know\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-unexamined\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-gadfly\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-virtue-money\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-only-god-wise\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "quotes-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "quotes-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 15,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       "#quote-search"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.84 (foreground color: #1a1712, background color: #62605b, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(2)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-2.flex-wrap > .py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(3)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-not-know\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-unexamined\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-gadfly\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-virtue-money\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-only-god-wise\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-deaf-captain\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-circumstantial-path\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "quotes-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/quotes",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "quotes-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق ",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Republic, الكتاب السادس، 504b — ترجمة بن",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 117a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 38a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   },
+   {
+    "text": "Apology, 41a",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "ترجمة بندلس جويت â€” Plato, Apology, tr.",
+    "fontSize": "11.2px",
+    "lineHeight": "16.8px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "اقتباسات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "QUOTES",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-xs tracking-[0.25em]",
+    "top": 76
+   },
+   {
+    "tag": "p",
+    "text": "كل اقتباس هنا له مصدر محدّد يمكن التحقق منه. ما لم نتمكن من تأكيده لم ندرجه.",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-4 leading-loose text-gold-muted",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 15,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       "#quote-search"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.84 (foreground color: #1a1712, background color: #62605b, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(2)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-2.flex-wrap > .py-1\\.5.border-gold\\/15.hover\\:border-gold\\/40:nth-child(3)"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.22 (foreground color: #8b8479, background color: #f4efe4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-not-know\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-unexamined\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-gadfly\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"socrates-virtue-money\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-only-god-wise\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-deaf-captain\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "li[data-quote-id=\"plato-circumstantial-path\"] > .space-y-0\\.5.mt-1 > .text-gold-muted\\/60.text-xs"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "enter-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "enter-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 2,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"wisdom\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #7c766c, background color: #fdfbf4, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"dialogue\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.34 (foreground color: #7c766c, background color: #fdfbf4, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "enter-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "enter-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "enter-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/enter",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "enter-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "الدخول كضيف يمنحك سجلاً كاملاً. إن أنشأت",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "تسجيل الدخول",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-2xl font-bold text-gold-light",
+    "top": 101
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "pricing-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 82
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 130
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "pricing-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 40
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 82
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 130
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 12,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"wisdom\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gap-1.px-1[href$=\"dialogue\"] > .text-\\[10px\\].leading-tight"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.37 (foreground color: #7d766c, background color: #fefcf6, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".text-lg"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".mt-3.text-gold-muted\\/70"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(2) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(4) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .items-baseline.gap-1\\.5.mt-5 > .text-gold-muted\\/60.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .items-baseline.gap-1\\.5.mt-5 > .text-gold-muted\\/60.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "pricing-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 148
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "pricing-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 148
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 9,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".text-lg"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".mt-3.text-gold-muted\\/70"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(2) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(4) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .items-baseline.gap-1\\.5.mt-5 > .text-gold-muted\\/60.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(5) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "pricing-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 148
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/pricing",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "pricing-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مك",
+    "fontSize": "16px",
+    "lineHeight": "32px",
+    "weight": "400"
+   },
+   {
+    "text": "Three tiers, each with exactly what it i",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "الأسعار الافتراضية المعروضة.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "The Free Seeker",
+    "fontSize": "14px",
+    "lineHeight": "20px",
+    "weight": "400"
+   },
+   {
+    "text": "مجاناً\nللأبد",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "خمس محاولات تفتح لك الباب، ثم تبدأ الحكم",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   },
+   {
+    "text": "33 دولاراً\n/شهرياً",
+    "fontSize": "16px",
+    "lineHeight": "24px",
+    "weight": "400"
+   },
+   {
+    "text": "تتبّع غير محدود وتحليل يومي من الفيلسوف.",
+    "fontSize": "16px",
+    "lineHeight": "26px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "العضويات",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 56
+   },
+   {
+    "tag": "p",
+    "text": "Membership",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 100
+   },
+   {
+    "tag": "p",
+    "text": "ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات ",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic mt-5 leading-loose text-gold-muted",
+    "top": 148
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 10,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".text-lg"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".mt-3.text-gold-muted\\/70"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(2) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-free\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(4) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .items-baseline.gap-1\\.5.mt-5 > .text-gold-muted\\/60.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       ".gold-frame > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .items-baseline.gap-1\\.5.mt-5 > .text-gold-muted\\/60.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(1) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "article[aria-labelledby=\"tier-sanctum\"] > .pt-5.border-t.border-gold\\/12 > ul > .items-start.gap-2:nth-child(5) > .text-gold-muted\\/60.leading-relaxed.text-sm"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.31 (foreground color: #8e887d, background color: #fbf8f0, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "oracle-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "oracle-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "oracle-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "oracle-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "oracle-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/oracle",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "oracle-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "sanctum-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "sanctum-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "sanctum-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "sanctum-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "sanctum-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/sanctum",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "sanctum-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "هذه المكتبة لأعضائها. سجّل الدخول بالحسا",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   }
+  ],
+  "top150": [],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "360x800",
+  "theme": "dark",
+  "file": "account-360x800-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 48
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 90
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "360x800",
+  "theme": "light",
+  "file": "account-360x800-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 360,
+   "innerW": 360,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 48
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 90
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 7,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".display-latin"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"اللغة\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"المظهر\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "768x1024",
+  "theme": "dark",
+  "file": "account-768x1024-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 64
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "768x1024",
+  "theme": "light",
+  "file": "account-768x1024-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 764,
+   "innerW": 768,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 64
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 7,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".display-latin"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"اللغة\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"المظهر\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "1440x900",
+  "theme": "dark",
+  "file": "account-1440x900-dark.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "dark",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 64
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 108
+   }
+  ],
+  "axe": [],
+  "shot": true
+ },
+ {
+  "route": "/account",
+  "viewport": "1440x900",
+  "theme": "light",
+  "file": "account-1440x900-light.png",
+  "status": 200,
+  "consoleErrors": [],
+  "dataTheme": "light",
+  "dir": "rtl",
+  "overflowX": {
+   "scrollW": 1436,
+   "innerW": 1440,
+   "overflow": false
+  },
+  "typeSample": [
+   {
+    "text": "بريدك غير مُفعّل بعد. بعض الوظائف تحتاج ",
+    "fontSize": "14px",
+    "lineHeight": "22.75px",
+    "weight": "400"
+   },
+   {
+    "text": "تُحفظ اللغة والمظهر على هذا الجهاز. ربطه",
+    "fontSize": "12px",
+    "lineHeight": "19.5px",
+    "weight": "400"
+   },
+   {
+    "text": "10 محارف على الأقل.",
+    "fontSize": "12px",
+    "lineHeight": "16px",
+    "weight": "400"
+   },
+   {
+    "text": "نزّل نسخة كاملة من بياناتك كملف JSON. صد",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   },
+   {
+    "text": "الحذف نهائي. سيُحذف ملفك وكل ما كتبته في",
+    "fontSize": "14px",
+    "lineHeight": "28px",
+    "weight": "400"
+   }
+  ],
+  "top150": [
+   {
+    "tag": "h1",
+    "text": "الحساب",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-arabic text-3xl font-bold leading-tight",
+    "top": 64
+   },
+   {
+    "tag": "p",
+    "text": "Account",
+    "role": "",
+    "ariaHidden": "",
+    "cls": "display-latin mt-1 text-lg text-gold-muted/70",
+    "top": 108
+   }
+  ],
+  "axe": [
+   {
+    "id": "color-contrast",
+    "impact": "serious",
+    "nodes": 7,
+    "desc": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "detail": [
+     {
+      "target": [
+       ".display-latin"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.13 (foreground color: #7a7267, background color: #f4efe4, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"اللغة\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "div[aria-label=\"المظهر\"] > .border-gold\\/20.py-1\\.5.px-4"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.29 (foreground color: #7c756a, background color: #fbf8f0, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-pw"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#new-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     },
+     {
+      "target": [
+       "#cur-pw-email"
+      ],
+      "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #453d31, background color: #979590, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+     }
+    ]
+   }
+  ],
+  "shot": true
+ }
+]
