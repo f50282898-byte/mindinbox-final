@@ -1,21 +1,20 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import * as Icons from "lucide-react";
-import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
 import { useLocale } from "@/lib/i18n";
 import { useShell } from "@/lib/shell-config";
 import { NAV_GROUPS, groupItems, isActive, type NavItem } from "@/lib/nav";
-import { useTheme } from "@/components/ThemeProvider";
+import { DesktopHeader, MobileHeader, MobileBottomBar } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
+import * as Icons from "lucide-react";
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ shared bits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*―――――――――――――――――――――――――――――― shared bits ―――――――――――――――――――――――――――――*/
 
 function iconFor(name: string) {
   const Cmp = (Icons as unknown as Record<string, typeof Icons.Home>)[name];
-  return Cmp ?? Icons.Sparkles;
+  return Cmp ?? Icons.LayoutDashboard;
 }
 
 function useOnEscape(active: boolean, onEscape: () => void) {
@@ -83,25 +82,7 @@ function useFocusTrap(active: boolean, container: React.RefObject<HTMLElement>) 
   }, [active, container]);
 }
 
-function ThemeToggle({ compact = false }: { compact?: boolean }) {
-  const { theme, toggle } = useTheme();
-  const label = theme === "dark" ? "Parchment" : "الوضع الداكن";
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={label}
-      title={label}
-      className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
-    >
-      {theme === "dark" ? <Icons.Sun className="size-4" /> : <Icons.Moon className="size-4" />}
-      {!compact && <span>{label}</span>}
-    </button>
-  );
-}
-
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ desktop rail â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── desktop rail (collapsible) ――――――――――――――――――――――――――――― */
 
 function RailLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const { t } = useLocale();
@@ -110,7 +91,7 @@ function RailLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const Icon = iconFor(item.icon);
 
   return (
-    <Link
+    <a
       href={item.href}
       aria-current={active ? "page" : undefined}
       title={collapsed ? t(item.label) : undefined}
@@ -121,62 +102,42 @@ function RailLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       }`}
     >
       {active && (
-        <motion.span
-          layoutId="rail-active"
+        <span
           className="absolute inset-y-1.5 start-0 w-0.5 rounded-full bg-gold"
-          transition={{ duration: 0.25 }}
         />
       )}
-      <Icon className="size-[18px] shrink-0" aria-hidden="true" />
-      <AnimatePresence initial={false}>
-        {!collapsed && (
-          <motion.span
-            initial={{ opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -6 }}
-            transition={{ duration: 0.18 }}
-            className="display-arabic truncate text-[15px]"
-          >
-            {t(item.label)}
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </Link>
+      <span className="size-[18px] shrink-0" aria-hidden="true">
+        <Icon className="size-4" />
+      </span>
+      <span className="truncate display-arabic text-sm" aria-hidden={collapsed}>
+        {t(item.label)}
+      </span>
+    </a>
   );
 }
 
 function DesktopRail() {
   const { items, railCollapsed, setRailCollapsed } = useShell();
   const { t } = useLocale();
-  const label = t({ ar: "التنقل الرئيسي", en: "Main navigation" });
 
   return (
     <nav
-      aria-label={label}
-      className="glass-strong fixed inset-y-0 start-0 z-40 hidden w-[68px] flex-col border-e border-gold/12 md:flex"
-      style={{ width: railCollapsed ? 68 : 248 }}
+      aria-label={t({ ar: "التنقل الرئيسي", en: "Main navigation" })}
+      className="fixed top-16 inset-y-0 start-0 z-30 hidden w-[68px] flex-col border-e border-gold/12 md:flex"
+      style={{ width: railCollapsed ? 68 : 248, top: "4rem" }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-3 pt-5 pb-4">
-        <Link
+      <div className="flex items-center gap-3 px-3 pt-5 pb-4 border-b border-gold/10">
+        <a
           href="/"
-          aria-label={t({ ar: "عقل في صندوق — الصفحة الرئيسية", en: "Mind in a Box — home" })}
+          aria-label="عقل في صندوق — الصفحة الرئيسية"
           className="gold-glow flex size-10 shrink-0 items-center justify-center rounded-full border border-gold/30 bg-black/60 text-gold-light transition-colors hover:border-gold/70"
         >
           <Logo size={24} />
-        </Link>
-        <AnimatePresence initial={false}>
-          {!railCollapsed && (
-            <motion.span
-              initial={{ opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -6 }}
-              className="display-arabic whitespace-nowrap text-base text-gold-light"
-            >
-              {t({ ar: "عقل في صندوق", en: "Mind in a Box" })}
-            </motion.span>
-          )}
-        </AnimatePresence>
+        </a>
+        <span className="display-arabic whitespace-nowrap text-base text-gold-light hidden" style={{ display: "none" }}>
+          عقل في صندوق
+        </span>
       </div>
 
       <div className="hairline mx-3" />
@@ -206,30 +167,35 @@ function DesktopRail() {
         })}
       </div>
 
-      {/* Footer: toggles + collapse */}
+      {/* Footer: collapse */}
       <div className="border-t border-gold/10 p-3">
-        <div className={railCollapsed ? "flex flex-col items-center gap-2" : "flex flex-col gap-2"}>
-          <ThemeToggle compact={railCollapsed} />
-          <button
-            type="button"
-            onClick={() => setRailCollapsed(!railCollapsed)}
-            aria-expanded={!railCollapsed}
-            aria-label={t({ ar: "طيّ الشريط الجانبي", en: "Collapse sidebar" })}
-            className="flex items-center justify-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
+        <button
+          type="button"
+          onClick={() => setRailCollapsed(!railCollapsed)}
+          aria-expanded={!railCollapsed}
+          aria-label="طيّ الشريط الجانبي"
+          className="flex items-center justify-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
+        >
+          <svg
+            className={`size-4 transition-transform ${!railCollapsed ? "rotate-180" : ""}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
           >
-            <Icons.PanelLeftClose
-              className={`size-4 transition-transform ${railCollapsed ? "rotate-180" : ""}`}
-              aria-hidden="true"
-            />
-            {!railCollapsed && <span>{t({ ar: "طيّ", en: "Collapse" })}</span>}
-          </button>
-        </div>
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          {!railCollapsed && <span>طيّ</span>}
+        </button>
       </div>
     </nav>
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ mobile bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── mobile bottom bar (4 items) ――――――――――――――――――――――――― */
 
 function BottomLink({ item }: { item: NavItem }) {
   const { t } = useLocale();
@@ -238,7 +204,7 @@ function BottomLink({ item }: { item: NavItem }) {
   const Icon = iconFor(item.icon);
 
   return (
-    <Link
+    <a
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={`flex flex-col items-center justify-center gap-1 px-1 py-2.5 transition-colors ${
@@ -246,119 +212,13 @@ function BottomLink({ item }: { item: NavItem }) {
       }`}
     >
       <span className="relative">
-        <Icon className="size-5" aria-hidden="true" />
+        {(() => { const Icon = iconFor(item.icon); return <Icon className="size-5" />; })()}
         {active && (
           <span className="absolute -bottom-1 start-1/2 size-1 -translate-x-1/2 rounded-full bg-gold" />
         )}
       </span>
       <span className="text-[10px] leading-tight">{t(item.short)}</span>
-    </Link>
-  );
-}
-
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ more sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-
-function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { overflow } = useShell();
-  const { t } = useLocale();
-  const panelRef = useRef<HTMLDivElement>(null);
-  const titleId = useId();
-
-  useOnEscape(open, onClose);
-  useFocusTrap(open, panelRef);
-
-  // Prevent background scroll while the sheet covers the screen.
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 md:hidden"
-        >
-          <button
-            type="button"
-            aria-label={t({ ar: "إغلاق", en: "Close" })}
-            onClick={onClose}
-            className="absolute inset-0 h-full w-full cursor-default bg-volcanic/85 backdrop-blur-sm"
-          />
-          <motion.div
-            ref={panelRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            tabIndex={-1}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-strong absolute inset-x-0 bottom-0 rounded-t-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
-          >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gold/25" aria-hidden="true" />
-            <div className="mb-4 flex items-center gap-3">
-              <Logo size={34} ariaLabel={t({ ar: "عقل في صندوق", en: "Mind in a Box" })} />
-              <h2 id={titleId} className="display-arabic text-lg text-gold-light">
-                {t({ ar: "المزيد", en: "More" })}
-              </h2>
-            </div>
-            <ul className="grid grid-cols-2 gap-2">
-              {overflow.map((item) => {
-                const Icon = iconFor(item.icon);
-                return (
-                  <li key={item.id}>
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className="flex items-center gap-2.5 rounded-2xl border border-gold/12 px-4 py-3 text-sm text-gold-muted transition-colors hover:border-gold/40 hover:text-gold-light"
-                    >
-                      <Icon className="size-4 shrink-0" aria-hidden="true" />
-                      <span className="truncate">{t(item.label)}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="mt-5 flex justify-center gap-3">
-              <ThemeToggle compact />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function MobileMoreTrigger() {
-  const [open, setOpen] = useState(false);
-  const { t } = useLocale();
-
-  return (
-    <>
-      <li>
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          className="flex w-full flex-col items-center justify-center gap-1 px-1 py-2.5 text-gold-muted/70 transition-colors"
-        >
-          <Icons.MoreHorizontal className="size-5" aria-hidden="true" />
-          <span className="text-[10px] leading-tight">{t({ ar: "المزيد", en: "More" })}</span>
-        </button>
-      </li>
-      <MoreSheet open={open} onClose={() => setOpen(false)} />
-    </>
+    </a>
   );
 }
 
@@ -366,16 +226,14 @@ function MobileShell() {
   const { primary } = useShell();
   const { t } = useLocale();
 
-  // Four destinations plus "More" fills the five-column bar. The brief calls
-  // for exactly five primary items and a sheet for the overflow, so the fifth
-  // slot is the sheet trigger rather than a fifth link.
-  const items = primary.slice(0, 4);
+  // Five primary items fill the bottom bar. No "More" sheet needed.
+  const items = primary.slice(0, 5);
 
   return (
     <div className="md:hidden">
       <nav
         aria-label={t({ ar: "التنقل السريع", en: "Quick navigation" })}
-        className="glass-strong fixed inset-x-0 bottom-0 z-40 border-t border-gold/12 pb-[env(safe-area-inset-bottom)]"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-gold/12 pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="grid grid-cols-5">
           {items.map((item) => (
@@ -383,19 +241,18 @@ function MobileShell() {
               <BottomLink item={item} />
             </li>
           ))}
-          <MobileMoreTrigger />
         </ul>
       </nav>
     </div>
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ export â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/*―――――――――――――――――――――――――――――― export ――――――――――――――――――――――――――――*/
 
 /**
  * Publishes the rail width as `--rail-w` so page content can inset itself.
  *
- * A sibling spacer `<div>` does not indent the content after it â€” the element
+ * A sibling spacer `<div>` does not indent the content after it — the element
  * that follows still takes the full width and slides under the fixed rail.
  * Padding on the content is the only thing that works, and a custom property
  * keeps it in sync with the collapse state.
@@ -415,7 +272,7 @@ function RailWidthPublisher({ width }: { width: number }) {
  * Responsive shell.
  *
  * Desktop: collapsible glass rail (state persisted).
- * Mobile: 5-item bottom bar + "More" sheet. No hamburger.
+ * Mobile: 5-item bottom bar. No hamburger, no "More" sheet.
  */
 export function Shell() {
   const { railCollapsed } = useShell();
@@ -429,3 +286,5 @@ export function Shell() {
     </>
   );
 }
+
+/* iconFor helper (shared with Header) */

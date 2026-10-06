@@ -43,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map((route) => ({
     url: `${SITE_URL}${route}`,
-    changeFrequency: route === "/" ? "weekly" : "monthly",
+    changeFrequency: route === "/" ? "weekly" : route === "/pricing" ? "monthly" : "weekly",
     priority: route === "/" ? 1 : route === "/pricing" ? 0.9 : 0.7,
   }));
 }

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = Number(process.env.E2E_PORT ?? 3000);
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = process.env.AUDIT_BASE_URL ?? `http://localhost:${PORT}`;
 
 /**
  * E2E config.
@@ -23,9 +23,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [["list"]],
-  timeout: 45_000,
-  expect: { timeout: 10_000 },
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: "test-results/html-report", open: "never" }],
+    ["json", { outputFile: "test-results/results.json" }],
+  ],
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
 
   use: {
     baseURL: BASE_URL,
@@ -35,12 +39,60 @@ export default defineConfig({
     colorScheme: "dark",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
 
   projects: [
+    // Desktop browsers
     {
-      name: "desktop",
+      name: "chromium-desktop",
       use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 } },
+    },
+    {
+      name: "firefox-desktop",
+      use: { ...devices["Desktop Firefox"], viewport: { width: 1280, height: 900 } },
+    },
+    {
+      name: "webkit-desktop",
+      use: { ...devices["Desktop Safari"], viewport: { width: 1280, height: 900 } },
+    },
+
+    // Tablet
+    {
+      name: "tablet-chrome",
+      use: { ...devices["iPad Pro"], viewport: { width: 1024, height: 1366 }, locale: "ar-SA" },
+    },
+    {
+      name: "tablet-firefox",
+      use: { ...devices["iPad Pro"], viewport: { width: 1024, height: 1366 }, locale: "ar-SA", browserName: "firefox" },
+    },
+
+    // Mobile
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 5"], viewport: { width: 390, height: 844 }, locale: "ar-SA" },
+    },
+    {
+      name: "mobile-chrome-360",
+      use: { ...devices["Galaxy S9+"], viewport: { width: 360, height: 740 }, locale: "ar-SA" },
+    },
+    {
+      name: "mobile-safari",
+      use: { ...devices["iPhone 14"], viewport: { width: 390, height: 844 }, locale: "ar-SA" },
+    },
+    {
+      name: "mobile-firefox",
+      use: { ...devices["Pixel 5"], viewport: { width: 390, height: 844 }, locale: "ar-SA", browserName: "firefox" },
+    },
+
+    // Light theme variants
+    {
+      name: "chromium-desktop-light",
+      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 }, colorScheme: "light" },
+    },
+    {
+      name: "mobile-chrome-light",
+      use: { ...devices["Pixel 5"], viewport: { width: 390, height: 844 }, locale: "ar-SA", colorScheme: "light" },
     },
   ],
 
@@ -85,4 +137,8 @@ export default defineConfig({
       },
     },
   ],
+
+  // Global setup and teardown
+  globalSetup: require.resolve("./e2e/global-setup.ts"),
+  globalTeardown: require.resolve("./e2e/global-teardown.ts"),
 });

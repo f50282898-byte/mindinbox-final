@@ -45,7 +45,6 @@ export type AuditAction =
   | "user.grant"
   | "user.suspend"
   | "settings.update"
-  | "riddle.settings"
   | "assistant.propose"
   | "assistant.apply";
 
@@ -65,7 +64,6 @@ export type AuditTarget =
   | "personas"
   | "users"
   | "settings"
-  | "riddles"
   | "assistant";
 
 export interface AuditEntry {

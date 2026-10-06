@@ -11,7 +11,7 @@ import { SITE_URL } from "@/lib/seo";
  * training sets, which matters for an app holding personal journal text.
  */
 export default function robots(): MetadataRoute.Robots {
-  const blocked = ["/admin", "/god-mode-admin", "/_design", "/account", "/api/"];
+  const blocked = ["/admin", "/god-mode-admin", "/_design", "/account", "/api/", "/enter", "/tracker", "/journal", "/account"];
 
   return {
     rules: [
@@ -27,4 +27,4 @@ export default function robots(): MetadataRoute.Robots {
 }
 
 /** Kept adjacent so the two SEO routes cannot drift apart. */
-export const ROBOTS_BLOCKED = [...HIDDEN_ROUTES, "/account", "/api/"];
+export const ROBOTS_BLOCKED = [...HIDDEN_ROUTES, "/account", "/api/", "/enter", "/tracker", "/journal"];

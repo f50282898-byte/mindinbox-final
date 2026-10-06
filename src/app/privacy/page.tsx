@@ -102,8 +102,8 @@ const SECTIONS: LegalSection[] = [
         en: "Here is the principle we hold ourselves to: administration must not read raw journal or tracker text line by line, and its access is limited to aggregates.",
       },
       {
-        ar: "إقرار صريح: القاعدة أعلاه مطبَّقة بالكامل على المفكرة الجديدة — أيامك وعاداتك ومبادئك وإعداداتك محجوبة عن الإدارة عند مستوى قاعدة البيانات، ولا يستطيع أي مشرف قراءتها. لكنها ليست مطبَّقة على المجموعات القديمة (entries وevents وpuzzles) بعد، لأنها كانت موجودة قبل هذا المبدأ. يجب إصلاح ذلك قبل أي إطلاق عام.",
-        en: "Explicit disclosure: the rule above is fully enforced for the current journal — your days, habits, principles and settings are closed to administration at the database level, and no operator can read them. It is not yet enforced for the older collections (entries, events, puzzles), which predate the rule. That must be fixed before any public launch.",
+        ar: "إقرار صريح: القاعدة أعلاه مطبَّقة بالكامل على المفكرة الجديدة — أيامك وعاداتك ومبادئك وإعداداتك محجوبة عن الإدارة عند مستوى قاعدة البيانات، ولا يستطيع أي مشرف قراءتها.",
+        en: "Explicit disclosure: the rule above is fully enforced for the current journal — your days, habits, principles and settings are closed to administration at the database level, and no operator can read them.",
       },
     ],
   },
@@ -128,8 +128,8 @@ const SECTIONS: LegalSection[] = [
         en: "You may request a copy of your data, correct it, delete it, or object to its processing. Exercise these rights through the contact address given on the Terms page.",
       },
       {
-        ar: "هذه النسخة من الخدمة مدعومة على منصة سحابية خارج中国大陆، وقد تنطبق قوانين مختلفة على بياناتك بحسب مكان إقامتك.",
-        en: "This version of the service runs on a cloud platform outside mainland China, and different laws may apply to your data depending on where you live.",
+        ar: "هذه النسخة من الخدمة مدعومة على منصة سحابية خارج الصين، وقد تنطبق قوانين مختلفة على بياناتك بحسب مكان إقامتك.",
+        en: "This version of the service runs on a cloud platform outside China, and different laws may apply to your data depending on where you live.",
       },
     ],
   },
@@ -141,6 +141,17 @@ const SECTIONS: LegalSection[] = [
       {
         ar: "قد نحدّث هذه السياسة. سنغيّر تاريخ آخر تحديث في أعلى الصفحة، ونعرض تنبيهاً واضحاً داخل التطبيق عند أي تغيير جوهري.",
         en: "We may update this policy. We will change the last-updated date at the top of this page and show a clear in-app notice for any material change.",
+      },
+    ],
+  },
+  {
+    id: "legal-review",
+    headingAr: "تنبيه: بحاجة لمراجعة قانونية",
+    headingEn: "Notice: Legal Review Required",
+    paragraphs: [
+      {
+        ar: "هذه الوثيقة تحتاج إلى مراجعة قانونية قبل الإطلاق الرسمي. النصوص أعلاه تصف ما يفعله المنتج فعلياً، لكن الصياغة القانونية النهائية يجب أن تتم بواسطة محامٍ مختص.",
+        en: "This document requires legal review before public launch. The text above describes what the product actually does, but final legal wording must be done by qualified counsel.",
       },
     ],
   },

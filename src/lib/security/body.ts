@@ -42,8 +42,6 @@ export const BODY_LIMITS = {
   siteContent: 128 * 1024,
   /** A publish/undo: a version number. */
   adminAction: 2 * 1024,
-  /** A riddle answer: prose, bounded generously. */
-  riddle: 8 * 1024,
   /** Signals: a batch of small events. */
   signals: 16 * 1024,
   /** Dialogue: the opening prompt. */

@@ -38,14 +38,14 @@ const ISSUER = "mindinbox";
 const AUDIENCE = "mindinbox:admin-page";
 
 /**
- * Reuses the riddle signing secret's shape: an environment secret, no default.
+ * Admin page session secret: an environment secret, no default.
  *
  * A missing secret means the page 404s for everyone, including a real admin. That is
  * the correct failure — a page that renders without a verifiable session is the thing
  * this whole module exists to prevent.
  */
 function adminSecret(): string | null {
-  const secret = process.env.ADMIN_PAGE_SECRET ?? process.env.RIDDLE_SIGNING_SECRET ?? process.env.ANON_SESSION_SECRET;
+  const secret = process.env.ADMIN_PAGE_SECRET;
   if (typeof secret !== "string" || secret.trim().length < 32) return null;
   return secret;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DailyTracker } from "@/components/DailyTracker";
 import { ArtLayer } from "@/components/art/ArtLayer";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, getCanonicalUrl } from "@/lib/seo";
 
 export const runtime = "edge";
 
@@ -30,6 +30,9 @@ export const metadata: Metadata = {
    * nav; it is not a search result anyone wants to land on.
    */
   robots: { index: false, follow: false },
+  other: {
+    canonical: getCanonicalUrl("/tracker"),
+  },
 };
 
 export default function TrackerPage() {

@@ -26,7 +26,7 @@ const SECTIONS: LegalSection[] = [
         en: "Mind in a Box is a philosophical reflection tool. It is not psychological, medical, legal, or financial advice. What you write and discuss here is an intellectual activity, not a diagnosis, a prescription, or a binding opinion.",
       },
       {
-        ar: "الردود يولّدها نموذج ذكاء اصطناعي يتكلم بلغة الفلسفة. النموذج قد يخطئ، وقد يكون مقتنعاً وهو مخطئ، وقد ينتج كلاماً يبدو عميقاً وهو فارغ. القراءة الفلسفية تُحفّظ على التأمّل، لا على اليقين.",
+        ar: "الردود يولّدها نموذج ذكاء اصطناعي يتكلم بلغة الفلسفة. النموذج قد يخطئ، وقد يكون مقتنعاً وهو مخطئ، وقد ينتج كلاماً يبدو عميقاً وهو فارغ. القراءة الفلسفية تُعين على التأمّل، لا على اليقين.",
         en: "Responses are produced by an AI model speaking in the register of philosophy. The model can be wrong, can be confidently wrong, and can produce sentences that sound profound while being empty. A philosophical reading is an aid to reflection, never a source of certainty.",
       },
     ],
@@ -92,37 +92,6 @@ const SECTIONS: LegalSection[] = [
     ],
   },
   {
-    id: "riddle",
-    headingAr: "لغز الرمز الذهبي",
-    headingEn: "The golden token riddle",
-    paragraphs: [
-      {
-        ar: "القرعة تُجرى على الخادم وحده، قبل أن يُرسَم شيء في الصفحة، وبمنطق يقرّره الخادم لا المتصفّح. لا يعلم المتصفّح احتمال الفوز، ولا يعرف ما إذا كان قد ربح قبل أن يقول له الخادم ذلك.",
-        en: "The draw happens on the server alone, before anything is painted on the page, and by logic the server decides rather than the browser. The browser does not know the odds, and does not know whether it has won until the server says so.",
-      },
-      {
-        ar: "الجائزة، إن فزتَ، أشهرٌ من المستوى المدفوع. تُمنح مرة واحدة كل ثلاثين يوماً على الأكثر، وفي حدود يومية وشهرية عامة.",
-        en: "The prize, if won, is a number of days of the paid tier. It is granted at most once every thirty days, and within global daily and monthly limits.",
-      },
-      {
-        ar: "بعد الفوز يُفتح لغز واحد. لك ثلاث محاولات. يُقيَّم الجواب على الخادم بمعيار ثابت لا يتغيّر، فلا يُقبل جوابٌ لمجرد أنه يبدو ذكياً، ويُرفض جوابٌ صحيح في المضمون إن خالطه خطأً في الاتجاه.",
-        en: "After a win, one riddle opens. You have three attempts. The answer is graded on the server by a fixed criterion that does not change, so an answer is not accepted merely for sounding clever, and an answer correct in substance is refused if it carries the error in the opposite direction.",
-      },
-      {
-        ar: "الرمز صالح لعشر دقائق من لحظة فوزه، ولا يُستخدم إلا مرة واحدة. لا يُقبل الرمز المعدَّل ولا المنقول إلى حساب آخر.",
-        en: "A token is valid for ten minutes from the moment it is won and may be used once only. A modified token, or one moved to another account, is refused.",
-      },
-      {
-        ar: "الجائزة بلا التزام ولا ضمان. يجوز لنا إيقاف اللغز في أي وقت، أو تخفيض احتمالاته أو سقفه، أو إلغاء الجوائز التي لم تُستحق بعد. والجوائز الممنوحة فعلاً لا تُسحب.",
-        en: "The prize carries no obligation and no guarantee. We may stop the riddle at any time, or lower its odds or ceilings, or cancel prizes not yet earned. Prizes already granted are not revoked.",
-      },
-      {
-        ar: "لا شراء ولا دفع ولا إدخال بيانات للحصول على رمز. الرمز يُمنح ولا يُباع. وأي محاولة للحصول على أكثر من واحد بالتحايل — بما في ذلك إنشاء حسابات متعددة — تستوجب الإيقاف.",
-        en: "There is no purchase, no payment, and no data entry that earns a token. Tokens are granted, never sold. Any attempt to obtain more than one by deception — including creating multiple accounts — results in suspension.",
-      },
-    ],
-  },
-  {
     id: "third-party",
     headingAr: "مزوّدو الطرف الثالث",
     headingEn: "Third-party providers",
@@ -182,6 +151,17 @@ const SECTIONS: LegalSection[] = [
       {
         ar: "لأي سؤال عن هذه الشروط، راسلنا على العنوان المُدرج في صفحة الحساب بعد تسجيل الدخول.",
         en: "For any question about these Terms, contact us at the address listed on the account page once signed in.",
+      },
+    ],
+  },
+  {
+    id: "legal-review",
+    headingAr: "تنبيه: بحاجة لمراجعة قانونية",
+    headingEn: "Notice: Legal Review Required",
+    paragraphs: [
+      {
+        ar: "هذه الوثيقة تحتاج إلى مراجعة قانونية قبل الإطلاق الرسمي. النصوص أعلاه تصف ما يفعله المنتج فعلياً، لكن الصياغة القانونية النهائية يجب أن تتم بواسطة محامٍ مختص.",
+        en: "This document requires legal review before public launch. The text above describes what the product actually does, but final legal wording must be done by qualified counsel.",
       },
     ],
   },

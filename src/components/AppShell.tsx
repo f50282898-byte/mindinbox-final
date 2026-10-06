@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { auth, db, paths } from "@/lib/firebase";
 import { useSession, useSessionTelemetry } from "@/lib/session";
 import { useAppStore } from "@/lib/store";

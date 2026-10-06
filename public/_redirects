@@ -1,0 +1,7 @@
+# 301 redirects for removed/changed paths
+/riddle/* /wisdom 301
+/api/riddle/* /wisdom 301
+/components/riddle/* /wisdom 301
+/lib/riddle/* /wisdom 301
+/refund /terms 301
+/membership /pricing 301

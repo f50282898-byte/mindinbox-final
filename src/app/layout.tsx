@@ -9,6 +9,7 @@ import { ThemeProvider, THEME_BOOTSTRAP_SCRIPT } from "@/components/ThemeProvide
 import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
 import { SITE_URL } from "@/lib/seo";
+import { ViewTransitions } from "@/components/ViewTransitions";
 
 export const runtime = "edge";
 
@@ -118,6 +119,7 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <meta name="view-transition" content="same-origin" />
         {/*
           Both bootstraps run before first paint so neither the theme nor the
           text direction flashes. Kept as inline strings rather than components
@@ -147,6 +149,7 @@ export default async function RootLayout({
                 <AppShell>
                   <Shortcuts />
                   <ThemeColorUpdater />
+                  <ViewTransitions />
                   {/*
                     `.shell-content` insets the content past the fixed rail on
                     desktop; see the comment on that rule in globals.css for

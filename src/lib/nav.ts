@@ -25,9 +25,9 @@ export interface NavItem {
   short: NavLabel;
   /** Lucide icon name, resolved in the shell. */
   icon: string;
-  /** Shown in the bottom bar on mobile (first 5). */
+  /** Shown in the bottom bar on mobile (first 4). */
   primaryMobile?: boolean;
-  /** Shown in the desktop rail (first 6). */
+  /** Shown in the desktop header (first 4). */
   primaryDesktop?: boolean;
   /** Minimum tier. */
   requires: "free" | "oracle" | "sanctum";
@@ -35,7 +35,7 @@ export interface NavItem {
   group: NavGroupId;
 }
 
-export type NavGroupId = "practice" | "library" | "account" | "legal";
+export type NavGroupId = "practice" | "account";
 
 export interface NavGroup {
   id: NavGroupId;
@@ -44,17 +44,15 @@ export interface NavGroup {
 
 export const NAV_GROUPS: NavGroup[] = [
   { id: "practice", label: { ar: "الممارسة", en: "Practice" } },
-  { id: "library", label: { ar: "المكتبة", en: "Library" } },
   { id: "account", label: { ar: "الحساب", en: "Account" } },
-  { id: "legal", label: { ar: "قانوني", en: "Legal" } },
 ];
 
 /**
- * Shipped default. Ordered; the first five `primaryMobile` items become the
- * mobile bottom bar, and the rest are folded into the "More" sheet.
+ * Shipped default. Ordered; the first four `primaryMobile` items become the
+ * mobile bottom bar, and the same four are the desktop header links.
  *
- * Desktop rail shows the first six items with `primaryDesktop: true`.
- * Mobile bottom bar shows the first five items with `primaryMobile: true`.
+ * Desktop header shows the same four items.
+ * Mobile bottom bar shows the same four items.
  */
 export const FALLBACK_NAV: NavItem[] = [
   {
@@ -73,7 +71,7 @@ export const FALLBACK_NAV: NavItem[] = [
     href: "/dialogue",
     label: { ar: "الحوار", en: "Dialogue" },
     short: { ar: "الحوار", en: "Dialogue" },
-    icon: "MessagesSquare",
+    icon: "MessageSquare",
     primaryMobile: true,
     primaryDesktop: true,
     requires: "free",
@@ -84,7 +82,7 @@ export const FALLBACK_NAV: NavItem[] = [
     href: "/journal",
     label: { ar: "المفكرة", en: "Journal" },
     short: { ar: "المفكرة", en: "Journal" },
-    icon: "NotebookPen",
+    icon: "BookOpen",
     primaryMobile: true,
     primaryDesktop: true,
     requires: "free",
@@ -102,15 +100,26 @@ export const FALLBACK_NAV: NavItem[] = [
     group: "practice",
   },
   {
+    id: "enter",
+    href: "/enter",
+    label: { ar: "المدخل", en: "Enter" },
+    short: { ar: "المدخل", en: "Enter" },
+    icon: "LogIn",
+    primaryMobile: false,
+    primaryDesktop: false,
+    requires: "free",
+    group: "practice",
+  },
+  {
     id: "quotes",
     href: "/quotes",
     label: { ar: "الأقوال", en: "Quotes" },
     short: { ar: "الأقوال", en: "Quotes" },
     icon: "Quote",
-    primaryMobile: true,
-    primaryDesktop: true,
+    primaryMobile: false,
+    primaryDesktop: false,
     requires: "free",
-    group: "library",
+    group: "practice",
   },
   {
     id: "paths",
@@ -118,17 +127,6 @@ export const FALLBACK_NAV: NavItem[] = [
     label: { ar: "المسارات", en: "Paths" },
     short: { ar: "المسارات", en: "Paths" },
     icon: "Compass",
-    primaryMobile: false,
-    primaryDesktop: true,
-    requires: "free",
-    group: "library",
-  },
-  {
-    id: "enter",
-    href: "/enter",
-    label: { ar: "المدخل", en: "Enter" },
-    short: { ar: "المدخل", en: "Enter" },
-    icon: "DoorOpen",
     primaryMobile: false,
     primaryDesktop: false,
     requires: "free",
@@ -159,7 +157,7 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "الخصوصية", en: "Privacy" },
     icon: "Shield",
     requires: "free",
-    group: "legal",
+    group: "account",
   },
   {
     id: "terms",
@@ -168,16 +166,16 @@ export const FALLBACK_NAV: NavItem[] = [
     short: { ar: "الشروط", en: "Terms" },
     icon: "FileText",
     requires: "free",
-    group: "legal",
+    group: "account",
   },
   {
     id: "refund",
     href: "/refund",
     label: { ar: "الاسترداد", en: "Refund" },
     short: { ar: "الاسترداد", en: "Refund" },
-    icon: "Undo2",
+    icon: "RotateCcw",
     requires: "free",
-    group: "legal",
+    group: "account",
   },
 ];
 
@@ -211,7 +209,6 @@ export const INDEXABLE_ROUTES = [
   "/pricing",
   "/privacy",
   "/terms",
-  "/refund",
 ] as const;
 
 const TIER_RANK = { free: 0, oracle: 1, sanctum: 2 } as const;
@@ -220,14 +217,14 @@ export function navVisibleTo(items: NavItem[], tier: keyof typeof TIER_RANK): Na
   return items.filter((item) => TIER_RANK[item.requires] <= TIER_RANK[tier]);
 }
 
-/** The five items pinned to the mobile bottom bar. */
+/** The four items pinned to the mobile bottom bar. */
 export function mobilePrimary(items: NavItem[]): NavItem[] {
-  return items.filter((i) => i.primaryMobile).slice(0, 5);
+  return items.filter((i) => i.primaryMobile).slice(0, 4);
 }
 
-/** The six items shown in the desktop rail. */
+/** The four items shown in the desktop header. */
 export function desktopPrimary(items: NavItem[]): NavItem[] {
-  return items.filter((i) => i.primaryDesktop).slice(0, 6);
+  return items.filter((i) => i.primaryDesktop).slice(0, 4);
 }
 
 /** Everything that does not fit the bottom bar, for the "More" sheet. */
@@ -236,7 +233,7 @@ export function mobileOverflow(items: NavItem[]): NavItem[] {
   return items.filter((i) => !primary.has(i.id));
 }
 
-/** Everything that does not fit the desktop rail, for the "More" sheet (desktop). */
+/** Everything that does not fit the desktop header, for the "More" sheet (desktop). */
 export function desktopOverflow(items: NavItem[]): NavItem[] {
   const primary = new Set(desktopPrimary(items).map((i) => i.id));
   return items.filter((i) => !primary.has(i.id));
@@ -260,16 +257,18 @@ const ICON_ALLOWLIST = new Set([
   "Crown",
   "DoorOpen",
   "FileText",
-  "MessagesSquare",
+  "LogIn",
+  "MessageSquare",
   "NotebookPen",
   "Quote",
+  "RotateCcw",
   "Shield",
   "Sparkles",
   "Undo2",
   "User",
 ]);
 
-const GROUPS = new Set<NavGroupId>(["practice", "library", "account", "legal"]);
+const GROUPS = new Set<NavGroupId>(["practice", "account"]);
 
 /**
  * Validate an untrusted `siteConfig/nav` payload.

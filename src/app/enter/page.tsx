@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AuthPanel } from "@/components/AuthPanel";
 import { ArtLayer } from "@/components/art/ArtLayer";
+import { getCanonicalUrl } from "@/lib/seo";
 
 export const runtime = "edge";
 
@@ -8,6 +9,10 @@ export const metadata: Metadata = {
   title: "المدخل",
   description:
     "سجّل الدخول إلى عقل في صندوق، أو تابع دون حساب. حسابك يحفظ ما تكتبه على جهازك وحده.",
+  alternates: {
+    canonical: "/enter",
+    languages: { ar: "/enter", en: "/enter" },
+  },
   /**
    * `noindex`, and deliberately on the page rather than in a component.
    *
@@ -21,6 +26,9 @@ export const metadata: Metadata = {
    * the nav, and nothing links to it from outside — so nothing is lost by this.
    */
   robots: { index: false, follow: false },
+  other: {
+    canonical: getCanonicalUrl("/enter"),
+  },
 };
 
 export default function EnterPage() {

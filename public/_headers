@@ -15,26 +15,64 @@
 #
 # If you change a policy, change `src/lib/security/csp.ts` too, and the check will
 # tell you if you forgot.
+#
+# =============================================================================
+# SECURITY HEADERS
+# =============================================================================
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+X-DNS-Prefetch-Control: off
+Cross-Origin-Opener-Policy: same-origin-allow-popups
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 
 /*
-  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://challenges.cloudflare.com https://api.paddle.com https://api.lemonsqueezy.com; frame-src 'self' https://challenges.cloudflare.com https://www.youtube-nocookie.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+
+# =============================================================================
+# CACHING HEADERS
+# =============================================================================
+
+# Next.js static assets (immutable, fingerprinted)
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Next.js image optimization API
+/_next/image*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static assets (images, fonts, etc.)
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/art/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts (self-hosted)
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Manifest and PWA files
+/site.webmanifest
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# Service Worker
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+/service-worker.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# HTML pages (no cache for dynamic content)
+/*
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
   Referrer-Policy: strict-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
   X-DNS-Prefetch-Control: off
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-
-/*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://challenges.cloudflare.com https://api.paddle.com https://api.lemonsqueezy.com; frame-src 'self' https://challenges.cloudflare.com https://www.youtube-nocookie.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
-
-/_next/static/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/_next/image*
-  Cache-Control: public, max-age=31536000, immutable
-
-/*
-  The security contact document. Referenced by humans, not fetched automatically,
-  so it must be reachable without a CSP exception.
-*/

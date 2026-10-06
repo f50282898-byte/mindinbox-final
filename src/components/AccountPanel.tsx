@@ -328,7 +328,7 @@ export function AccountPanel() {
                     : "border border-gold/20 text-gold-muted/70 hover:text-gold-light"
                 }`}
               >
-                {th === "dark" ? "داكن" : "Parchment"}
+                {th === "dark" ? "داكن" : "فاتح"}
               </button>
             ))}
           </div>
