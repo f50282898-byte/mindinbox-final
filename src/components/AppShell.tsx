@@ -9,24 +9,11 @@ import { sanitizePricing } from "@/lib/tiers";
 import { doc, getDoc } from "firebase/firestore";
 
 /**
- * Both of these are decorative or conditional, and both pull in `framer-motion`.
- * Loaded eagerly they cost every reader on every route — including the landing page,
- * where neither ever appears.
- *
- * `ssr: false` is correct here rather than merely convenient: both render `null` or
- * pure decoration until after mount, so there is nothing to server-render, and
- * server-rendering them would only delay first paint on the route that does need them.
- *
- * `ssr: false` is not allowed in a Server Component, so this file stays a client
- * component — which it already was.
+ * The membership banner is conditional and pulls in `framer-motion`.
+ * Loaded eagerly it costs every reader on every route, so it stays client-only.
  */
 const MembershipBanner = dynamic(
   () => import("@/components/MembershipBanner").then((m) => m.MembershipBanner),
-  { ssr: false }
-);
-
-const GoldenSymbols = dynamic(
-  () => import("@/components/GoldenSymbols").then((m) => m.GoldenSymbols),
   { ssr: false }
 );
 
@@ -34,8 +21,7 @@ const GoldenSymbols = dynamic(
  * Client shell.
  *
  * Owns the cross-cutting concerns that every page needs exactly once:
- * auth resolution, telemetry, pricing config, the membership banner, and the
- * hidden-symbol puzzle layer.
+ * auth resolution, telemetry, pricing config, and the membership banner.
  *
  * The Gate itself is NOT here. It used to be, as a global `GateModal` driven by
  * the store, and that was wrong: the gate is a decision about one question, so it
@@ -48,7 +34,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   useSessionTelemetry(state === "member");
 
   const setPricing = useAppStore((s) => s.setPricing);
-  const [symbolCount, setSymbolCount] = useState(0);
 
   // Signal that the client tree has hydrated.
   //
@@ -104,10 +89,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     <>
       {children}
       <MembershipBanner />
-      <GoldenSymbols
-        solvedCount={symbolCount}
-        onSolve={() => setSymbolCount((c) => c + 1)}
-      />
       {uid && auth && <span className="sr-only">مسجّل الدخول.</span>}
     </>
   );
