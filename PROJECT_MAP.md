@@ -3,7 +3,7 @@
 Phase A (read-only audit) + Phase B (implementation). Source of truth for *what the system is*;
 `AUDIT.md` is the source of truth for *what is wrong with it*.
 
-Last updated: 2026-10-03 · commit `5c766a0` + Phase B changes · deployed at `mindinbox-final.pages.dev`
+Last updated: 2026-10-14 · Cloudflare Workers migration in progress. The previous Pages deployment remains live until the new Worker is configured and released.
 
 ---
 
@@ -11,10 +11,10 @@ Last updated: 2026-10-03 · commit `5c766a0` + Phase B changes · deployed at `m
 
 | Layer | Choice | Version | Pinned? |
 |---|---|---|---|
-| Framework | Next.js (App Router) | `14.2.35` | exact ✓ (was 14.2.15, updated to latest 14.2.x patch) |
+| Framework | Next.js (App Router) | `15.5.27` | exact ✓ (minimum supported by OpenNext Cloudflare) |
 | UI runtime | React / React DOM | `18.3.1` | exact ✓ (rule: no 19) |
-| Hosting | Cloudflare **Pages** | — | ⚠ adapter deprecated, see AUDIT §8 |
-| Runtime | Cloudflare Workers (Edge) | - | API routes declare `runtime = "edge"`; pages are statically prerendered (see D11) |
+| Hosting | Cloudflare **Workers** | — | `@opennextjs/cloudflare@1.20.11` |
+| Runtime | Cloudflare Workers (`nodejs_compat`) | — | OpenNext Node.js runtime; Next Edge route exports are unsupported |
 | Database / Auth | Firebase **Client** SDK | `^10.12.2` → `10.14.1` | floats |
 | Firestore cache | `persistentLocalCache` + `persistentMultipleTabManager` | — | current API, not deprecated |
 | Animation | Framer Motion | `^11.2.10` → `11.18.2` | floats |
@@ -37,8 +37,9 @@ Last updated: 2026-10-03 · commit `5c766a0` + Phase B changes · deployed at `m
 | Testing | **Vitest** | `^2.0.5` | ✅ added |
 | | **Playwright** | `^1.51.1` | ✅ added |
 | Linting | **ESLint** | `8.57.0` | ✅ configured |
-| Adapter | `@cloudflare/next-on-pages` | `^1.13.16` | ⚠ **deprecated** |
-| Deploy tooling | `wrangler` | `^3.112.0` → `3.114.17` | latest is `4.147.0` |
+| Adapter | `@opennextjs/cloudflare` | `1.20.11` | exact ✓ |
+| Deploy tooling | `wrangler` | `4.148.0` | exact ✓ |
+| Worker config | `wrangler.jsonc` | `.open-next/worker.js` + `.open-next/assets` | single deployment config |
 
 **Palette** — `--volcanic #050505` · `--gold #D4AF37` (+ `--gold-light #E7D9A1`,
 `--gold-muted #D9D0BA`, `--gold-dark #AA8C2C`). Single source: `src/app/globals.css:12-18`.
@@ -57,7 +58,7 @@ Browser
   │                   ├─ GoldenSymbols        → users/{uid}/puzzles
   │                   └─ GateModal            → fires when attemptsLeft hits 0
   │
-  ├─ Pages (all `runtime = "edge"`)
+  ├─ Next.js routes → OpenNext Worker (Node.js compatibility runtime)
   │     /            cinematic hero — CSS colonnade + gold dust, one gold CTA
   │     /wisdom      Ask the Wise — persona picker, allowance meter, composer
   │     /tracker     daily tracker — Firestore live stream, gold bar chart
@@ -208,17 +209,16 @@ technique stops a screenshot. The real boundary is Firestore/Storage rules.
 migration to jose is a future improvement).
 
 ### D10 - Testing infrastructure
-Vitest for unit tests (42 passing), Playwright for e2e (39 passing).
-`scripts/check-edge.mjs` enforces Edge constraints at build time.
-e2e runs against a **production build** (`next start`), not `next dev` — strict-mode double
-rendering, the dev overlay and unminified chunks all change behaviour, so a green dev run
-says little about what users get.
+Vitest runs the unit suite; Playwright is used for end-to-end checks.
+`scripts/check-worker.mjs` verifies the OpenNext Worker output, Wrangler asset
+configuration, absence of unsupported Next Edge runtime exports, and absence of known
+secret patterns in the generated bundle.
 
-### D11 - Pages are statically prerendered; only API routes declare `runtime = "edge"`
-`export const runtime = "edge"` was removed from every **page**. On `@cloudflare/next-on-pages`
-the whole app already runs on the edge worker, so the export only disabled static generation
-and forced all routes to be server-rendered on demand (`ƒ`). Removing it prerenders 20 of 22
-routes (`○`). It is retained on `/api/**/route.ts`, which `scripts/check-edge.mjs` enforces.
+### D11 - OpenNext runs Next.js on the Workers Node.js compatibility runtime
+The application uses Next.js's default Node.js runtime with Cloudflare's `nodejs_compat`
+flag. The former `runtime = "edge"` exports were removed from pages and API routes because
+the OpenNext Cloudflare adapter does not support Next.js Edge runtime routes.
+`middleware.ts` remains the Next middleware entry point for the per-response CSP nonce.
 
 ### D12 - The Tailwind ramp is bound to theme-aware RGB triplets
 `tailwind.config.ts` maps `gold-*` to `rgb(var(--gold) / <alpha-value>)` rather than to a
@@ -479,25 +479,21 @@ The brief asked for more than is here. These are the real gaps, not stubs:
 *Not orphans:* all 15 components and all 10 lib modules have real importers. There are **no**
 `_build.js` or scratch files, and **no** stock images.
 
-### PENDING — blocked, needs you or manual dashboard work
+### PENDING — Cloudflare Workers release
 
-**Needs you to decide (architecture / money / version)**
-1. **Adapter** — `next-on-pages` is deprecated; Cloudflare now recommends vinext (Next 16) or
-   OpenNext. vinext conflicts with the Next 14.2.x rule. Full analysis: AUDIT §8.
-2. **Bytez** — provider is dead (401 / 404). Remove, or supply a working key + host.
-3. **`jose` migration** — `edge-auth.ts` hand-rolls RS256; `jose` is available but not used.
+**Completed in source:** migration from deprecated Pages/`next-on-pages` to
+OpenNext Cloudflare Workers; Next.js is pinned to 15.5.27, route Edge exports
+are removed, and `wrangler.jsonc` defines the Worker and asset binding.
 
-**Needs manual Cloudflare Pages dashboard work (I cannot reach it)**
-1. **`NEXT_PUBLIC_FIREBASE_*` unset** → **no auth, no database, no tracker, no admin in
-   production.** `/tracker` currently renders "the tracker needs Firebase setup". Set as
-   **plain text** for both Production and Preview (they are inlined at *build* time).
-2. **`ANON_SESSION_SECRET` unset** → the 5-attempt gate is a no-op in production (7/7 returned 200).
-3. **`RIDDLE_SIGNING_SECRET` unset** → `/api/riddle/*` returns 503 and the game does not run. Set a
-   distinct ≥32-char secret; the code falls back to `ANON_SESSION_SECRET` but one secret doing two
-   jobs should not ship.
-4. **`public/_headers` not deployed** → no CSP, no HSTS, no `X-Frame-Options` in production.
-5. **Deploy `firestore.rules` / `storage.rules`** — unverified; may not be live. The `riddle/*`
-   subtree added for this feature is included in that unverified set.
+**Requires the account owner before production release**
+1. Configure Cloudflare production and preview runtime secrets and build-time
+   `NEXT_PUBLIC_*` values as documented in [`docs/CLOUDFLARE-WORKERS.md`](./docs/CLOUDFLARE-WORKERS.md).
+2. Set `NEXT_PUBLIC_SITE_URL` to the real domain at build time, deploy the Worker,
+   and attach/verify the public custom domain.
+3. Verify response CSP and static asset headers on the live Worker, and confirm
+   Firestore/Storage rules are deployed to the Firebase project.
+4. Do not treat this migration as deployed until a Worker preview and the live
+   production domain have been exercised end to end.
 
 **Needs building (not Phase B)**
 1. **Admin can read raw journal text** (`firestore.rules:32,42`) — violates the privacy rule that
@@ -2015,7 +2011,7 @@ dead form.
 | `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | yes | build | Production, Preview | Numeric. Required by the Firebase console but not by sign-in. |
 | `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` | yes | build | Production, optional | Analytics only. **Deliberately not required**: Analytics is consent-gated and optional, and blocking on it would mean a project that declined Analytics could never authenticate anyone. |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | yes | build | Production, Preview | Public by design — the widget cannot work without it in the browser. Setting it with no matching secret means **every** login is refused (D20, fails closed). `check:env` catches that pair. |
-| `NEXT_PUBLIC_SITE_URL` | yes | build | Production | Canonical URLs, `sitemap.xml`, `robots.txt`. Defaults to `mindinbox-final.pages.dev`. Set it once a custom domain exists. |
+| `NEXT_PUBLIC_SITE_URL` | yes | build | Production | Required by `check:env`; set to the public Worker/custom-domain origin for canonical URLs, `sitemap.xml`, and `robots.txt`. |
 
 #### Secret — read at request time, never inlined
 

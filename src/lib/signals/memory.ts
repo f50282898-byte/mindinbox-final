@@ -1,6 +1,18 @@
 /**
  * The memory profile — and the sensitive-attribute ban.
  *
+ * ## Not yet wired to a route
+ *
+ * No API route or component imports this module today. Its only importer is
+ * `redteam.test.ts`. That test is the reason it is kept rather than deleted: it
+ * runs twenty adversarial inputs through the scrubber and asserts that none of
+ * them produces surveillance language or discloses a sensitive attribute — a real
+ * privacy guarantee that would otherwise be written, tested, and then lost with
+ * the file.
+ *
+ * `track.ts` and `retention.ts` had no such test and no importer at all, so they
+ * were removed rather than left as an unreachable half-feature.
+ *
  * ## Size
  *
  * `MAX_MEMORY_TOKENS = 600`. The profile is injected verbatim into every system

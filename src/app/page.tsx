@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { UtopiaHero } from "@/components/UtopiaHero";
 import { SITE_URL } from "@/lib/seo";
 
-export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "عقل في صندوق",
@@ -75,9 +75,19 @@ export default function HomePage() {
         // Static, developer-authored object. No user input reaches this string.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
-      <main className="relative">
-        <UtopiaHero />
-      </main>
+      {/* A `<div>`, not a `<main>`: `ShellChrome` owns the single main landmark. */}
+      {/*
+        `UtopiaHero` reads `?philosopher=` and `?q=` through `useSearchParams`. A
+        client component calling that without a Suspense boundary above it opts
+        the *whole* route into client-side rendering at request time, which would
+        undo the static generation of the landing page. The boundary is the
+        thinnest possible one and sits directly around the component that needs it.
+      */}
+      <div className="relative">
+        <Suspense fallback={null}>
+          <UtopiaHero />
+        </Suspense>
+      </div>
     </>
   );
 }

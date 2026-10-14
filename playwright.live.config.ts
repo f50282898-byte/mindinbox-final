@@ -2,15 +2,15 @@ import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Live-preview config: runs the Firebase-configured assertions against a
- * deployed Cloudflare Pages preview, not against a local build.
+ * deployed Cloudflare Worker preview, not against a local build.
  *
  * No `webServer` here on purpose: the app under test is the preview URL in
  * `MIAB_LIVE_URL`, which already has `NEXT_PUBLIC_FIREBASE_*` inlined at its
  * own build time. Booting a local build would test the wrong deployment.
  *
- * Usage (after setting the Preview variables in Cloudflare and redeploying):
+ * Usage (after setting the Preview build variables and runtime secrets):
  *
- *   MIAB_LIVE_URL=https://<preview>.mindinbox-final.pages.dev \
+ *   MIAB_LIVE_URL=https://<worker-preview-domain> \
  *     npx playwright test --config playwright.live.config.ts
  */
 export default defineConfig({

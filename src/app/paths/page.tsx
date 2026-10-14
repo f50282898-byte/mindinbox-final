@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 import { FALLBACK_SITE_CONFIG } from "@/lib/site-config";
 
-export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "المسارات",
@@ -37,8 +37,15 @@ const DEEP_LINKS = [
 ];
 
 export default function PathsPage() {
+  /*
+    `astrolabe` is this surface's declared artwork — `art-manifest.json` names it
+    `surface: "paths"` — built and shipped but never placed. A page that maps
+    choices onto a 21:9 horizon is exactly what an astrolabe is for.
+  */
   return (
-    <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:py-14">
+    <div className="relative">
+      <ArtLayer id="astrolabe" />
+      <div className="relative mx-auto w-full max-w-4xl px-5 py-10 sm:py-14">
       <header className="mb-10">
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           المسارات
@@ -109,6 +116,7 @@ export default function PathsPage() {
           مقارنة تفصيلية بين المستويات
         </Link>
       </p>
+      </div>
     </div>
   );
 }

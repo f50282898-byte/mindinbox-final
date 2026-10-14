@@ -147,8 +147,6 @@ export function ViewTransitionLink({
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
-  const router = useRouter();
-
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
       return; // Let browser handle normally
@@ -181,21 +179,20 @@ export function ViewTransitionLink({
     <a
       href={href}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-        // Let the component handle the click
-        // But also allow native behavior for modifier keys
+        // Modified and non-primary clicks keep their native behaviour.
         if (
           e.metaKey ||
           e.ctrlKey ||
           e.shiftKey ||
           e.altKey ||
-          (e as React.MouseEvent<HTMLAnchorElement>).button !== 0
+          e.button !== 0
         ) {
           return;
         }
+        handleClick(e);
         if (onClick) onClick(e);
-      }
+      }}
       className={className}
-      href={href}
     >
       {children}
     </a>

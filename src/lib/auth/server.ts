@@ -1,11 +1,11 @@
 /**
- * Server-side Firebase ID token verification for the Edge runtime.
+ * Server-side Firebase ID token verification for Cloudflare Workers.
  *
  * Replaces the hand-rolled RS256 in `edge-auth.ts` with `jose`, which is the
  * only part of that file worth keeping by hand is gone: signature checking,
  * algorithm pinning, and claim validation are now `jose`'s job.
  *
- * Constraints (Cloudflare Workers):
+ * Constraints (Cloudflare Workers Node.js compatibility runtime):
  *  - Web Crypto only (`jose` uses `crypto.subtle` automatically).
  *  - Web `fetch` only.
  *  - No Node built-ins, no `firebase-admin`.

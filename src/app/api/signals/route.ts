@@ -3,6 +3,7 @@ import { getDocument, setDocument } from "@/lib/google/firestore-rest";
 import { bearerFromHeaders, verifyIdToken } from "@/lib/auth/server";
 import { jsonError } from "@/lib/ai/http";
 import { log } from "@/lib/log";
+import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
 import { isCollectable, type SignalKind } from "@/lib/signals/types";
 import { monthKeyOf } from "@/lib/signals/months";
 import {
@@ -12,7 +13,6 @@ import {
   type GlobalSwitch,
 } from "@/lib/signals/consent";
 
-export const runtime = "edge";
 
 /**
  * The signal receiver.
@@ -100,10 +100,15 @@ async function readConsent(uid: string): Promise<ConsentState | null> {
 
 export async function POST(request: Request): Promise<Response> {
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    parsed = bodySchema.parse(await request.json());
-  } catch {
-    return jsonError({ ok: false, error: "طلب غير صالح." }, 400);
+  {
+    /* Bounded read — see the note in `/api/dialogue`. `BODY_LIMITS.signals` (16 KB)
+       was already declared for this route and never wired up. A batch of at most 20
+       small events has no reason to arrive larger, and this endpoint needs no
+       credentials, so an unbounded body was reachable by anyone.
+       Behaviour change: oversized returns 413 rather than 400. */
+    const body = await readJsonBody(request, bodySchema, "signals");
+    if (!body.ok) return jsonError({ ok: false, error: BODY_REJECTED_MESSAGE }, bodyErrorStatus(body));
+    parsed = body.value;
   }
 
   if (parsed.signals.length === 0) {

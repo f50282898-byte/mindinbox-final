@@ -1,4 +1,10 @@
-# Cloudflare Pages response headers.
+# Cloudflare static-asset response headers.
+#
+# NOTE ON SYNTAX: Cloudflare `_headers` recognises `#` as a comment and nothing
+# else. This file previously wrapped two sections in `/* ... */` CSS-style block
+# comments, which Cloudflare does not understand: it would have tried to parse
+# `/*` as a route pattern and the rest as header rules. Both blocks are now `#`
+# comments, which is what the rest of this file has always used.
 #
 # This is the STATIC fallback. `src/middleware.ts` sets the real policy, because a
 # Content Security Policy needs a per-request nonce to authorise Next's inline
@@ -27,9 +33,22 @@ X-DNS-Prefetch-Control: off
 Cross-Origin-Opener-Policy: same-origin-allow-popups
 Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 
-/*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://challenges.cloudflare.com https://api.paddle.com https://api.lemonsqueezy.com; frame-src 'self' https://challenges.cloudflare.com https://www.youtube-nocookie.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
-
+# Content-Security-Policy: default-src 'self'; script-src 'self'; script-src-elem 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://yt3.ggpht.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://challenges.cloudflare.com https://api.paddle.com https://api.lemonsqueezy.com; frame-src 'self' https://challenges.cloudflare.com https://www.youtube-nocookie.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+#
+# ^ The static CSP is deliberately NOT emitted.
+#
+# Enabling it would be actively harmful, not merely redundant. `middleware.ts`
+# sends a nonce-bearing policy with `strict-dynamic`; this one has no nonce and
+# allows only `script-src 'self'`. A response carrying both makes the browser
+# enforce the *intersection*, so Next's inline flight scripts â€” which carry the
+# middleware's nonce â€” would fail this policy's `script-src 'self'` and the app
+# would not hydrate. The middleware policy alone is the correct one.
+#
+# It is kept here, commented, because it is still the specification: it is what
+# `check-headers.mjs` compares against `src/lib/security/csp.ts`, so the two
+# cannot drift. The checker strips `#` comments before looking, so commenting it
+# out does not weaken that check.
+#
 # =============================================================================
 # CACHING HEADERS
 # =============================================================================
@@ -49,16 +68,26 @@ Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 /art/*
   Cache-Control: public, max-age=31536000, immutable
 
-/favicon/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Fonts (self-hosted)
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Manifest and PWA files
-/site.webmanifest
-  Cache-Control: public, max-age=86400, must-revalidate
+# The web app manifest.
+#
+# More specific than `/favicon/*` below, and must revalidate. An installed PWA
+# reads this file to decide what it is; caching it `immutable` for a year means a
+# name, an icon set or a start_url changed on this side never reaches anyone who
+# already installed the app. The previous entry here was for `/site.webmanifest`,
+# a path this app has never served â€” `app/layout.tsx` declares
+# `/favicon/site.webmanifest`, so the rule was inert and the real manifest was
+# inheriting a year of immutable cache.
+/favicon/site.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Favicons and PWA icons. Deliberately NOT `immutable`: these filenames carry no
+# content hash, so `favicon-32x32.png` can legitimately change underneath a URL
+# that claims never to revalidate.
+/favicon/*
+  Cache-Control: public, max-age=604800
 
 # Service Worker
 /sw.js
@@ -67,12 +96,8 @@ Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cache-Control: public, max-age=0, must-revalidate
 
 # HTML pages (no cache for dynamic content)
-/*
-  Cache-Control: public, max-age=0, must-revalidate
-  X-Content-Type-Options: nosniff
-  X-Frame-Options: DENY
-  Referrer-Policy: strict-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
-  X-DNS-Prefetch-Control: off
-  Cross-Origin-Opener-Policy: same-origin-allow-popups
-  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+#
+# ^ Also deliberately not emitted, for the same reason as the CSP above: these
+# headers are already set by `middleware.ts` on every response, and emitting them
+# here as well would duplicate rather than add anything. Kept commented because
+# `check-headers.mjs` verifies them against the middleware's `SECURITY_HEADERS`.

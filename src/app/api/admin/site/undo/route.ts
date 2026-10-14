@@ -3,7 +3,6 @@ import { authenticatedUser, requireAdmin } from "@/lib/auth/guards";
 import { recordWrite } from "@/lib/admin/audit";
 import { readPublished, undoLastPublish } from "@/lib/admin/site-store";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

@@ -117,10 +117,11 @@ export function GateDialog({
         {/* Fixed aspect box so the image cannot push the copy around (CLS). */}
         <div className="relative mx-auto aspect-square w-32 overflow-hidden rounded-full sm:w-40">
           <Image
-            src="/gate.png"
+            src="/gate.webp"
             alt=""
             width={320}
             height={320}
+            unoptimized
             className="h-full w-full object-cover"
             priority
           />

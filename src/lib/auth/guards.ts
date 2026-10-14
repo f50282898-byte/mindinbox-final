@@ -1,5 +1,5 @@
 /**
- * Request guards for edge route handlers.
+ * Request guards for server route handlers.
  *
  * `requireUser()`  — the caller presented a cryptographically valid Firebase
  *                    ID token for *this* project.

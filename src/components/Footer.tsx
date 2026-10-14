@@ -102,23 +102,23 @@ export function Footer() {
                   {t({ ar: "الشروط", en: "Terms" })}
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/refund"
-                  className="display-arabic text-sm text-gold-muted/70 hover:text-gold-light transition-colors"
-                >
-                  {t({ ar: "الاسترداد", en: "Refund" })}
-                </Link>
-              </li>
+              {/*
+                No refund link.
+
+                There is no payment path in this product, so there is nothing to
+                refund and no policy to state. `public/_redirects` already carries
+                `/refund /terms 301` for anyone who follows an old link; listing it
+                here as well would only offer a second route to the same dead end.
+              */}
             </ul>
           </nav>
         </div>
 
         <div className="mt-10 pt-6 border-t border-gold/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="display-arabic text-xs text-gold-muted/50">
+          <p className="display-arabic text-xs text-gold-muted">
             © {new Date().getFullYear()} عقل في صندوق. جميع الحقوق محفوظة.
           </p>
-          <p className="display-latin text-xs text-gold-muted/50">
+          <p className="display-latin text-xs text-gold-muted">
             Mind in a Box. All rights reserved.
           </p>
         </div>

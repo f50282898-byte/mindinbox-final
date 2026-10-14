@@ -18,7 +18,25 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     (r) => pathname === r || pathname.startsWith(`${r}/`)
   );
 
-  if (chromeless) return <>{children}</>;
+  /*
+    Exactly one `<main>` per document, in both branches.
+
+    This component is the single owner of the main landmark. The root layout used
+    to render a second `<main id="main">` of its own, which produced two elements
+    sharing the id on every non-chromeless route — and left the chromeless branch
+    with none, because it returned `children` bare. Pages must therefore render a
+    plain `<div>` and never their own `<main>`.
+
+    `id="main"` is also the target of the skip-link in `layout.tsx`; a duplicate
+    made that link resolve to whichever copy came first in the DOM.
+  */
+  if (chromeless) {
+    return (
+      <main id="main" className="shell-content min-h-screen pb-24 md:pb-0">
+        {children}
+      </main>
+    );
+  }
 
   return (
     <>

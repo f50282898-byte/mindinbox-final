@@ -25,7 +25,6 @@ export const CANONICAL_URLS: Record<string, string> = {
   "/account": `${SITE_URL}/account`,
   "/privacy": `${SITE_URL}/privacy`,
   "/terms": `${SITE_URL}/terms`,
-  "/refund": `${SITE_URL}/refund`,
   "/pricing": `${SITE_URL}/pricing`,
   "/paths": `${SITE_URL}/paths`,
   "/quotes": `${SITE_URL}/quotes`,

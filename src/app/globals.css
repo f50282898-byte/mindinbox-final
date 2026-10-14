@@ -45,6 +45,21 @@
     --gold-muted: 217 208 186; /* secondary text */
     --gold-dark: 231 217 161; /* accent hover  */
 
+    /* Antique gold and cold silver — the two accents the cinematic layer needs.
+       Both live in the token layer so they re-point with the theme the same way
+       `--gold` does. RGB triplets, not hex, so `rgb(var(--…) / alpha)` works. */
+    --gold-antique: 197 160 89; /* #C5A059 — patina gold on stone */
+    --silver-faint: 154 163 176; /* cold rim light, kept far below gold in area */
+
+    /* Philosopher lens hues. Each lens drives the box glow through these, so the
+       accent travels from the strip down into the 3D layer instead of stopping at
+       the label. Plato: Attic blue. Rumi: desert gold. Dostoevsky: oxblood.
+       Aesop holds a neutral so it never reads as a fourth statement. */
+    --lens-plato: 120 158 196;
+    --lens-rumi: 197 160 89;
+    --lens-dostoevsky: 158 54 58;
+    --lens-aesop: 140 140 132;
+
     /* ---- Theme: default is dark ---- */
     --theme-bg: #050505;
     --bg-0: #050505; /* page          */
@@ -117,9 +132,12 @@
     --radius-pill: 999px;
 
     /* Type scale (1.250 major third, fluid via clamp) */
-    --font-ui: "Cairo", system-ui, sans-serif;
-    --font-display-ar: "Amiri", "Cairo", serif;
-    --font-display-lat: "Playfair Display", Georgia, serif;
+    /* Each name leads with the `next/font` variable, self-hosted at build time.
+       The original family stays in the chain as a fallback for the first paint
+       before the stylesheet carrying the variable resolves. */
+    --font-ui: var(--font-plex-arabic), "Cairo", system-ui, sans-serif;
+    --font-display-ar: var(--font-amiri), "Cairo", serif;
+    --font-display-lat: var(--font-cinzel), "Playfair Display", Georgia, serif;
 
     --text-xs: 0.75rem;
     --text-sm: 0.875rem;
@@ -600,6 +618,256 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* ---------- Cinematic grain ----------
+     Breaks up the banding that a near-black page (#050505) shows on any gradient.
+     An inline SVG feTurbulence rather than a noise PNG: no extra request, scales to
+     any DPR, and `feColorMatrix` collapses the RGB to a single alpha channel so it
+     composites as luminance grain instead of a grey wash.
+
+     `pointer-events: none` — a decorative overlay that eats a click is a bug, the
+     same rule ArtLayer follows. */
+  .film-grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+  }
+
+  /* Slightly stronger grain where the box glow lands, so the grain reads as
+     texture on light rather than as a flat veil over black. */
+  .film-grain-strong {
+    opacity: 0.09;
+  }
+
+  /* ---------- The living manuscript ----------
+     The dialogue used to render as chat bubbles: rounded glass slabs with a
+     solid gold block for the reader. That is the visual grammar of every other
+     app on the internet, and it is the one thing this product must not look like.
+
+     A manuscript has no bubbles. It has a margin, a hand, and a rule. So a turn
+     is set as running text with a hairline in the reading margin, and the
+     philosopher's name is a small-capital line above it rather than an avatar.
+
+     The reader's own turns keep a distinct treatment — inset, warmer, slightly
+     smaller — because the difference between *what I wrote* and *what they
+     answered* is the entire point of the page, and symmetric styling erases it. */
+
+  .ink-manuscript {
+    font-family: var(--font-display-ar), serif;
+    font-size: 1.05rem;
+    line-height: 2.05;
+    color: rgb(var(--gold-light) / 0.92);
+    /* Optical margin: the text block is indented from the rule, not from the
+       container edge, which is what makes the rule read as a page margin. */
+    padding-inline-start: 1.15rem;
+    border-inline-start: 1px solid rgb(var(--gold) / 0.22);
+  }
+
+  /* The rule brightens while a turn is still being written. */
+  .ink-manuscript-live {
+    border-inline-start-color: rgb(var(--lens-accent, var(--gold-antique)) / 0.5);
+  }
+
+  .ink-hand {
+    font-family: var(--font-ui), sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgb(var(--gold) / 0.78);
+    padding: 0.65rem 1rem;
+    background: rgb(var(--gold) / 0.045);
+    border-inline-start: 2px solid rgb(var(--gold) / 0.34);
+    border-radius: 0 0.6rem 0.6rem 0;
+  }
+
+  .ink-attribution {
+    font-family: var(--font-display-lat), serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgb(var(--text-3));
+  }
+
+  /* The pulse. Replaces the three-dot "typing" convention: one slow breath of
+     light along the margin, which reads as the page being written rather than as
+     an app waiting for you. Disabled by the global reduced-motion rule in base. */
+  .ink-pulse {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display-ar), serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    color: rgb(var(--gold-muted) / 0.7);
+  }
+
+  .ink-pulse::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(var(--lens-accent, var(--gold-antique)));
+    box-shadow: 0 0 0 0 rgb(var(--lens-accent, var(--gold-antique)) / 0.5);
+    animation: ink-breathe 2.6s ease-in-out infinite;
+  }
+
+  @keyframes ink-breathe {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.82);
+      box-shadow: 0 0 0 0 rgb(var(--lens-accent, var(--gold-antique)) / 0.45);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 7px rgb(var(--lens-accent, var(--gold-antique)) / 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ink-pulse::before {
+      animation: none;
+      opacity: 0.8;
+    }
+  }
+
+  /* ---------- The spatial box ----------
+     CSS 3D, not WebGL. A box of six faces and eight corners cannot tell you
+     anything a `transform: rotate3d()` cannot, and the difference is ~600KB of
+     gzip and a second GPU context competing with the page. If this ever outgrows
+     CSS, the swap is one component — the geometry here is already in CSS vars.
+
+     The scene is driven entirely by custom properties written once per frame from
+     one `requestAnimationFrame` loop in `SpatialBox`: --rx, --ry for the tilt,
+     --open for how far the faces have separated, --core for the heart's warmth.
+     Nothing here animates on its own, so one loop owns every moving pixel and the
+     browser never runs two of them at once. */
+  .spatial-stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+    pointer-events: none;
+    /* Fade the whole object at the edges of the viewport rather than clipping it,
+       so a rotated corner never produces a hard rectangular seam. */
+    -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 42%, transparent 82%);
+    mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 42%, transparent 82%);
+  }
+
+  .spatial-cube {
+    position: relative;
+    width: clamp(210px, 30vw, 340px);
+    aspect-ratio: 1;
+    /* Half the box, so the six faces meet in the middle when closed. A percentage
+       here resolves against the element's own height, which is why 50% is exact
+       at any size without a media query. */
+    --half: 50%;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotateZ(var(--rz, 0deg));
+    will-change: transform;
+  }
+
+  .spatial-face {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgb(var(--lens-accent, var(--gold-antique)) / 0.16);
+    background:
+      linear-gradient(
+        135deg,
+        rgb(var(--lens-accent, var(--gold-antique)) / 0.045),
+        transparent 55%
+      ),
+      rgb(var(--volcanic) / 0.16);
+    /* The `transform` is set inline per face in `SpatialBox`, because each one needs
+       a different rotation. What is shared is the easing, so the bloom reads as one
+       object opening rather than six independently animating panels. */
+    transition: transform 240ms var(--ease-silk);
+  }
+
+  /* How far each face travels once the box opens. Front faces push outward along
+     their own normal; the back face pushes inward, which is what gives the object
+     depth instead of making it inflate. */
+  .spatial-face-near {
+    --push-near: 44px;
+  }
+  .spatial-face-far {
+    --push-far: -44px;
+  }
+
+  .spatial-edge {
+    position: absolute;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--lens-accent, var(--gold-antique)) / 0.34),
+      transparent
+    );
+    /* A rim, not a border: the gradient falls off at both ends so an edge reads
+       as a lit wire rather than a solid bar. */
+  }
+
+  /* The core: the "awareness" inside. Its opacity and scale are driven by --core,
+     written by the same loop, so the heart swells with the tilt instead of running
+     its own independent animation. */
+  .spatial-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 42%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgb(var(--lens-accent, var(--gold-antique)) / 0.5),
+      rgb(var(--gold-antique) / 0.12) 46%,
+      transparent 70%
+    );
+    opacity: calc(0.16 + var(--core, 0) * 0.6);
+    scale: calc(1 + var(--core, 0) * 0.55);
+    filter: blur(6px);
+    transition: opacity 320ms var(--ease-silk), scale 320ms var(--ease-silk);
+  }
+
+  /* The slow breath. Runs on the whole cube so the whole object inhales together,
+     and is disabled wholesale under prefers-reduced-motion by the global rule in
+     the base layer — one place, not five. */
+  @keyframes spatial-breathe {
+    0%,
+    100% {
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+        scale(calc(1 + var(--breath, 0) * 0.02));
+    }
+    50% {
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+        scale(calc(1 + (var(--breath, 0) + 1) * 0.02));
+    }
+  }
+
+  .spatial-breathe {
+    animation: spatial-breathe 9s ease-in-out infinite;
+  }
+
+  /* Fully static when the reader asked for less motion. The rAF loop is also
+     stopped in JS — this only removes the leftover CSS animation. */
+  @media (prefers-reduced-motion: reduce) {
+    .spatial-cube,
+    .spatial-breathe {
+      animation: none;
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    }
+    .spatial-face,
+    .spatial-core {
+      transition: none;
+    }
   }
 
   /* Safe-area padding for notched phones */

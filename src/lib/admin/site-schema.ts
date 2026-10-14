@@ -27,6 +27,7 @@
  */
 
 import { z } from "zod";
+import { isCanonicalEmbedUrl } from "@/lib/admin/youtube";
 
 /** Bilingual text. Arabic is required; English may be the Arabic, never blank. */
 const bilingual = z.object({
@@ -57,7 +58,6 @@ export const NAV_IDS = [
   "account",
   "privacy",
   "terms",
-  "refund",
 ] as const;
 
 export type NavId = (typeof NAV_IDS)[number];
@@ -111,8 +111,27 @@ export const videoSchema = z.object({
   id: z.string().trim().min(1).max(80).regex(/^[a-z0-9-]+$/, "معرّف غير صالح"),
   title: bilingual,
   summary: bilingual,
-  /** Already normalised by `toNoCookieEmbedUrl`. Re-checked on read, never trusted. */
-  embedUrl: z.string().url().max(300),
+  /**
+   * A canonical `youtube-nocookie` embed URL, and nothing else.
+   *
+   * This was `z.string().url()`, which does not mean what the comment beside it
+   * claimed. Verified against the installed zod: `z.string().url()` accepts
+   * `javascript:alert(1)` and `data:text/html,<script>…` alike, because all it
+   * checks is that `new URL(value)` parses — and both of those parse. The old
+   * comment said "re-checked on read, never trusted", but the read path runs this
+   * same schema, so nothing was ever re-checked; the allow-list in
+   * `admin/youtube.ts` existed and was simply never called from here.
+   *
+   * Using the allow-list makes the comment true. Nothing renders
+   * `siteContent.videos[].embedUrl` today, so this closes a latent trap rather
+   * than an active exploit — but the schema is the place that claim belongs, and
+   * the moment someone renders this into an `<iframe src>` it is the only thing
+   * standing between them and a stored XSS.
+   */
+  embedUrl: z
+    .string()
+    .max(300)
+    .refine((v) => isCanonicalEmbedUrl(v), "رابط فيديو غير صالح"),
 });
 
 /** The editable document. */

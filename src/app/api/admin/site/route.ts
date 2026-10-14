@@ -6,7 +6,6 @@ import { recordWrite } from "@/lib/admin/audit";
 import { validateSiteContent } from "@/lib/admin/site-schema";
 import { readDraft, writeDraft } from "@/lib/admin/site-store";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

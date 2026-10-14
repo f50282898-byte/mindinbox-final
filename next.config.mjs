@@ -1,18 +1,19 @@
 /**
- * Next.js configuration — Cloudflare Pages / Edge Runtime.
+ * Next.js configuration — OpenNext on Cloudflare Workers.
  *
- * Hard constraints for this project:
- *  - Every API route must set `export const runtime = "edge"`.
- *  - No Node.js built-ins (fs, path, crypto, buffer) anywhere in the bundle.
- *  - Next.js / React versions are pinned and must not float (see package.json).
+ * OpenNext runs the application on Workers' Node.js compatibility runtime.
+ * Next.js Edge Runtime route exports are not supported by the Cloudflare adapter.
  */
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+initOpenNextCloudflareForDev();
+
 const nextConfig = {
   reactStrictMode: true,
 
-  // Enable image optimization with Cloudflare Images-compatible configuration
+  // Keep images as static requests; Workers do not run Next's Node image optimizer.
   images: {
-    // Enable optimization; Cloudflare Pages supports the Image Optimization API
-    // via the Next.js Image Optimization API on the edge.
+    unoptimized: true,
     remotePatterns: [
       { protocol: "https", hostname: "*.googleusercontent.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
@@ -27,18 +28,14 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // Never ship source maps of provider secrets into the Pages bundle.
+  // Never ship source maps of provider secrets in a Worker deployment.
   productionBrowserSourceMaps: false,
 
   // Enable compression
   compress: true,
 
-  // Keep the runtime honest: nothing in this app needs a Node runtime, so
-  // any accidental Node-only dependency fails the build loudly instead of
-  // silently degrading on Workers.
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
-    // Enable Turbopack for faster builds (stable in Next 14.2+)
     turbo: {
       resolveAlias: {
         "@/*": "./src/*",
@@ -46,21 +43,7 @@ const nextConfig = {
     },
   },
 
-  // The Firebase client SDK ships Node-flavoured fallbacks that Workers
-  // cannot evaluate. Strip them from every server/edge compilation.
-  webpack: (config, { isEdgeServer, isServer }) => {
-    if (isEdgeServer || isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        os: false,
-        crypto: false,
-        net: false,
-        tls: false,
-        child_process: false,
-      };
-    }
+  webpack: (config) => {
     // Enable tree shaking for framer-motion
     config.optimization = {
       ...config.optimization,
@@ -70,14 +53,8 @@ const nextConfig = {
     return config;
   },
 
-  // Enable React strict mode for development
-  reactStrictMode: true,
-
-  // Enable SWC minification (default in Next 14)
+  // Enable SWC minification (default in Next 15)
   swcMinify: true,
-
-  // Output configuration for Cloudflare Pages
-  output: "standalone",
 };
 
 export default nextConfig;

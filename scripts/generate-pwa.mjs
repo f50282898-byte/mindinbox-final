@@ -35,7 +35,25 @@ async function generatePWA() {
 }
 
 async function ensureFaviconAssets() {
-  const sourceFiles = [
+  /*
+  ## Do not "fix" the icon destinations
+
+  Every `dest` below carries a redundant `favicon/` prefix while line 51 joins it
+  onto `FAVICON_DIR` (already `public/favicon`), so the copies land in
+  `public/favicon/favicon/`. That looks like an obvious typo and it is not safe to
+  correct: the same table copies `art/*.webp` sources to `*.png` destinations, so
+  fixing the prefix would replace the committed PNG icons with webp bytes under a
+  `.png` name — silently, and only on the next `npm install`, because this file
+  runs from `postinstall`.
+
+  Both the nested directory and the root `site.webmanifest` are gitignored for the
+  same reason. The canonical icons live in `public/favicon/` and the manifest the
+  app actually loads is `/favicon/site.webmanifest` (see `app/layout.tsx`).
+  Producing correctly-scaled icons needs `sharp`, which is a devDependency and
+  deliberately unused here.
+*/
+
+const sourceFiles = [
     { src: 'art/agora-dark-1920.webp', dest: 'favicon/android-chrome-512x512.png', size: 512 },
     { src: 'art/agora-dark-1280.webp', dest: 'favicon/android-chrome-192x192.png', size: 192 },
     { src: 'art/gate-dark-1280.webp', dest: 'favicon/favicon-512x512.png', size: 512 },
@@ -160,22 +178,21 @@ async function generateIcons() {
   }
 }
 
-async function writeFile(path, content) {
-  const { mkdir, writeFile } = await import('node:fs/promises');
-  const { dirname } = await import('node:path');
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, content, 'utf8');
-}
+/*
+  Three local helpers used to live here — `writeFile`, `readFile` and
+  `createHash` — each re-importing from `node:*` to shadow the static imports at
+  the top of this file. All three were dead: every call site uses the imports.
 
-async function readFile(path) {
-  const { readFile } = await import('node:fs/promises');
-  return readFile(path, 'utf8');
-}
+  `writeFile` was not merely dead. Declaring it at module scope alongside
+  `import { writeFile } from 'node:fs/promises'` is a redeclaration of the same
+  binding, which is a SyntaxError at parse time — so this file could not load at
+  all, and `npm install` failed on its `postinstall` hook (`npm run
+  pwa:generate`) for as long as they were here. `createHash` additionally used
+  `await` inside a plain function, which would have thrown if it ever were called.
 
-function createHash(algorithm) {
-  const { createHash } = await import('node:crypto');
-  return createHash(algorithm);
-}
+  Kept as a note rather than a blank space so the next person does not
+  reintroduce them.
+*/
 
 generatePWA().catch((error) => {
   console.error('❌ PWA generation failed:', error);

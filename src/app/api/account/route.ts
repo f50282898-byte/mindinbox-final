@@ -8,7 +8,6 @@ import {
 } from "@/lib/google/firestore-rest";
 import { log } from "@/lib/log";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**
@@ -22,8 +21,43 @@ export const dynamic = "force-dynamic";
  * stored — including documents the client SDK would be denied.
  */
 
-/** Subcollections under `users/{uid}` that belong to the user. */
-const USER_SUBCOLLECTIONS = ["days", "entries", "events", "puzzles"];
+/**
+ * Subcollections under `users/{uid}` that belong to the user.
+ *
+ * Every entry here is a document that actually exists and actually holds the
+ * reader's own words. The list previously stopped at the four written by the
+ * journal, which meant `DELETE /api/account` returned `200 {ok:true}` while
+ * leaving behind:
+ *
+ *   habits        habit titles and free-text `intention`   (journal/store.ts)
+ *   principles    the reader's stated values, up to 50     (journal/store.ts)
+ *   settings      timezone and the AI-journal consent flag (journal/store.ts)
+ *   conversations full dialogue transcripts                (lib/conversations.ts)
+ *   signals       per-month behavioural aggregates         (api/signals)
+ *
+ * All five are enforced by `firestore.rules`, so they are real, and the last two
+ * are written by the server with the service account — invisible to the client
+ * SDK, which is precisely why a client-side deletion could never have reached
+ * them. Combined with the subsequent Auth teardown, the result was personal data
+ * left in Firestore with no identity left attached to it.
+ *
+ * `deleteSubcollections` lists and deletes per document, so a collection of
+ * month documents (`signals`) and a collection of conversations behave the same
+ * as a single-document collection — no change needed there.
+ *
+ * Kept server-owned and literal: nothing in this list comes from a request.
+ */
+const USER_SUBCOLLECTIONS = [
+  "days",
+  "entries",
+  "events",
+  "puzzles",
+  "habits",
+  "principles",
+  "settings",
+  "conversations",
+  "signals",
+];
 
 export async function GET(request: Request) {
   const denied = await requireUser(request);

@@ -15,7 +15,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
 
-  // AI providers (SECRETS — server/edge only)
+  // AI providers (SECRETS — server/Worker only)
   GEMINI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
   NVIDIA_API_KEY: z.string().optional(),
@@ -74,7 +74,7 @@ export function env(): Env {
   return cachedEnv;
 }
 
-/** Helper for edge routes that need the raw env object. */
+/** Helper for server routes that need the raw env object. */
 export const envLike = {
   get GEMINI_API_KEY() { return env().GEMINI_API_KEY; },
   get GROQ_API_KEY() { return env().GROQ_API_KEY; },

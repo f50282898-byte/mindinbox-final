@@ -349,11 +349,7 @@ export function Dialogue() {
         {turns.map((turn, i) => {
           if (turn.personaId === "__reader") {
             return (
-              <article
-                key={`reader-${i}`}
-                dir="auto"
-                className="rounded-2xl rounded-ee-sm bg-gold px-4 py-3 text-[0.95rem] leading-loose text-black"
-              >
+              <article key={`reader-${i}`} dir="auto" className="ink-hand">
                 {turn.text}
               </article>
             );
@@ -362,15 +358,21 @@ export function Dialogue() {
           const empty = !turn.text;
           return (
             <article key={`${turn.personaId}-${i}`} dir="auto">
-              <h2 className="display-arabic mb-1.5 flex items-center gap-2 text-sm font-bold text-gold-light">
+              <h2 className="ink-attribution mb-2 flex items-center gap-2">
                 <span aria-hidden="true">{persona?.symbol}</span>
                 {persona?.nameAr}
               </h2>
               {empty ? (
-                // Reserved height, so the arrival of the first token moves nothing.
-                <div className="glass min-h-[3.5rem]" />
+                /* Reserved height, so the arrival of the first token moves nothing.
+                   The pulse sits inside it, so "thinking" occupies exactly the
+                   space the answer will. */
+                <div className="ink-manuscript ink-manuscript-live min-h-[3.5rem]">
+                  <span className="ink-pulse">يكتب…</span>
+                </div>
               ) : (
-                <div className="glass px-4 py-3 text-[0.95rem] leading-loose text-gold-light">
+                <div
+                  className={`ink-manuscript ${phase !== "done" && running ? "ink-manuscript-live" : ""}`}
+                >
                   <Markdown text={turn.text} />
                 </div>
               )}
@@ -399,7 +401,10 @@ export function Dialogue() {
       </div>
 
       {running && (
-        <p className="display-arabic mt-6 text-center text-xs text-gold-muted/60">
+        /* `role="status"` so a screen reader hears the phase change, and `aria-live`
+           is left to the implicit polite of `status` — announcing this twice would
+           be an interruption, not an improvement. */
+        <p role="status" className="ink-pulse mt-6 justify-center">
           {phase === "summary" ? "تُكتب الخلاصة…" : "يتناوبان…"}
         </p>
       )}

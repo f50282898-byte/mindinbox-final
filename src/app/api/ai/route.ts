@@ -14,10 +14,10 @@ import type { AiRole, ChatMessage, StreamErrorCode, StreamEvent } from "@/lib/ai
 import { bearerFromHeaders, verifyIdToken } from "@/lib/auth/server";
 import { getEntitlements } from "@/lib/entitlements";
 import { log } from "@/lib/log";
+import { clientIp } from "@/lib/http";
 import { recordUsage } from "@/lib/metrics";
 import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /* ── request shape ───────────────────────────────────────────────────────── */
@@ -37,7 +37,23 @@ const bodySchema = z.object({
     .min(1)
     .max(MAX_MESSAGES),
   personaId: z.string().max(40).optional(),
-  role: z.enum(["chat", "analysis", "admin"]).optional(),
+  /*
+    `admin` is deliberately not selectable from the wire.
+
+    `ai/settings.ts` defines `admin` as a third, cheaper model tier reserved for
+    administrative work, and every other number in this route is server-derived
+    from the entitlement — see `dialogue-policy.ts`, which states the rule
+    outright: "every number here comes from the entitlement, never from the
+    request." Accepting the role from the client let an unauthenticated caller
+    pin themselves to that chain by posting `{"role":"admin"}`.
+
+    It is a configuration knob, not a capability — the model has no tools and no
+    data access, and the quota check still runs first — so removing it is not a
+    privilege fix. It is removing the last place a client chooses something it
+    should not. Any server-side caller that needs the admin chain passes it
+    directly, not through this schema.
+  */
+  role: z.enum(["chat", "analysis"]).optional(),
 });
 
 const SSE_HEADERS: Record<string, string> = {
@@ -51,10 +67,8 @@ const SSE_HEADERS: Record<string, string> = {
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
-function clientIp(headers: Headers): string | null {
-  const ip = headers.get("cf-connecting-ip") ?? headers.get("x-real-ip");
-  return ip && /^[\d.:a-f]{3,45}$/i.test(ip) ? ip : null;
-}
+// `clientIp` is imported from `@/lib/http` — see the note in that file. This
+// route previously carried a third copy of the same rule.
 
 function jsonError(body: unknown, status: number, headers: Record<string, string> = {}) {
   return NextResponse.json(body, {

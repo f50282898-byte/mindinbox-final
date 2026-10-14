@@ -30,7 +30,7 @@ function key(name: string): () => string | null {
  *
  * These exist for two reasons: a self-hosted or proxied provider, and the e2e
  * suite, which needs a deterministic upstream. Playwright cannot intercept a
- * server-side fetch from the edge route, so the only way to make the gateway
+ * server-side fetch from a Worker route, so the only way to make the gateway
  * testable is to let it talk somewhere else.
  */
 function baseUrl(envName: string): () => string | undefined {

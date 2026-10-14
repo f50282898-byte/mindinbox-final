@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { useTheme } from "@/components/ThemeProvider";
+import { ART_AVAILABLE } from "@/lib/art/generated";
 
 /**
  * The artwork layer.
@@ -52,7 +53,6 @@ import { useTheme } from "@/components/ThemeProvider";
  */
 
 export type ArtId =
-  | "emblem"
   | "colonnade"
   | "gate"
   | "hourglass"
@@ -76,12 +76,17 @@ interface ArtEntry {
 /**
  * The emitted set.
  *
- * Widths mirror `assets-source/manifest.json` and `scripts/build-art.mjs`'s naming.
- * `scripts/check-art.mjs` asserts all three agree — a width built but not listed here
- * would 404, and a missing background is silent.
+ * Exactly the six ids in `assets-source/manifest.json`, and nothing else. An id
+ * declared here but absent from the manifest would resolve to no files at all —
+ * `ART_AVAILABLE` would be `undefined` and every placement would silently render
+ * its fallback — so the two lists are kept equal deliberately rather than one
+ * being allowed to drift ahead.
+ *
+ * `emblem` was here once, as the only `role: "mark"` entry. It had no source
+ * image, no manifest entry and no file on disk, so it could never resolve; the
+ * app's mark is `Logo`, which uses `public/images/logo-128.webp`.
  */
 const ART: Record<ArtId, ArtEntry> = {
-  emblem: { widths: [160, 320, 640], aspect: "1:1", fit: "contain", focal: "50% 50%", opacity: 1, scrim: "none", parallax: 0, role: "mark", themed: false },
   colonnade: { widths: [768, 1280, 1920], aspect: "21:9", fit: "cover", focal: "50% 100%", opacity: 0.5, scrim: "vertical", parallax: 0.22, role: "background", themed: true },
   gate: { widths: [640, 1280], aspect: "16:9", fit: "cover", focal: "50% 78%", opacity: 0.34, scrim: "radial", parallax: 0, role: "background", themed: true },
   hourglass: { widths: [640, 1280], aspect: "16:9", fit: "cover", focal: "50% 82%", opacity: 0.3, scrim: "radial", parallax: 0, role: "background", themed: true },
@@ -95,23 +100,30 @@ function pathFor(id: ArtId, theme: "dark" | "light", width: number, ext: "webp" 
   return `/art/${id}-${theme}-${width}.${ext}`;
 }
 
-/** Whether `public/art/art-manifest.json` exists, i.e. whether the art was built. */
-function useArtAvailable(): boolean {
-  const [available, setAvailable] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/art/art-manifest.json", { cache: "force-cache" })
-      .then((res) => {
-        if (!cancelled) setAvailable(res.ok);
-      })
-      .catch(() => {
-        /* Offline or absent — the layer stays hidden, which is correct. */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  return available;
+/**
+ * Whether the artwork for this id was actually built.
+ *
+ * ## Why this is an import and not a fetch
+ *
+ * The first version asked the browser: it fetched `/art/art-manifest.json` on
+ * mount and rendered nothing until the answer arrived. That was correct about
+ * *absence* and quietly wrong about *presence* — the `<picture>` was therefore
+ * absent from the server-rendered HTML on **every** page, and the image was only
+ * injected after hydration. By then the browser had already recorded LCP, so an
+ * above-the-fold background could not be given a meaningful `fetchpriority`, and
+ * each page paid a round trip before its background existed.
+ *
+ * Presence is a fact settled at build time — `build-art.mjs` fails on missing
+ * source and now emits `ART_AVAILABLE` — so it is imported directly. The
+ * degrade-quietly contract is unchanged: an id that was never built still
+ * renders the caller's `fallback` and the page shows its token background.
+ *
+ * The only cost is that adding artwork now requires re-running `npm run art:build`
+ * to refresh the generated constant, which is the same command that produces the
+ * files in the first place.
+ */
+function isArtAvailable(id: ArtId): boolean {
+  return ART_AVAILABLE[id] === true;
 }
 
 export function ArtLayer({
@@ -141,7 +153,7 @@ export function ArtLayer({
   const entry = ART[id];
   const { theme } = useTheme();
   const reduceMotion = useReducedMotion() === true;
-  const available = useArtAvailable();
+  const available = isArtAvailable(id);
   const ref = useRef<HTMLDivElement>(null);
   const [shift, setShift] = useState(0);
 

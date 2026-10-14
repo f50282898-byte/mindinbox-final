@@ -69,6 +69,7 @@ const PROFILES = {
       "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
       "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
       "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+      "NEXT_PUBLIC_SITE_URL",
       "ANON_SESSION_SECRET",
       "TURNSTILE_SECRET_KEY",
       "FIREBASE_SERVICE_ACCOUNT_JSON",
@@ -76,7 +77,6 @@ const PROFILES = {
     ],
     recommended: [
       "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
-      "NEXT_PUBLIC_SITE_URL",
       "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
     ],
     description: "Production. Every listed variable must be present.",
@@ -373,9 +373,10 @@ if (asJson) {
   if (missing.length > 0 || coherence.length > 0) {
     lines.push("");
     lines.push("  WHERE TO SET THEM");
-    lines.push("  Cloudflare Pages -> your project -> Settings -> Variables and Secrets.");
-    lines.push("  Add each name under BOTH Production and Preview.");
-    lines.push("  Mark a value as a Secret for anything that is not a public Firebase web key.");
+    lines.push("  Cloudflare Workers -> your Worker -> Settings -> Variables and Secrets.");
+    lines.push("  Add runtime values under both Production and Preview environments.");
+    lines.push("  Set NEXT_PUBLIC_* values in the build environment before building.");
+    lines.push("  Mark server-only values as Secrets; never commit them to wrangler.jsonc.");
     lines.push("  Plain text for these, because Next.js inlines them at build time:");
     lines.push("    NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_APP_ID,");
     lines.push("    NEXT_PUBLIC_FIREBASE_PROJECT_ID, NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,");
@@ -386,8 +387,7 @@ if (asJson) {
     lines.push("    ANON_SESSION_SECRET, TURNSTILE_SECRET_KEY,");
     lines.push("    FIREBASE_SERVICE_ACCOUNT_JSON, ADMIN_PAGE_SECRET");
     lines.push("");
-    lines.push("  After adding a NEXT_PUBLIC_* value you MUST redeploy. Editing a variable");
-    lines.push("  does not rebuild an existing deployment.");
+    lines.push("  After changing a NEXT_PUBLIC_* value, rebuild and deploy the Worker.");
   }
 
   console.log(lines.join("\n"));

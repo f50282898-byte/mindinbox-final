@@ -100,7 +100,21 @@ export function MembershipBanner() {
           (item): item is BannerContent =>
             typeof item?.headline === "string" &&
             typeof item?.detail === "string" &&
-            typeof item?.href === "string"
+            typeof item?.href === "string" &&
+            /*
+              Same-origin absolute paths only — the rule `lib/nav.ts` and
+              `lib/site-config.ts` already apply to every other Firestore-sourced
+              href in the product. This file was the one place that checked only
+              `typeof`, so a document carrying `href: "javascript:…"` would render
+              it into an `<a>` and execute on click.
+
+              Not currently reachable: `firestore.rules` denies writes to
+              `siteConfig/ads` to every client including admins, so setting one
+              already requires the service account. This closes the last gap in a
+              rule the rest of the codebase applies uniformly.
+            */
+            item.href.startsWith("/") &&
+            !item.href.startsWith("//")
         );
         if (valid.length) setItems(valid);
       },

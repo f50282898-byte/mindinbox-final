@@ -3,7 +3,7 @@
  * Provides offline support for the journal and cached assets
  */
 
-const CACHE_NAME = 'mindinbox-v1';
+const CACHE_NAME = 'mindinbox-v1-06c935d9';
 const STATIC_CACHE = 'mindinbox-static-v1';
 const DYNAMIC_CACHE = 'mindinbox-dynamic-v1';
 

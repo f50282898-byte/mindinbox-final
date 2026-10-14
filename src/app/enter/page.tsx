@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { AuthPanel } from "@/components/AuthPanel";
+import { Suspense } from "react";
+import { EnterTemple } from "@/components/enter/EnterTemple";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { getCanonicalUrl } from "@/lib/seo";
 
-export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "المدخل",
@@ -35,7 +35,15 @@ export default function EnterPage() {
   return (
     <div className="relative">
       <ArtLayer id="gate" />
-      <AuthPanel />
+      {/*
+        `EnterTemple` reads `?philosopher=` and `?q=`. Without a Suspense boundary
+        above it, `useSearchParams` pushes this route out of static generation —
+        and `/enter` is a page that must render even when Firebase is absent, so
+        it is worth keeping on the fast path.
+      */}
+      <Suspense fallback={null}>
+        <EnterTemple />
+      </Suspense>
     </div>
   );
 }

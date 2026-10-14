@@ -60,7 +60,7 @@ const firebaseConfig = {
  */
 export const firebaseConfigured = isFirebaseConfigured();
 
-/** Mirrors the project id the edge routes verify ID tokens against. */
+/** Mirrors the project id the server routes verify ID tokens against. */
 export const firebaseProjectId = firebaseProjectIdOrEmpty();
 
 let app: FirebaseApp | null = null;

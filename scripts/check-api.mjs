@@ -22,7 +22,6 @@
  *
  * | Check | Why |
  * |---|---|
- * | `runtime = "edge"` | a Node runtime silently unpins the bundle model |
  * | a guard or `@public` | no anonymous privileged surface by accident |
  * | zod on any request body | an unvalidated body is the entry point for everything |
  * | a body size bound | zod's `.max()` on a string is not a body size limit |
@@ -92,13 +91,7 @@ for (const file of files) {
   const hasZod = /\bz\.(object|string|number|enum|array|union|literal|boolean)\s*\(/.test(code);
   const readsBody = /\.(json|formData|text)\s*\(\s*\)/.test(code);
   const hasBodyBound = /\.(max|length)\s*\(\s*\d{3,}\s*\)/.test(code);
-  const declaresEdge = /export\s+const\s+runtime\s*=\s*"edge"/.test(code);
-
   /* ── hard failures ─────────────────────────────────────────────────────── */
-
-  if (!declaresEdge) {
-    errors.push(`${rel}: no 'export const runtime = "edge"'`);
-  }
 
   if (!isGuard && !isPublic) {
     errors.push(

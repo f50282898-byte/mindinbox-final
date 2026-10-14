@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { clientIpFromHeaders, verifyTurnstile } from "@/lib/auth/turnstile";
+import {
+  BODY_REJECTED_MESSAGE,
+  bodyErrorStatus,
+  readJsonBody,
+} from "@/lib/security/body";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**
@@ -21,14 +25,20 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    const json: unknown = await request.json();
-    parsed = bodySchema.parse(json);
-  } catch {
-    return NextResponse.json(
-      { ok: false, message: "طلب غير صالح." },
-      { status: 400, headers: { "Cache-Control": "no-store" } }
-    );
+  {
+    /* Bounded read — see the note in `/api/dialogue`. The schema caps the token at
+       2048 characters, but again that caps a *field*, not the request: without
+       this the body is fully buffered before zod sees it, and this is an
+       unauthenticated endpoint on the signup path.
+       Behaviour change: oversized returns 413 rather than 400. */
+    const body = await readJsonBody(request, bodySchema, "auth");
+    if (!body.ok) {
+      return NextResponse.json(
+        { ok: false, message: BODY_REJECTED_MESSAGE },
+        { status: bodyErrorStatus(body), headers: { "Cache-Control": "no-store" } }
+      );
+    }
+    parsed = body.value;
   }
 
   const result = await verifyTurnstile(parsed.token, clientIpFromHeaders(request.headers));

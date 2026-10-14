@@ -16,7 +16,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { useSession } from "@/lib/session";
 import { auth, db, paths } from "@/lib/firebase";
-import { FREE_ATTEMPT_LIMIT } from "@/lib/anon-session";
+import { FREE_INTERACTIONS } from "@/lib/quota";
 import { sanitizePricing } from "@/lib/tiers";
 
 interface BannerRow {
@@ -234,7 +234,7 @@ export function AdminConsole() {
           <Card label="المستخدمون" value={stats.users} />
           <Card label="الجلسات" value={stats.sessions} />
           <Card label="أحداث التفاعل" value={stats.events} />
-          <Card label="الحد المجاني" value={FREE_ATTEMPT_LIMIT} />
+          <Card label="الحد المجاني" value={FREE_INTERACTIONS} />
         </section>
 
         {/* ── Pricing ── */}

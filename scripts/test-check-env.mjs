@@ -71,7 +71,7 @@ const GOOD = {
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: "G-ABCDEF1234",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: "0x4AAAAAAAtestkey",
   TURNSTILE_SECRET_KEY: "0xBBBBBBBBtestsecret",
-  NEXT_PUBLIC_SITE_URL: "https://mindinbox-final.pages.dev",
+  NEXT_PUBLIC_SITE_URL: "https://mindinbox-final.example",
   ANON_SESSION_SECRET: "x".repeat(48),
   FIREBASE_SERVICE_ACCOUNT_JSON: '{"type":"service_account"}',
   ADMIN_PAGE_SECRET: "y".repeat(48),

@@ -4,8 +4,8 @@ import { getEntitlements } from "@/lib/entitlements";
 import { bearerFromHeaders, verifyIdToken } from "@/lib/auth/server";
 import { jsonError } from "@/lib/ai/http";
 import { log } from "@/lib/log";
+import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
 
-export const runtime = "edge";
 
 /**
  * Quote card download.
@@ -38,10 +38,14 @@ const bodySchema = z.object({
 
 export async function POST(request: Request): Promise<Response> {
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    parsed = bodySchema.parse(await request.json());
-  } catch {
-    return jsonError({ ok: false, error: "طلب غير صالح." }, 400);
+  {
+    /* Bounded read — see the note in `/api/dialogue`. This route takes a quote id
+       and a template, so its declared budget is 4 KB; it is reachable with no
+       credentials, which is what made the unbounded read worth closing.
+       Behaviour change: oversized returns 413 rather than 400. */
+    const body = await readJsonBody(request, bodySchema, "quoteCard");
+    if (!body.ok) return jsonError({ ok: false, error: BODY_REJECTED_MESSAGE }, bodyErrorStatus(body));
+    parsed = body.value;
   }
 
   // `verifiedQuote`, not a plain lookup: an unverified entry must not be drawable

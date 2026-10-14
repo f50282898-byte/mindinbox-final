@@ -10,7 +10,6 @@ import {
 } from "@/lib/admin/assistant";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

@@ -31,8 +31,13 @@
       "type": "image/png"
     }
   ],
-  "categories": ["lifestyle", "education", "productivity"],
+  "categories": [
+    "lifestyle",
+    "education",
+    "productivity"
+  ],
   "lang": "ar",
   "dir": "rtl",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "scope": "/"
 }

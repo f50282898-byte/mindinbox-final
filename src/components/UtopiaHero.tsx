@@ -2,11 +2,15 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GreekColumns } from "@/components/GreekColumns";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { GoldDust } from "@/components/GoldDust";
 import { Logo } from "@/components/Logo";
+import { SpatialBox } from "@/components/spatial/SpatialBox";
+import { PhilosopherLenses } from "@/components/lenses/PhilosopherLenses";
+import { lensById, type Lens } from "@/components/lenses/lensToken";
 
 /**
  * The landing.
@@ -16,15 +20,27 @@ import { Logo } from "@/components/Logo";
  * line of definition, one button. A nav beside it would read as a dashboard
  * rather than an arrival.
  *
- * The horizon is procedural CSS (`.greek-column`) lit by gold dust, layered
- * three deep for parallax. No stock photography.
+ * ## What arrives from the URL
  *
- * The title reveals progressively: each character fades up in sequence rather
- * than the whole block fading at once, so the eye lands on the word rather than
- * on a rectangle.
+ * `?philosopher=plato` preselects a lens, and `?q=…` carries an opening question
+ * written on a different page. Both are read once, on mount, and both resolve
+ * through `lensById` — an unrecognised value yields `null`, never a silent
+ * fallback, so a stale link shows the neutral hero rather than putting someone
+ * else's name on the button.
+ *
+ * The context is carried as **query parameters**, not `sessionStorage`. They
+ * survive a paste, a refresh and a back-navigation, and they reach `/enter`
+ * without the reader having to be signed in first.
  */
+
 export function UtopiaHero() {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const params = useSearchParams();
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [question, setQuestion] = useState("");
+
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
   // Three depths only. More layers costs paint time and reads as noise.
@@ -39,50 +55,102 @@ export function UtopiaHero() {
   // Words stay intact (joining preserved); the stagger runs across words.
   const words = title.split(" ");
 
+  // Incoming context, read once. `useSearchParams` returns a new identity on some
+  // navigations, so this is keyed off the string values rather than the object.
+  const incomingPhilosopher = params.get("philosopher");
+  const incomingQuestion = params.get("q");
+
+  useEffect(() => {
+    if (lensById(incomingPhilosopher)) setSelectedId(incomingPhilosopher);
+    if (incomingQuestion) setQuestion(incomingQuestion);
+  }, [incomingPhilosopher, incomingQuestion]);
+
+  const lens: Lens | null = lensById(selectedId);
+
+  /*
+    `--lens-accent` is set once, on the hero root, and inherited by every descendant.
+    That is how the halo the reader chooses on the strip reaches the 3D box: no
+    shared context, no prop drilling, no global — one custom property crossing the
+    component boundary the way the cascade is meant to.
+  */
+  const accentStyle = {
+    "--lens-accent": lens ? lens.accentVar : "var(--gold-antique)",
+  } as React.CSSProperties;
+
+  const enterHref = enterHrefFor(selectedId, question);
+
+  const commit = useCallback(
+    (id: string) => {
+      setSelectedId(id);
+      // Changing the philosopher invalidates a question written for the last one.
+      setQuestion("");
+    },
+    []
+  );
+
+  const onAsk = useCallback(() => {
+    router.push(enterHref);
+  }, [enterHref, router]);
+
   return (
     <div
       ref={ref}
+      style={accentStyle}
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
       <div aria-hidden="true" className="absolute inset-0 void-vignette" />
 
       {/*
-        Depth order, back to front: horizon glow (slowest) → the artwork colonnade →
-        gold dust. Three layers is the budget; a fourth buys nothing visible and costs
-        paint time on a mid-range phone.
-
-        The colonnade was procedural CSS (`.greek-column`) and is now the real
-        engraving. `ArtLayer` renders the CSS version as its `fallback` until
-        `npm run art:build` has produced the files, so dropping the artwork in changes
-        the page from "acceptable" to "intended" without ever leaving it broken — and
-        without two scrims stacked over one composition.
+        Depth order, back to front: the horizon glow (slowest) → the box → the
+        colonnade engraving → gold dust → grain. The box sits *behind* the text
+        column and carries no content, so it can bloom open without moving a
+        single glyph.
       */}
       <motion.div aria-hidden="true" style={{ y: farY }} className="absolute inset-0">
         <div className="absolute inset-x-0 top-1/2 h-[46vh] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.09),transparent_70%)]" />
       </motion.div>
+
+      <div className="absolute inset-0">
+        <SpatialBox />
+      </div>
+
       <motion.div aria-hidden="true" style={{ y: midY }} className="absolute inset-0">
-        <ArtLayer id="colonnade" fallback={<GreekColumns />} />
+        {/*
+          `eager`: this is the largest above-the-fold asset on the landing page and
+          the element the browser will attribute LCP to. Left lazy, its bytes were
+          only requested once the reader started scrolling — after the metric had
+          already been recorded. It is a background layer, so there is nothing below
+          the fold competing with it for bandwidth.
+        */}
+        <ArtLayer id="colonnade" eager fallback={<GreekColumns />} />
       </motion.div>
 
       <GoldDust count={52} />
 
+      {/* Breaks the banding a near-black gradient shows on any display. */}
+      <div aria-hidden="true" className="film-grain absolute inset-0 z-20" />
+
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
-        className="relative z-10 flex flex-col items-center px-5 text-center"
+        className="relative z-10 flex w-full flex-col items-center px-5 text-center"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="gold-glow display-arabic mb-10 flex size-24 items-center justify-center rounded-full border border-gold/30 bg-black/70 text-gold-light backdrop-blur-md"
+          className="gold-glow display-arabic mb-8 flex size-24 items-center justify-center rounded-full border border-gold/30 bg-black/70 text-gold-light backdrop-blur-md"
         >
-          <Logo size={68} ariaLabel="شعار عقل في صندوق" />
+          {/*
+            `priority` because this is inside the first viewport and is the
+            largest above-the-fold asset the browser can attribute. Its glow is
+            the same `.gold-glow` the box core warms into, so the mark and the
+            object behind it read as one light source.
+          */}
+          <Logo size={68} ariaLabel="شعار عقل في صندوق" priority />
         </motion.div>
 
-        {/* Per-character reveal. Letters are marked aria-hidden and the word is
-            exposed once to assistive tech, otherwise it reads letter by letter. */}
         <h1
-          className="gold-text-glow display-arabic max-w-3xl text-5xl font-bold leading-tight text-gold-light sm:text-7xl lg:text-8xl"
+          className="gold-text-glow display-arabic max-w-3xl text-4xl font-bold leading-tight text-gold-light sm:text-6xl lg:text-8xl"
           aria-label={title}
         >
           {words.map((word, i) => (
@@ -93,15 +161,17 @@ export function UtopiaHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{
                 duration: 0.7,
-                // 120ms stagger across words: the line assembles in reading
-                // order without the whole line feeling slow.
-                delay: 0.15 + i * 0.12,
+                // A short stagger across words. The previous 120ms-per-word ran
+                // past a second before the last word landed, which delayed the
+                // LCP element itself; 80ms assembles the line without holding
+                // the largest paint hostage to its own choreography.
+                delay: i * 0.08,
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="inline-block"
             >
               {word}
-              {i < words.length - 1 ? " " : ""}
+              {i < words.length - 1 ? " " : ""}
             </motion.span>
           ))}
         </h1>
@@ -109,7 +179,7 @@ export function UtopiaHero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
           className="display-latin mt-4 text-[11px] tracking-[0.45em] text-ink-3 sm:text-xs"
         >
           MIND IN A BOX
@@ -118,40 +188,96 @@ export function UtopiaHero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="display-arabic mt-9 max-w-xl text-base leading-loose text-gold-muted/80 sm:text-lg"
+          transition={{ duration: 1.1, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          className="display-arabic mt-7 max-w-xl text-base leading-loose text-gold-muted/80 sm:text-lg"
         >
           لا تسأل لتجد الإجابة، بل تساءل لترتقي بوعيك.
           <br />
           ملاذك الفلسفي للذكاء الاصطناعي، في بيئة معزولة عن ضجيج العالم.
         </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-12"
-        >
-          <Link href="/enter" className="btn-gold px-12 py-5 text-lg">
-            <span className="tracking-widest">ابدأ الآن</span>
-          </Link>
-        </motion.div>
-
+        {/* The lenses replace the old static row of names. */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 1.1 }}
-          className="mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] tracking-[0.3em] text-ink-3"
+          transition={{ duration: 1.2, delay: 0.4 }}
+          className="mt-12 w-full"
         >
-          <span>AESOP</span>
-          <span className="text-ink-3">—</span>
-          <span>PLATO</span>
-          <span className="text-ink-3">—</span>
-          <span>RUMI</span>
-          <span className="text-ink-3">—</span>
-          <span>DOSTOEVSKY</span>
+          <PhilosopherLenses selected={selectedId} onSelect={commit} />
+        </motion.div>
+
+        {/* The opening question. Optional — the portal works without it. */}
+        <motion.form
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onAsk();
+          }}
+          className="mt-8 flex w-full max-w-xl items-center gap-2"
+        >
+          <label htmlFor="hero-q" className="sr-only">
+            اكتب تساؤلك الأول
+          </label>
+          <input
+            id="hero-q"
+            type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            maxLength={400}
+            placeholder="اكتب تساؤلك الأول…"
+            className="field flex-1 bg-black/40 text-sm backdrop-blur-sm"
+          />
+          <button
+            type="submit"
+            disabled={!question.trim()}
+            className="btn-ghost shrink-0 px-5 py-3 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            احمله معي
+          </button>
+        </motion.form>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.1, delay: 0.58, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10"
+        >
+          {/*
+            The label is the selection. With a philosopher it says who waits on
+            the other side; without one it stays the invitation it always was.
+            The href carries the same two values the form does, so the two routes
+            into `/enter` agree on what they carry.
+          */}
+          <Link href={enterHref} className="btn-gold px-10 py-5 text-base sm:px-12 sm:text-lg">
+            <span className="tracking-wide">
+              {lens ? `ادخل العزلة مع ${lens.nameAr}` : "ابدأ رحلة الوعي"}
+            </span>
+          </Link>
         </motion.div>
       </motion.div>
     </div>
   );
 }
+
+/**
+ * The one place `/enter`'s query string is assembled.
+ *
+ * A plain function, not a hook: it reads only its arguments and calls no React
+ * API, and naming it `use*` would make the linter treat it as one. `q` is only
+ * appended when there is something to say, so the common case stays
+ * `/enter?philosopher=…` and a reader who arrived by clicking the button gets a
+ * clean URL. `URLSearchParams` rather than a hand-rolled escape — an Arabic
+ * question contains `&` and `?` as often as not.
+ */
+function enterHrefFor(philosopherId: string | null, question: string): string {
+  const params = new URLSearchParams();
+  if (philosopherId) params.set("philosopher", philosopherId);
+  const q = question.trim();
+  if (q) params.set("q", q);
+  const qs = params.toString();
+  return qs ? `/enter?${qs}` : "/enter";
+}
+
+export default UtopiaHero;

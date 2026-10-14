@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Generates the gate illustration: public/gate.png (900x900).
+ * Generates the gate illustration: public/gate.png (900x900) and
+ * public/gate.webp (320x320 for the dialog).
  *
  * Pure geometry — no text of any script. The gate copy carries the meaning; the
  * image only has to feel like an open door rather than a locked one, because the
@@ -18,6 +19,7 @@ import sharp from "sharp";
 
 const SIZE = 900;
 const OUT = resolve(process.cwd(), "public/gate.png");
+const WEBP_OUT = resolve(process.cwd(), "public/gate.webp");
 
 const GOLD = "#d4af37";
 const GOLD_LIGHT = "#e7d9a1";
@@ -92,9 +94,16 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${S
 
 mkdirSync(resolve(process.cwd(), "public"), { recursive: true });
 await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toFile(OUT);
+await sharp(Buffer.from(svg))
+  .resize(320, 320)
+  .webp({ quality: 80, effort: 6 })
+  .toFile(WEBP_OUT);
 
 const size = statSync(OUT).size;
 console.log(`gate image written: public/gate.png  ${SIZE}x${SIZE}  ${(size / 1024).toFixed(1)} KB`);
+console.log(
+  `gate image written: public/gate.webp  320x320  ${(statSync(WEBP_OUT).size / 1024).toFixed(1)} KB`
+);
 
-if (!existsSync(OUT)) process.exit(1);
+if (!existsSync(OUT) || !existsSync(WEBP_OUT)) process.exit(1);
 void writeFileSync;

@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { log } from "@/lib/log";
 import { Logo } from "@/components/Logo";
 
-export const runtime = "edge";
 
 /**
  * Route-level error boundary.

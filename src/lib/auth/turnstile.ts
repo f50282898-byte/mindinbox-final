@@ -94,8 +94,11 @@ export function turnstileConfigured(): boolean {
  *
  * Cloudflare sets `CF-Connecting-IP`. On other hosts this is absent, and we
  * simply omit it — Turnstile works without it.
+ *
+ * A thin alias over `lib/http.ts`, which is the single definition of this rule.
+ * This file previously carried its own copy of the same two lines, which is
+ * exactly the drift `lib/http.ts` exists to prevent: two places deciding who gets
+ * counted against which limit. Kept as a named export so the call sites in
+ * `/api/auth/turnstile` read the same as before.
  */
-export function clientIpFromHeaders(headers: Headers): string | null {
-  const ip = headers.get("cf-connecting-ip") ?? headers.get("x-real-ip");
-  return ip && /^[\d.:a-f]{3,45}$/i.test(ip) ? ip : null;
-}
+export { clientIp as clientIpFromHeaders } from "@/lib/http";

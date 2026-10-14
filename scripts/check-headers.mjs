@@ -46,16 +46,49 @@ function readOrFail(path, label) {
 /* ── 1. every directive in the module appears in _headers ──────────────────── */
 
 /**
- * Extracts the CSP line from `_headers`.
+ * The CSP line in `_headers`, active or not.
  *
- * The file has two `/* ... *\/` blocks; only the second carries the policy. Taking
- * the first match of `Content-Security-Policy:` is enough and avoids parsing blocks.
+ * Cloudflare's `_headers` recognises `#` as a comment and nothing else — there
+ * are no block comments, and the file previously used `/* ... *\/`, which
+ * Cloudflare would have tried to parse as a route pattern.
+ *
+ * The static policy is commented out on purpose: `middleware.ts` sends a
+ * nonce-bearing CSP with `strict-dynamic`, this one allows only
+ * `script-src 'self'`, and a response carrying both makes the browser enforce
+ * the intersection — so Next's inline flight scripts would fail it and the app
+ * would not hydrate.
+ *
+ * So the policy is read whether it is commented or active. That keeps the
+ * original job intact: `_headers` and `src/lib/security/csp.ts` cannot drift.
+ * `assertNoActiveStaticCsp` below guards the second half — that nobody turns
+ * the commented line back on.
  */
 function extractHeaderCsp(headers) {
   const line = headers
     .split(/\r?\n/)
+    .map((l) => l.replace(/^\s*#\s?/, ""))
     .find((l) => /^\s*Content-Security-Policy:/i.test(l));
   return line ? line.slice(line.indexOf(":") + 1).trim() : "";
+}
+
+/**
+ * Fails if `_headers` actually serves a CSP.
+ *
+ * Not a hypothetical: it is the state that would break the app, and it is the
+ * most plausible bad edit to this file — someone reads the commented policy,
+ * concludes it should be active, and uncomments it. The failure here says why.
+ */
+function assertNoActiveStaticCsp(headers) {
+  const active = headers
+    .split(/\r?\n/)
+    .find((l) => /^\s*Content-Security-Policy:/i.test(l) && !/^\s*#/.test(l));
+  if (!active) return;
+  errors.push(
+    "public/_headers serves an active Content-Security-Policy; it must stay commented out. " +
+      "middleware.ts sends a nonce-bearing policy, a response carrying two CSP headers is " +
+      "enforced as their intersection, and Next's inline scripts carry a nonce this one " +
+      "would reject — the app would stop hydrating. Change src/lib/security/csp.ts instead."
+  );
 }
 
 /** Parses a policy value into `{ directive: Set(origin) }`. */
@@ -145,6 +178,9 @@ if (headersText && cspText) {
       .some((l) => new RegExp(`^\\s*${name.replace(/[-]/g, "\\-")}\\s*:`, "i").test(l));
     if (!present) errors.push(`header "${name}" is in csp.ts but not in public/_headers`);
   }
+
+  /* And the one thing this file must never do: serve a second CSP. */
+  assertNoActiveStaticCsp(headersText);
 
   /* ── the two assertions that actually catch a regression ───────────────── */
 

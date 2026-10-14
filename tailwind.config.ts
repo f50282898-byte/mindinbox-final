@@ -46,10 +46,16 @@ const config: Config = {
           solid: "var(--surface-solid)",
         },
       },
+      /*
+       * Driven by the same `next/font` variables `globals.css` consumes, so a
+       * family is named in exactly one place. The concrete names stay in the chain
+       * as fallbacks: `next/font` emits `font-display: swap`, so the first frame
+       * renders before the variable-bearing stylesheet applies.
+       */
       fontFamily: {
-        sans: ["Cairo", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Georgia", "serif"],
-        naskh: ["Amiri", "Cairo", "serif"],
+        sans: ["var(--font-plex-arabic)", "Cairo", "system-ui", "sans-serif"],
+        serif: ["var(--font-cinzel)", "Playfair Display", "Georgia", "serif"],
+        naskh: ["var(--font-amiri)", "Cairo", "serif"],
       },
       transitionTimingFunction: {
         silk: "cubic-bezier(0.22, 1, 0.36, 1)",

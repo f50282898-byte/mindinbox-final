@@ -189,5 +189,5 @@ for (const f of findings) {
   console.error(`    ${f.kind}: ${f.preview}`);
 }
 console.error("\nA provider key in the client bundle is readable by anyone who views source.");
-console.error("Rotate the key, then move it behind an edge route.");
+console.error("Rotate the key, then move it behind an authenticated server route.");
 process.exit(1);

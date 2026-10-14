@@ -131,6 +131,64 @@ describe("site content validation", () => {
     expect(hasUniqueNavIds(validContent())).toBe(true);
     expect(HISTORY_DEPTH).toBeGreaterThan(1);
   });
+
+  /*
+    The regression this locks down.
+
+    `embedUrl` was `z.string().url()`, and zod's `.url()` only asserts that
+    `new URL(value)` parses. Both of these parse, so both were accepted and both
+    persisted through publish and undo — every validation of this document runs
+    this same schema, so "re-checked on read" was not happening anywhere.
+
+    Nothing renders `videos[].embedUrl` today, which is the only reason this was
+    a latent trap rather than a live stored XSS. This test exists so the day
+    someone wires it into an `<iframe src>`, the allow-list is already enforced.
+  */
+  it("refuses a video embedUrl that is not a canonical youtube-nocookie URL", () => {
+    // `id` must be lowercase a-z0-9 and dashes — the schema says so, and a YouTube
+    // video id is *not* a valid id here despite being what goes in `embedUrl`.
+    const video = {
+      id: "lecture-one",
+      title: { ar: "محاضرة", en: "Lecture" },
+      summary: { ar: "ملخّص", en: "Summary" },
+      embedUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    };
+
+    for (const hostile of [
+      "javascript:alert(document.cookie)",
+      "data:text/html,<script>alert(1)</script>",
+      // Protocol-relative: parses, and resolves to whatever the page's origin is.
+      "//evil.example.com/embed/x",
+      // Right host, wrong path — an allow-list is not a host check.
+      "https://www.youtube-nocookie.com/watch?v=dQw4w9WgXcQ",
+      // Lookalike host: passes a naive `.includes("youtube")`.
+      "https://www.youtube-nocookie.com.evil.example/embed/x",
+      // Non-nocookie embed: `toNoCookieEmbedUrl` would rewrite it, but it is not
+      // already-normalised, so it must not be *stored* as-is.
+      "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    ]) {
+      const result = validateSiteContent(
+        validContent({ videos: [{ ...video, embedUrl: hostile }] })
+      );
+      expect(result.ok, `should refuse: ${hostile}`).toBe(false);
+    }
+  });
+
+  it("still accepts the canonical nocookie embed URL", () => {
+    expect(
+      validateSiteContent({
+        ...validContent(),
+        videos: [
+          {
+            id: "lecture-one",
+            title: { ar: "محاضرة", en: "Lecture" },
+            summary: { ar: "ملخّص", en: "Summary" },
+            embedUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+          },
+        ],
+      }).ok
+    ).toBe(true);
+  });
 });
 
 /* ── the version lock ─────────────────────────────────────────────────────── */

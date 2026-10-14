@@ -92,30 +92,43 @@ async function readSubscription(uid: string): Promise<{ tier: Tier; expiresAt: n
   return { tier, expiresAt: atExpiry(tier, timestampToMs(doc.currentPeriodEnd)) };
 }
 
-/** Grants are documents named after the uid they were issued to. */
+/**
+ * Grants issued to `uid`.
+ *
+ * ## Why this reads one document instead of scanning the collection
+ *
+ * The previous version listed `grants` with a five-page cap — up to 1,500
+ * documents — on **every** AI request, every dialogue round, and every quote
+ * card, using the service account. That was wrong twice over:
+ *
+ *  - **Cost.** A full-collection scan on the hottest path in an Edge function,
+ *    executed to find a document whose id is already the uid.
+ *  - **Correctness.** Past 1,500 grants the tail became invisible. A reader who
+ *    had been granted a tier stopped being entitled, silently — no error, no log,
+ *    just a comped user returned to `free`. And the `catch { return [] }` turned a
+ *    Firestore quota error into *zero entitlements* rather than an error, which
+ *    fails in the direction that looks like a bug report rather than an incident.
+ *
+ * The convention was already documented right here — grants are documents named
+ * after the uid they were issued to — so this is a point read, and it cannot miss
+ * a document no matter how large the collection grows.
+ */
 async function readGrants(uid: string, now: number): Promise<Grant[]> {
-  let docs: Array<{ name: string; data: Record<string, unknown> }>;
+  let doc: Record<string, unknown> | null;
   try {
-    docs = await listDocuments("grants", 5);
+    doc = await getDocument<Record<string, unknown>>(`grants/${uid}`);
   } catch {
     return [];
   }
+  if (!doc) return [];
 
-  const out: Grant[] = [];
-  for (const doc of docs) {
-    // Prefer an indexed uid field; fall back to the document id convention.
-    const owner = typeof doc.data.uid === "string" ? doc.data.uid : doc.name === uid ? uid : null;
-    if (owner !== uid) continue;
+  const tier = asTier(doc.tier);
+  if (!tier) return [];
 
-    const tier = asTier(doc.data.tier);
-    if (!tier) continue;
+  const expiresAt = timestampToMs(doc.expiresAt);
+  if (expiresAt !== null && expiresAt <= now) return [];
 
-    const expiresAt = timestampToMs(doc.data.expiresAt);
-    if (expiresAt !== null && expiresAt <= now) continue;
-
-    out.push({ tier, expiresAt });
-  }
-  return out;
+  return [{ tier, expiresAt }];
 }
 
 function trialState(trialEnd: number | null, now: number): { active: boolean; daysLeft: number } {

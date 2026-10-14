@@ -79,12 +79,12 @@ export function DesktopHeader() {
 
             <button
               type="button"
-              onClick={() => document.documentElement.dataset.theme === "light" ? document.documentElement.dataset.theme = "dark" : document.documentElement.dataset.theme = "light"}
+              onClick={toggle}
               aria-label="تبديل الثيم"
               title="تبديل الثيم"
               className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
             >
-              {document.documentElement.dataset.theme === "light" ? (
+              {theme === "light" ? (
                 <>
                   <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <circle cx="12" cy="12" r="5" />
@@ -180,7 +180,7 @@ export function MobileBottomBar() {
 export function MobileHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
-  const { theme } = useTheme();
+  const { theme, toggle } = useTheme();
 
   if (isLanding) return null;
 
@@ -202,7 +202,7 @@ export function MobileHeader() {
 
           <button
             type="button"
-            onClick={() => document.documentElement.dataset.theme === "light" ? document.documentElement.dataset.theme = "dark" : document.documentElement.dataset.theme = "light"}
+            onClick={toggle}
             aria-label="تبديل الثيم"
             title="تبديل الثيم"
             className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"

@@ -272,6 +272,49 @@ writeFileSync(
   "utf8"
 );
 
+/*
+  A build-time availability flag, for `ArtLayer`.
+
+  ArtLayer used to discover this by fetching `art-manifest.json` from the client,
+  which meant the `<picture>` element was not in the server-rendered HTML at all —
+  the image was injected after hydration, so the browser had already recorded LCP
+  before the bytes were requested, and `fetchPriority="high"` could not help. It
+  also made every page pay a round trip before its background existed.
+
+  Presence of the artwork is a fact known at build time, so it is emitted as a
+  constant and imported directly. `ART_AVAILABLE[id] === false` still degrades to
+  the caller's `fallback` exactly as before; the difference is that a missing
+  artwork no longer costs a request to discover.
+
+  Committed on purpose: the emitted images under `public/art/` are committed too,
+  and a fresh clone must render them without anyone running the art pipeline
+  first. Re-running `npm run art:build` rewrites this file.
+*/
+const availableIds = Object.keys(artIndex.art);
+writeFileSync(
+  join(ROOT, "src", "lib", "art", "generated.ts"),
+  `/**
+ * GENERATED FILE — do not edit by hand.
+ * Written by \`scripts/build-art.mjs\`. Re-run \`npm run art:build\` to refresh it.
+ *
+ * Which artwork actually exists on disk. \`ArtLayer\` imports this instead of
+ * fetching \`art-manifest.json\` at runtime, so the \`<picture>\` is present in the
+ * server-rendered HTML and an above-the-fold image can be given a real
+ * \`fetchpriority\` rather than arriving after LCP was already recorded.
+ *
+ * An id that is \`false\` is not an error: the layer renders the caller's
+ * \`fallback\` and the page shows its token background.
+ */
+
+export const ART_AVAILABLE: Readonly<Record<string, boolean>> = ${JSON.stringify(
+    Object.fromEntries(availableIds.map((id) => [id, true])),
+    null,
+    2
+  )};
+`,
+  "utf8"
+);
+
 for (const w of warnings) console.log(`  warning: ${w}`);
 
 console.log(

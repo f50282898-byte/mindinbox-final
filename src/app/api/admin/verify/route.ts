@@ -3,7 +3,6 @@ import { requireUser, requireAdmin, authenticatedUser } from "@/lib/auth/guards"
 import { ADMIN_COOKIE, ADMIN_COOKIE_OPTIONS, issueAdminSession } from "@/lib/admin/session";
 import { log } from "@/lib/log";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

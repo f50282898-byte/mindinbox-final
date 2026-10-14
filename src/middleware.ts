@@ -6,13 +6,13 @@ import { renderCsp, SECURITY_HEADERS } from "@/lib/security/csp";
  *
  * ## Why middleware exists at all
  *
- * `public/_headers` is applied by the Cloudflare Pages edge and is the right place for
- * a *static* header set. It cannot supply a **nonce**, because a nonce has to be unique
- * per response and match the inline scripts in that same response. So the CSP is set
- * here, where a nonce can be minted, and `_headers` keeps a documented fallback.
+ * `public/_headers` is applied to static assets by Cloudflare and is the right place
+ * for a *static* header set. It cannot supply a **nonce**, because a nonce has to be
+ * unique per response and match the inline scripts in that same response. So the CSP
+ * is set here, where a nonce can be minted, and `_headers` keeps a documented fallback.
  *
  * The fallback matters: if the middleware is ever removed, misconfigured, or not
- * supported by the Pages adapter, the site degrades to a stricter-than-before policy
+ * supported by the Worker adapter, the site degrades to a stricter-than-before policy
  * rather than to none.
  *
  * ## How the nonce reaches Next's own scripts

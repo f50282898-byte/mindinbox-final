@@ -1,17 +1,52 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { Amiri, Cinzel, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { ShellChrome } from "@/components/ShellChrome";
 import { AppShell } from "@/components/AppShell";
 import { Shortcuts } from "@/components/Shortcuts";
 import { ThemeColorUpdater } from "@/components/ThemeColorUpdater";
 import { ThemeProvider, THEME_BOOTSTRAP_SCRIPT } from "@/components/ThemeProvider";
+import { AmbientAudioToggle } from "@/components/audio/AmbientAudioToggle";
 import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
 import { SITE_URL } from "@/lib/seo";
 import { ViewTransitions } from "@/components/ViewTransitions";
 
-export const runtime = "edge";
+
+/*
+  Three faces, each with one job.
+
+  `next/font/google` rather than a `<link>` to fonts.googleapis.com: the font files
+  are fetched and self-hosted at build time, so the render never waits on a third
+  party, there is no third-party request to leak a visitor to, and `font-display:
+  swap` is applied per family instead of by a query string.
+
+  Every family exposes a CSS variable rather than a `className`, because the token
+  indirection already exists — `globals.css` reads `--font-ui` / `--font-display-ar`
+  / `--font-display-lat` — and mapping the variables here keeps one source of truth
+  for "which face is this" instead of two.
+*/
+const amiri = Amiri({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
+  display: "swap",
+});
+
+const plexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-arabic",
+  display: "swap",
+});
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-cinzel",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -109,16 +144,9 @@ export default async function RootLayout({
       // `dark` is the default; the Parchment theme is opt-in via [data-theme="light"].
       data-theme="dark"
       suppressHydrationWarning
+      className={`${amiri.variable} ${plexArabic.variable} ${cinzel.variable}`}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* The App Router root layout is the document-level font entry point. */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <meta name="view-transition" content="same-origin" />
         {/*
           Both bootstraps run before first paint so neither the theme nor the
@@ -151,13 +179,22 @@ export default async function RootLayout({
                   <ThemeColorUpdater />
                   <ViewTransitions />
                   {/*
+                    Inside the app shell, so the toggle is never rendered while a
+                    paywall gate or a dialog owns the screen. It is fixed-position
+                    and self-dismissing; it holds no state the tree needs.
+                  */}
+                  <AmbientAudioToggle />
+                  {/*
                     `.shell-content` insets the content past the fixed rail on
                     desktop; see the comment on that rule in globals.css for
                     why it is CSS and not a Tailwind arbitrary value.
+
+                    No `<main>` here. `ShellChrome` above owns the single main
+                    landmark in both of its branches, so wrapping the children
+                    again produced two `<main id="main">` on every route with
+                    chrome, and made the skip-link target ambiguous.
                   */}
-                  <main id="main" className="shell-content min-h-screen pb-24 md:pb-0">
-                    {children}
-                  </main>
+                  {children}
                 </AppShell>
               </ShellChrome>
             </ShellProvider>

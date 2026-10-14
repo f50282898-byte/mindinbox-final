@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { requireUser, authenticatedUser } from "@/lib/auth/guards";
 import { getEntitlements } from "@/lib/entitlements";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

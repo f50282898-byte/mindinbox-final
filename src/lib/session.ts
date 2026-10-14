@@ -28,7 +28,7 @@ import type { Tier } from "@/lib/tiers";
 
 export type AuthState = "loading" | "anonymous" | "member" | "unavailable";
 
-/** Asks the edge route whether this token really carries `admin: true`. */
+/** Asks the server route whether this token really carries `admin: true`. */
 async function checkAdminClaim(user: User): Promise<boolean> {
   try {
     const token = await user.getIdToken();

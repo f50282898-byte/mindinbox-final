@@ -17,6 +17,7 @@ import { getEntitlements } from "@/lib/entitlements";
 import { clientIp } from "@/lib/http";
 import { log } from "@/lib/log";
 import { recordUsage } from "@/lib/metrics";
+import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
 import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
 import {
   FULL_ROUNDS,
@@ -26,7 +27,6 @@ import {
   terminalFor,
 } from "@/lib/ai/dialogue-policy";
 
-export const runtime = "edge";
 
 
 const PERSONA_IDS = PERSONAS.map((p) => p.id) as string[];
@@ -75,10 +75,22 @@ export async function POST(request: Request): Promise<Response> {
   const startedAt = Date.now();
 
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    parsed = bodySchema.parse(await request.json());
-  } catch {
-    return jsonError({ error: "طلب غير صالح." }, 400);
+  {
+    /*
+      Bounded read, not `request.json()`.
+
+      zod's `.max()` bounds a field *after* the body has already been buffered and
+      handed to `JSON.parse`, so it is not a request-size limit. `readJsonBody`
+      checks `Content-Length` first, then reads with a hard cap, and only then
+      parses. `BODY_LIMITS.dialogue` (16 KB) was already declared for exactly this
+      route and was simply never wired up.
+
+      Behaviour change: an oversized body now returns 413 instead of 400. The
+      client-facing message is unchanged, so nothing in the UI has to know.
+    */
+    const body = await readJsonBody(request, bodySchema, "dialogue");
+    if (!body.ok) return jsonError({ error: BODY_REJECTED_MESSAGE }, bodyErrorStatus(body));
+    parsed = body.value;
   }
 
   const settings = applyRemoteAiSettings(resolveAiSettings(), null);

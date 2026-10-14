@@ -11,6 +11,16 @@ export interface LogoProps {
   className?: string;
   /** aria-label override. */
   ariaLabel?: string;
+  /**
+   * Eager-load and de-prioritise the preload scanner.
+   *
+   * Only for a logo inside the first viewport. `next/image` lazy-loads by default,
+   * which means a hero logo asks for its own bytes *after* the browser has already
+   * been told what the LCP element is — the image arrives one round trip late for
+   * a 1.7KB file. Off everywhere else, where it would only compete with real
+   * content for bandwidth.
+   */
+  priority?: boolean;
 }
 
 /**
@@ -22,6 +32,7 @@ export function Logo({
   withWordmark = false,
   className = "",
   ariaLabel,
+  priority = false,
 }: LogoProps) {
   const defaultAriaLabel = `عقل في صندوق${withWordmark ? " — Mind in a Box" : ""}`;
 
@@ -31,12 +42,13 @@ export function Logo({
       aria-hidden={withWordmark ? "true" : undefined}
     >
       <Image
-        src="/images/Logo_representing_philosophical___2K_20260922065211.webp"
+        src="/images/logo-128.webp"
         alt={withWordmark ? "" : ariaLabel ?? defaultAriaLabel}
         width={size}
         height={size}
         sizes={`${size}px`}
         unoptimized
+        priority={priority}
         className="shrink-0 rounded-full bg-[#f8f4e8] object-contain"
       />
 

@@ -5,7 +5,6 @@ import { TIER_DEFINITIONS } from "@/lib/tiers";
 // import { recordWrite } from "@/lib/admin/audit";
 import { checkPricingConsistency } from "@/lib/admin/site-store";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**

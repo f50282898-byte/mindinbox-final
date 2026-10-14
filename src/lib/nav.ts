@@ -168,15 +168,6 @@ export const FALLBACK_NAV: NavItem[] = [
     requires: "free",
     group: "account",
   },
-  {
-    id: "refund",
-    href: "/refund",
-    label: { ar: "الاسترداد", en: "Refund" },
-    short: { ar: "الاسترداد", en: "Refund" },
-    icon: "RotateCcw",
-    requires: "free",
-    group: "account",
-  },
 ];
 
 /** Routes that exist but must never appear in navigation or the sitemap. */
