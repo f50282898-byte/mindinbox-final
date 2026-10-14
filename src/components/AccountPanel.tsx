@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AuthActionError,
@@ -258,9 +259,9 @@ export function AccountPanel() {
         {isAnonymous && (
           <Notice kind="warn">
             أنت داخل كضيف.{" "}
-            <a href="/enter" className="underline underline-offset-4">
+            <Link href="/enter" className="underline underline-offset-4">
               أنشئ حساباً
-            </a>{" "}
+            </Link>{" "}
             وسنحفظ سجلّك تحت نفس المعرّف.
           </Notice>
         )}

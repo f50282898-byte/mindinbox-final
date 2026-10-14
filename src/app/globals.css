@@ -555,8 +555,11 @@
    * rail — which is exactly the failure this is meant to prevent, so it is
    * worth stating in one deterministic place.
    *
-   * --rail-w is published by <Shell> and is 0 until it mounts. Mobile is
-   * untouched here; it clears the bottom bar with padding-block-end instead.
+   * --rail-w is published by `ShellProvider` in `lib/shell-config.tsx`, and is 0
+   * until the rail state is known. It used to name `<Shell>`, a component nothing
+   * imported and that has now been removed; the rail itself is rendered by
+   * `ShellChrome`. Mobile is untouched here; it clears the bottom bar with
+   * padding-block-end instead.
    */
   @media (min-width: 768px) {
     .shell-content {

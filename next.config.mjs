@@ -36,10 +36,21 @@ const nextConfig = {
 
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
-    turbo: {
-      resolveAlias: {
-        "@/*": "./src/*",
-      },
+  },
+
+  /*
+    Moved out of `experimental` in Next 15 — `experimental.turbo` is deprecated and
+    logs on every build. The equivalent key is the top-level `turbopack`, which is
+    only consulted when a Turbopack build is requested; `next build` and
+    `next dev` without `--turbopack` still use webpack and ignore it.
+
+    The `@/*` alias is also declared in `tsconfig.json` paths and is resolved by
+    webpack from there, so this entry is a convenience for Turbopack runs rather
+    than load-bearing for the build.
+  */
+  turbopack: {
+    resolveAlias: {
+      "@/*": "./src/*",
     },
   },
 
@@ -52,9 +63,6 @@ const nextConfig = {
     };
     return config;
   },
-
-  // Enable SWC minification (default in Next 15)
-  swcMinify: true,
 };
 
 export default nextConfig;
