@@ -6,6 +6,7 @@ import { jsonError } from "@/lib/ai/http";
 import { log } from "@/lib/log";
 import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
 
+export const runtime = "edge";
 
 /**
  * Quote card download.

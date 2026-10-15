@@ -3,6 +3,7 @@ import { DailyTracker } from "@/components/DailyTracker";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl, getCanonicalUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "متتبع الوعي",

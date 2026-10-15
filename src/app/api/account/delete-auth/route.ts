@@ -4,6 +4,8 @@ import { requireUser, authenticatedUser } from "@/lib/auth/guards";
 import { getAccessToken, serviceProjectId } from "@/lib/google/token";
 import { log } from "@/lib/log";
 
+export const runtime = "edge";
+
 export const dynamic = "force-dynamic";
 
 /**

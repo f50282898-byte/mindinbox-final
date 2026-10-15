@@ -2,6 +2,7 @@
 import { QuotesApp } from "@/components/quotes/QuotesApp";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "اقتباسات",

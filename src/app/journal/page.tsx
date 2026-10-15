@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JournalApp } from "@/components/journal/JournalApp";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "المفكرة",

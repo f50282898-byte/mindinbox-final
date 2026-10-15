@@ -8,6 +8,8 @@ import {
   readPublished,
 } from "@/lib/admin/site-store";
 
+export const runtime = "edge";
+
 export const dynamic = "force-dynamic";
 
 /**

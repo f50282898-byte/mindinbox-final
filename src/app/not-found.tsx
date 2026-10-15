@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Compass } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
+export const runtime = "edge";
 
 /**
  * 404.

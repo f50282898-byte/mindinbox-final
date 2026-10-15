@@ -13,6 +13,7 @@ import {
   type GlobalSwitch,
 } from "@/lib/signals/consent";
 
+export const runtime = "edge";
 
 /**
  * The signal receiver.

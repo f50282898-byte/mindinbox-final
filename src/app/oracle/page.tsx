@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { MemberLibrary } from "@/components/MemberLibrary";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "العرّاف — The Oracle",

@@ -4,6 +4,7 @@ import { EnterTemple } from "@/components/enter/EnterTemple";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { getCanonicalUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "المدخل",

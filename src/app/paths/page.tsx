@@ -4,6 +4,7 @@ import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 import { FALLBACK_SITE_CONFIG } from "@/lib/site-config";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "المسارات",

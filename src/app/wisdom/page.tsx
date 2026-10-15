@@ -3,6 +3,7 @@ import { WisdomChat } from "@/components/WisdomChat";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { absoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "اسأل الحكيم",

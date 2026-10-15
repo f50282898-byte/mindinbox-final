@@ -18,6 +18,8 @@ import { clientIp } from "@/lib/http";
 import { recordUsage } from "@/lib/metrics";
 import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
 
+export const runtime = "edge";
+
 export const dynamic = "force-dynamic";
 
 /* ── request shape ───────────────────────────────────────────────────────── */
