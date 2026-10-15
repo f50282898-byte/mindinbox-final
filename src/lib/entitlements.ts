@@ -18,7 +18,7 @@
 
 import type { Tier, TierEntitlements } from "@/lib/tiers";
 import { TIER_DEFINITIONS, TIER_ORDER } from "@/lib/tiers";
-import { getDocument, listDocuments } from "@/lib/google/firestore-rest";
+import { getDocument } from "@/lib/google/firestore-rest";
 
 export interface Grant {
   /** Which tier the grant confers. */

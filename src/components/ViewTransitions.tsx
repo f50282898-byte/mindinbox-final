@@ -18,16 +18,12 @@ import { useRouter } from "next/navigation";
  */
 export function ViewTransitions() {
   const pathname = usePathname();
-  const router = useRouter();
   const lastPathRef = useRef(pathname);
   const transitioningRef = useRef(false);
 
   useEffect(() => {
     // Only run on client side
     if (typeof window === "undefined") return;
-
-    // Check if View Transitions API is supported
-    const supportsViewTransitions = typeof document.startViewTransition === "function";
 
     const handleRouteChange = async () => {
       if (transitioningRef.current) return;

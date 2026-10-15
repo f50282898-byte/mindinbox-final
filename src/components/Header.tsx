@@ -4,8 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ThemeProvider";
 import { Logo } from "@/components/Logo";
-import { desktopPrimary, mobilePrimary, type NavItem, FALLBACK_NAV } from "@/lib/nav";
-import { useLocale } from "@/lib/i18n";
+import { desktopPrimary, mobilePrimary, FALLBACK_NAV } from "@/lib/nav";
 import * as Icons from "lucide-react";
 
 /* Icons mapping */
@@ -20,9 +19,7 @@ function iconFor(name: string) {
  */
 export function DesktopHeader() {
   const pathname = usePathname();
-  const { t } = useLocale();
   const { theme, toggle } = useTheme();
-  const items = desktopPrimary(FALLBACK_NAV);
 
   return (
     <header
@@ -129,8 +126,6 @@ export function DesktopHeader() {
  */
 export function MobileBottomBar() {
   const pathname = usePathname();
-  const { t } = useLocale();
-  const items = mobilePrimary(FALLBACK_NAV);
 
   return (
     <nav
@@ -141,7 +136,6 @@ export function MobileBottomBar() {
         <ul className="grid grid-cols-4" role="tablist">
           {mobilePrimary(FALLBACK_NAV).map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            const Icon = iconFor(item.icon);
             return (
               <li key={item.id} role="presentation">
                 <Link
@@ -180,7 +174,7 @@ export function MobileBottomBar() {
 export function MobileHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
-  const { theme, toggle } = useTheme();
+  const { toggle } = useTheme();
 
   if (isLanding) return null;
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useLocale } from "@/lib/i18n";
 import { Logo } from "@/components/Logo";
-import { NAV_GROUPS, groupItems, FALLBACK_NAV } from "@/lib/nav";
+import { groupItems, FALLBACK_NAV } from "@/lib/nav";
 
 /**
  * Footer — minimal, clean, RTL.
