@@ -27,7 +27,7 @@ import {
   terminalFor,
 } from "@/lib/ai/dialogue-policy";
 
-export const runtime = "edge";
+
 
 const PERSONA_IDS = PERSONAS.map((p) => p.id) as string[];
 

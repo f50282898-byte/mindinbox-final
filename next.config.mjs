@@ -1,11 +1,13 @@
 /**
- * Next.js configuration — Cloudflare Pages via `@cloudflare/next-on-pages`.
+ * Next.js configuration — OpenNext on Cloudflare Workers.
  *
- * Every dynamic route exports `runtime = "edge"`, which the adapter requires.
- * The server code is Edge-safe by construction: no Node built-ins, no
- * `firebase-admin`, and service-account auth is minted with `jose` over Web
- * Crypto against Firestore's REST API.
+ * OpenNext runs the application on Workers' Node.js compatibility runtime.
+ * Next.js Edge Runtime route exports are not supported by the Cloudflare adapter.
  */
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+initOpenNextCloudflareForDev();
+
 const nextConfig = {
   reactStrictMode: true,
 

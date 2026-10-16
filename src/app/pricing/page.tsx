@@ -2,7 +2,6 @@
 import { PricingGrid } from "@/components/PricingGrid";
 import { absoluteUrl } from "@/lib/seo";
 
-export const runtime = "edge";
 
 export const metadata: Metadata = {
   title: "العضويات",

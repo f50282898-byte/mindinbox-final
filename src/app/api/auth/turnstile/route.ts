@@ -7,8 +7,6 @@ import {
   readJsonBody,
 } from "@/lib/security/body";
 
-export const runtime = "edge";
-
 export const dynamic = "force-dynamic";
 
 /**

@@ -8,8 +8,6 @@ import {
 } from "@/lib/google/firestore-rest";
 import { log } from "@/lib/log";
 
-export const runtime = "edge";
-
 export const dynamic = "force-dynamic";
 
 /**
