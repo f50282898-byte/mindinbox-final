@@ -14,13 +14,25 @@ const SRC = resolve(ROOT, "src");
 const OUTPUT = resolve(ROOT, ".open-next");
 const CONFIG = resolve(ROOT, "wrangler.jsonc");
 const NODE_EDGE_RUNTIME = /export\s+const\s+runtime\s*=\s*["']edge["']/;
+/**
+ * Provider key formats and PEM private keys.
+ *
+ * These are deliberately anchored on a recognisable vendor prefix. A generic
+ * "long base64 string" rule was removed: it matched the DWARF/Rust panic
+ * backtrace symbol tables that `sharp`'s native binary contributes to the
+ * bundle (base64 of binary data very often begins with `AAAA`), so it fired on
+ * every single build and could never be satisfied.
+ *
+ * Source-tree secrets are covered separately and more precisely by
+ * `check-no-keys.mjs` (`npm run check:keys`); this list only guards what the
+ * bundler might inline into the Worker output.
+ */
 const SECRET_PATTERNS = [
   /gsk_[0-9A-Za-z]{20,}/,
   /nvapi-[0-9A-Za-z\-_]{20,}/,
   /sk-[0-9A-Za-z]{20,}/,
   /cfat_[0-9A-Za-z]{20,}/,
   /-----BEGIN [A-Z ]+-----[\r\n\\n]+[A-Za-z0-9+/=\r\n\\]{40,}-----END [A-Z ]+-----/,
-  /AAAA[A-Za-z0-9_\-]{30,}/,
 ];
 
 const errors = [];
@@ -28,6 +40,9 @@ const errors = [];
 function walk(dir, extensions) {
   const files = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    // Vendored dependencies are not our code and cannot hold a secret we
+    // introduced; OpenNext copies a full node_modules tree into the output.
+    if (entry.name === "node_modules") continue;
     const file = resolve(dir, entry.name);
     if (entry.isDirectory()) {
       files.push(...walk(file, extensions));
