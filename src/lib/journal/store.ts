@@ -51,6 +51,7 @@ import {
   type DayDocument,
   type Habit,
   type JournalSettings,
+  type Note,
   type Principle,
 } from "./types";
 
@@ -92,11 +93,13 @@ interface PersistedShape {
   days: Record<string, DayDocument>;
   habits: Habit[];
   principles: Principle[];
+  notes: Note[];
   settings: JournalSettings;
   /** Mutations not yet confirmed by the server. */
   dirtyDays: DayKey[];
   dirtyHabits: boolean;
   dirtyPrinciples: boolean;
+  dirtyNotes: boolean;
   dirtySettings: boolean;
 }
 
@@ -105,10 +108,12 @@ function emptyPersisted(): PersistedShape {
     days: {},
     habits: [],
     principles: [],
+    notes: [],
     settings: defaultJournalSettings(),
     dirtyDays: [],
     dirtyHabits: false,
     dirtyPrinciples: false,
+    dirtyNotes: false,
     dirtySettings: false,
   };
 }
@@ -125,10 +130,12 @@ function readLocal(): PersistedShape {
       days: parsed.days ?? {},
       habits: Array.isArray(parsed.habits) ? parsed.habits : [],
       principles: Array.isArray(parsed.principles) ? parsed.principles : [],
+      notes: Array.isArray(parsed.notes) ? parsed.notes : [],
       settings: { ...defaultJournalSettings(), ...(parsed.settings ?? {}) },
       dirtyDays: Array.isArray(parsed.dirtyDays) ? parsed.dirtyDays.filter(isDayKey) : [],
       dirtyHabits: Boolean(parsed.dirtyHabits),
       dirtyPrinciples: Boolean(parsed.dirtyPrinciples),
+      dirtyNotes: Boolean(parsed.dirtyNotes),
       dirtySettings: Boolean(parsed.dirtySettings),
     };
   } catch {
@@ -150,6 +157,7 @@ function writeLocal(state: PersistedShape): void {
       JSON.stringify({
         ...state,
         days: Object.fromEntries(sorted.map((d) => [d.date, d])),
+        notes: state.notes,
         // Keep only the dirty keys that still exist, so the queue cannot grow
         // without bound or reference deleted days.
         dirtyDays: state.dirtyDays.filter((k) => k in Object.fromEntries(sorted.map((d) => [d.date, d]))),
@@ -182,10 +190,12 @@ interface JournalState {
   days: Record<string, DayDocument>;
   habits: Habit[];
   principles: Principle[];
+  notes: Note[];
   settings: JournalSettings;
   dirtyDays: DayKey[];
   dirtyHabits: boolean;
   dirtyPrinciples: boolean;
+  dirtyNotes: boolean;
   dirtySettings: boolean;
   /** True while a sync drain is in flight. */
   syncing: boolean;
@@ -214,6 +224,12 @@ interface JournalState {
   addPrinciple: (text: string) => void;
   removePrinciple: (id: string) => void;
 
+  /** Notes (bento workspace) */
+  addNote: (input: Omit<Note, "id" | "createdAt" | "updatedAt">) => void;
+  updateNote: (id: string, patch: Partial<Note>) => void;
+  deleteNote: (id: string) => void;
+  togglePinNote: (id: string) => void;
+
   updateSettings: (patch: Partial<JournalSettings>) => void;
 
   flush: (uid: string | null) => Promise<void>;
@@ -230,10 +246,12 @@ export const useJournal = create<JournalState>()((set, get) => {
         days: next.days,
         habits: next.habits,
         principles: next.principles,
+        notes: next.notes,
         settings: next.settings,
         dirtyDays: next.dirtyDays,
         dirtyHabits: next.dirtyHabits,
         dirtyPrinciples: next.dirtyPrinciples,
+        dirtyNotes: next.dirtyNotes,
         dirtySettings: next.dirtySettings,
       });
       return patch;
@@ -261,10 +279,12 @@ export const useJournal = create<JournalState>()((set, get) => {
     days: {},
     habits: [],
     principles: [],
+    notes: [],
     settings: defaultJournalSettings(),
     dirtyDays: [],
     dirtyHabits: false,
     dirtyPrinciples: false,
+    dirtyNotes: false,
     dirtySettings: false,
     syncing: false,
     syncError: null,
@@ -455,6 +475,47 @@ export const useJournal = create<JournalState>()((set, get) => {
       }));
     },
 
+    /* ═══ Notes (bento workspace) ═══ */
+
+    addNote: (input) => {
+      const now = Date.now();
+      const note: Note = {
+        ...input,
+        id: crypto.randomUUID(),
+        createdAt: now,
+        updatedAt: now,
+      };
+      mutate((s) => ({
+        notes: [note, ...s.notes],
+        dirtyNotes: true,
+      }));
+    },
+
+    updateNote: (id, patch) => {
+      mutate((s) => ({
+        notes: s.notes.map((n) =>
+          n.id === id ? { ...n, ...patch, updatedAt: Date.now() } : n
+        ),
+        dirtyNotes: true,
+      }));
+    },
+
+    deleteNote: (id) => {
+      mutate((s) => ({
+        notes: s.notes.filter((n) => n.id !== id),
+        dirtyNotes: true,
+      }));
+    },
+
+    togglePinNote: (id) => {
+      mutate((s) => ({
+        notes: s.notes.map((n) =>
+          n.id === id ? { ...n, pinned: !n.pinned, updatedAt: Date.now() } : n
+        ),
+        dirtyNotes: true,
+      }));
+    },
+
     updateSettings: (patch) => {
       mutate((s) => {
         const settings = { ...s.settings, ...patch };
@@ -512,15 +573,28 @@ export const useJournal = create<JournalState>()((set, get) => {
           queued += 1;
         }
 
+        if (state.dirtyNotes && state.notes.length > 0) {
+          batch.set(doc(db, paths.userNotes(uid)), { items: state.notes }, { merge: true });
+          queued += 1;
+        }
+
         if (queued > 0) await batch.commit();
 
         set(() => ({
           dirtyDays: [],
           dirtyHabits: false,
           dirtyPrinciples: false,
+          dirtyNotes: false,
           dirtySettings: false,
         }));
-        writeLocal({ ...readLocal(), dirtyDays: [], dirtyHabits: false, dirtyPrinciples: false, dirtySettings: false });
+        writeLocal({
+          ...readLocal(),
+          dirtyDays: [],
+          dirtyHabits: false,
+          dirtyPrinciples: false,
+          dirtyNotes: false,
+          dirtySettings: false,
+        });
 
         // Mirror, so another device's edits arrive.
         observeRemote(uid);
@@ -604,6 +678,12 @@ function observeRemote(uid: string): void {
     useJournal.setState((s) => ({
       settings: { ...s.settings, ...data, timeZone: resolveTimeZone(data.timeZone ?? s.settings.timeZone) },
     }));
+  });
+
+  onSnapshot(doc(db, paths.userNotes(uid)), (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data() as { items?: Note[] };
+    useJournal.setState({ notes: Array.isArray(data.items) ? data.items : [] });
   });
 }
 

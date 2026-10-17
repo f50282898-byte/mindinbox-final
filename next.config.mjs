@@ -23,11 +23,6 @@ const nextConfig = {
 
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
-    turbo: {
-      resolveAlias: {
-        "@/*": "./src/*",
-      },
-    },
   },
 
   webpack: (config) => {
@@ -37,6 +32,37 @@ const nextConfig = {
       sideEffects: false,
     };
     return config;
+  },
+
+  /** Security headers applied to every response from this Next.js app. */
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+          },
+        ],
+      },
+    ];
   },
 };
 

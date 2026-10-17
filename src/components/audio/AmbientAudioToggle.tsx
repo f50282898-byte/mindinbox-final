@@ -89,7 +89,7 @@ export function AmbientAudioToggle() {
       className={`pointer-events-auto fixed bottom-24 left-4 z-40 flex size-11 items-center justify-center rounded-full border backdrop-blur-md transition-colors duration-500 md:bottom-8 md:left-auto md:right-8 ${
         on
           ? "border-gold/45 bg-gold/[0.10] text-gold-light"
-          : "border-gold/20 bg-black/50 text-gold-muted/70 hover:border-gold/35 hover:text-gold-light"
+          : "border-white/10 bg-white/[0.04] text-zinc-300 hover:border-amber-500/30 hover:text-zinc-100"
       }`}
     >
       {/*

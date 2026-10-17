@@ -10,11 +10,8 @@ import { useRouter } from "next/navigation";
  * Uses the View Transitions API for same-document transitions when available,
  * with a CSS-based fallback for browsers that don't support it.
  *
- * The approach:
- * 1. On navigation, we capture the current state
- * 2. If View Transitions API is supported, use document.startViewTransition()
- * 3. Fallback: CSS-based crossfade using a transitioning overlay
- * 3. Skip for external links, downloads, etc.
+ * Transitions are kept fast (220ms) so navigation feels instant and premium —
+ * like a single-page application, not a document reload.
  */
 export function ViewTransitions() {
   const pathname = usePathname();
@@ -31,13 +28,11 @@ export function ViewTransitions() {
 
       try {
         if (typeof document.startViewTransition === "function") {
-          // Use native View Transitions API
           await document.startViewTransition(() => {
             // The navigation has already happened by the time this runs
             // because Next.js handles the navigation
           }).finished;
         } else {
-          // Fallback: CSS-based crossfade
           await fallbackTransition();
         }
       } finally {
@@ -45,12 +40,8 @@ export function ViewTransitions() {
       }
     };
 
-    // Listen for route changes
     lastPathRef.current = pathname;
 
-    // For View Transitions API, we need to intercept navigation
-    // This is handled by the ViewTransitionsLink wrapper on links
-    // But we can also listen for popstate for browser back/forward
     const handlePopState = () => {
       handleRouteChange();
     };
@@ -62,11 +53,10 @@ export function ViewTransitions() {
     };
   }, [pathname]);
 
-  // Fallback transition using CSS crossfade
+  // Fallback transition using CSS crossfade — fast and premium
   const fallbackTransition = async (): Promise<void> => {
     if (typeof document === "undefined") return;
 
-    // Create transition overlay
     const overlay = document.createElement("div");
     overlay.style.cssText = `
       position: fixed;
@@ -75,30 +65,28 @@ export function ViewTransitions() {
       z-index: 9999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 200ms var(--ease-silk);
+      transition: opacity 220ms var(--ease-silk);
     `;
     document.body.appendChild(overlay);
 
-    // Fade in
     requestAnimationFrame(() => {
       overlay.style.opacity = "1";
     });
 
-    // Wait for fade in
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 110));
 
-    // Fade out
     overlay.style.opacity = "0";
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 220));
 
-    // Cleanup
     overlay.remove();
   };
 
   return null;
 }
 
-// Hook for components that want to trigger transitions manually
+/**
+ * Hook for components that want to trigger transitions manually
+ */
 export function useViewTransition() {
   const router = useRouter();
 
@@ -111,7 +99,7 @@ export function useViewTransition() {
           } else {
             router.push(href);
           }
-        });
+        }).finished.catch(() => {});
       } else {
         if (options?.replace) {
           router.replace(href);
@@ -145,7 +133,7 @@ export function ViewTransitionLink({
 }) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-      return; // Let browser handle normally
+      return;
     }
 
     e.preventDefault();
@@ -157,11 +145,9 @@ export function ViewTransitionLink({
         } else {
           window.history.pushState(null, "", href);
         }
-        // Trigger Next.js router update
         window.dispatchEvent(new PopStateEvent("popstate"));
       }).finished.catch(() => {});
     } else {
-      // Fallback navigation
       if (replace) {
         window.history.replaceState(null, "", href);
       } else {
@@ -175,7 +161,6 @@ export function ViewTransitionLink({
     <a
       href={href}
       onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-        // Modified and non-primary clicks keep their native behaviour.
         if (
           e.metaKey ||
           e.ctrlKey ||
@@ -189,6 +174,7 @@ export function ViewTransitionLink({
         if (onClick) onClick(e);
       }}
       className={className}
+      style={{ viewTransitionName: "navigate" }}
     >
       {children}
     </a>

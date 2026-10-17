@@ -245,15 +245,6 @@ export function ArtLayer({
         />
       </picture>
 
-      {/* The scrim. `volcanic` is #050505 on dark and #f4efe4 on Parchment, so this one
-          declaration is correct in both themes. See the note at the top. */}
-      {entry.scrim === "vertical" && (
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-volcanic/85 via-volcanic/45 to-volcanic/95" />
-      )}
-      {entry.scrim === "radial" && (
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_62%_58%_at_50%_50%,rgb(var(--volcanic)/0.82),rgb(var(--volcanic)/0.4)_65%,transparent_88%)]" />
-      )}
-
       {children}
     </div>
   );

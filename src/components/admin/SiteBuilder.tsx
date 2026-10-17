@@ -281,7 +281,7 @@ export function SiteBuilder() {
           <iframe
             title="معاينة الموقع"
             src="/?preview=1"
-            className="h-[420px] w-full rounded-xl border border-white/10 bg-black"
+            className="h-[420px] w-full rounded-xl border border-white/10 bg-white/[0.04]"
           />
           <p className="mt-2 text-xs text-gold-muted/60">
             المعاينة تحمّل الصفحة الحقيقية. ما تراه في «ترتيب الشريط» هو ما سيظهر بعد
@@ -317,7 +317,7 @@ function SortableNavRow({
     <li
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-black/30 p-2 ${
+      className={`flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2 ${
         isDragging ? "opacity-70" : ""
       }`}
     >
@@ -345,7 +345,7 @@ function SortableNavRow({
         dir="rtl"
         value={item.label.ar}
         onChange={(e) => onRename("ar", e.target.value)}
-        className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-1 text-sm text-gold-light outline-none focus:border-accent-solid/60"
+        className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-sm text-zinc-100 outline-none focus:border-accent-solid/60"
       />
 
       <label className="sr-only" htmlFor={`en-${item.id}`}>
@@ -356,7 +356,7 @@ function SortableNavRow({
         dir="ltr"
         value={item.label.en}
         onChange={(e) => onRename("en", e.target.value)}
-        className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-1 text-sm text-gold-light outline-none focus:border-accent-solid/60"
+        className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-sm text-zinc-100 outline-none focus:border-accent-solid/60"
       />
 
       <button

@@ -13,8 +13,6 @@ test-results/
 playwright-report/
 blob-report/
 .playwright/
-docs/audit/
-docs/audit-smoke/
 
 # Build, dev and audit logs.
 #

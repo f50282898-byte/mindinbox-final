@@ -32,7 +32,7 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
   */
   if (chromeless) {
     return (
-      <main id="main" className="shell-content min-h-screen pb-24 md:pb-0">
+      <main id="main" className="shell-content min-h-screen pb-24 md:pb-0 overflow-x-hidden">
         {children}
       </main>
     );
@@ -42,7 +42,7 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     <>
       <DesktopHeader />
       <MobileHeader />
-      <main id="main" className="shell-content min-h-screen pt-16 pb-24 md:pb-0">
+      <main id="main" className="shell-content min-h-screen pt-16 pb-28 md:pb-0 overflow-x-hidden">
         {children}
       </main>
       <Footer />

@@ -116,7 +116,7 @@ export function PricingCheck() {
                   )
                 )
               }
-              className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-1 text-gold-light outline-none focus:border-accent-solid/60"
+              className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-sm text-zinc-100 outline-none focus:border-accent-solid/60"
             />
             <label className="sr-only" htmlFor={`price-en-${card.tier}`}>
               السعر المعروض بالإنجليزية
@@ -132,7 +132,7 @@ export function PricingCheck() {
                   )
                 )
               }
-              className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-1 text-gold-light outline-none focus:border-accent-solid/60"
+              className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-sm text-zinc-100 outline-none focus:border-accent-solid/60"
             />
             <label className="sr-only" htmlFor={`priceid-${card.tier}`}>
               معرّف السعر عند المزوّد
@@ -149,7 +149,7 @@ export function PricingCheck() {
                   )
                 )
               }
-              className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-1 text-xs text-gold-muted outline-none focus:border-accent-solid/60"
+              className="min-w-0 flex-1 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-zinc-300 outline-none focus:border-accent-solid/60"
             />
           </li>
         ))}

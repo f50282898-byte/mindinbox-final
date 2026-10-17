@@ -233,7 +233,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                 <div className="space-y-8">
                   {videos.map((item, index) => (
                     <figure key={`${item.title}-${index}`} className="gold-frame rounded-2xl p-3">
-                      <div className="aspect-video overflow-hidden rounded-xl bg-black">
+                      <div className="aspect-video overflow-hidden rounded-xl bg-white/[0.04] border border-white/10 shadow-2xl">
                         <iframe
                           className="size-full"
                           src={safeYouTubeEmbed(item.videoUrl!)!}

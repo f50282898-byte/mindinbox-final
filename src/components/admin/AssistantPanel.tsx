@@ -87,7 +87,7 @@ export function AssistantPanel() {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="لماذا هبط التحويل؟"
-        className="w-full rounded-lg border border-white/15 bg-black/40 p-3 text-sm text-gold-light outline-none focus:border-accent-solid/60"
+        className="w-full rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm text-zinc-100 outline-none focus:border-accent-solid/60 shadow-2xl"
       />
 
       <div className="flex flex-wrap items-center gap-3">

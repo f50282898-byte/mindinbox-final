@@ -100,7 +100,7 @@ export function AdminGate({ uid }: { uid: string | null }) {
           dir="ltr"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-gold-light outline-none focus:border-accent-solid/60"
+          className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-100 outline-none focus:border-accent-solid/60 shadow-2xl"
         />
         <label htmlFor="admin-password" className="text-xs text-gold-muted">
           كلمة المرور
@@ -112,7 +112,7 @@ export function AdminGate({ uid }: { uid: string | null }) {
           dir="ltr"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-gold-light outline-none focus:border-accent-solid/60"
+          className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-100 outline-none focus:border-accent-solid/60 shadow-2xl"
         />
         {error && (
           <p role="alert" className="text-sm text-gold-light">

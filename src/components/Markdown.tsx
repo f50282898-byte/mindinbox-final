@@ -33,7 +33,7 @@ function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
     case "paragraph":
       return (
-        <p className="mb-3 last:mb-0">
+        <p className="mb-4 leading-loose last:mb-0 text-zinc-200">
           <InlineView nodes={block.inline} />
         </p>
       );
@@ -42,8 +42,8 @@ function BlockView({ block }: { block: Block }) {
       const Tag = block.level === 2 ? "h3" : "h4";
       return (
         <Tag
-          className={`mb-2 mt-4 font-bold text-gold-light first:mt-0 ${
-            block.level === 2 ? "text-base" : "text-[0.95rem]"
+          className={`mb-3 mt-5 font-bold text-gold-light first:mt-0 tracking-tight ${
+            block.level === 2 ? "text-xl" : "text-lg"
           }`}
         >
           <InlineView nodes={block.inline} />
@@ -53,9 +53,9 @@ function BlockView({ block }: { block: Block }) {
 
     case "bullet":
       return (
-        <ul className="mb-3 space-y-1.5 ps-5 last:mb-0">
+        <ul className="mb-4 space-y-2 ps-6 last:mb-0 list-disc marker:text-amber-400/70">
           {block.items.map((item, i) => (
-            <li key={i} className="list-disc marker:text-ink-3">
+            <li key={i} className="leading-loose text-zinc-200">
               <InlineView nodes={item} />
             </li>
           ))}
@@ -64,9 +64,9 @@ function BlockView({ block }: { block: Block }) {
 
     case "ordered":
       return (
-        <ol className="mb-3 list-decimal space-y-1.5 ps-5 marker:text-ink-3 last:mb-0">
+        <ol className="mb-4 list-decimal space-y-2 ps-6 last:mb-0 marker:text-amber-400/70">
           {block.items.map((item, i) => (
-            <li key={i}>
+            <li key={i} className="leading-loose text-zinc-200">
               <InlineView nodes={item} />
             </li>
           ))}
@@ -75,7 +75,7 @@ function BlockView({ block }: { block: Block }) {
 
     case "quote":
       return (
-        <blockquote className="mb-3 border-s-2 border-gold/40 ps-4 italic text-gold-muted/90 last:mb-0">
+        <blockquote className="mb-4 border-r-2 border-amber-500/60 bg-amber-500/5 pr-4 py-2 rounded-l-lg last:mb-0 italic text-zinc-200/90">
           <InlineView nodes={block.inline} />
         </blockquote>
       );
@@ -87,7 +87,7 @@ function BlockView({ block }: { block: Block }) {
       return (
         // `whitespace-pre-wrap` rather than `overflow-x-auto`: a horizontal
         // scroll region inside a chat bubble is a CLS and touch problem.
-        <pre className="mb-3 overflow-x-hidden whitespace-pre-wrap rounded-xl border border-gold/15 bg-black/40 p-3 text-[0.8rem] leading-relaxed last:mb-0">
+        <pre className="mb-3 overflow-x-hidden whitespace-pre-wrap rounded-xl border border-white/10 bg-white/[0.04] p-3 text-[0.8rem] leading-relaxed last:mb-0 shadow-2xl">
           <code className="font-mono text-gold-muted">{block.text}</code>
         </pre>
       );
@@ -103,7 +103,7 @@ function InlineView({ nodes }: { nodes: Inline[] }): ReactNode {
             return <Fragment key={i}>{node.text}</Fragment>;
           case "bold":
             return (
-              <strong key={i} className="font-bold text-gold-light">
+              <strong key={i} className="font-bold text-amber-400/90">
                 {node.text}
               </strong>
             );
@@ -117,7 +117,7 @@ function InlineView({ nodes }: { nodes: Inline[] }): ReactNode {
             return (
               <code
                 key={i}
-                className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[0.85em] text-gold-light"
+                className="rounded bg-white/[0.04] px-1.5 py-0.5 font-mono text-[0.85em] text-zinc-100 border border-white/10"
               >
                 {node.text}
               </code>

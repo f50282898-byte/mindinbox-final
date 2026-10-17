@@ -2,8 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Check, Copy, MessageSquarePlus, Quote, RefreshCw, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Check,
+  Copy,
+  MessageSquarePlus,
+  Quote,
+  RefreshCw,
+  Trash2,
+  Sparkles,
+  BookOpen,
+} from "lucide-react";
 import { GateDialog } from "@/components/GateDialog";
+import { BottomSheet } from "@/components/BottomSheet";
 import { Markdown, markdownToText } from "@/components/Markdown";
 import { PersonaCards } from "@/components/PersonaCards";
 import { QuotaMeter } from "@/components/QuotaMeter";
@@ -18,38 +29,39 @@ import { useSession } from "@/lib/session";
 import { useAppStore } from "@/lib/store";
 import { writeEntry } from "@/lib/session";
 import { consumeStream, readErrorBody } from "@/lib/stream-client";
+import { useJournal } from "@/lib/journal/store";
+import { sanitizeContent, sanitizeTitle } from "@/lib/security/sanitize";
 
 /**
- * /wisdom â€” ask one philosopher.
+ * /wisdom — ask one philosopher.
  *
- * Order of concerns in this file, deliberately:
- *  1. render the conversation (local, instant, works offline)
- *  2. stream the reply
- *  3. persist locally *as it streams*, so a dropped connection loses nothing
+ * Rebuilt as an "Interactive Wisdom Document":
+ *  - each assistant reply carries its own header (icon + philosopher name)
+ *  - generated text renders with loose paragraphs, amber-emphasised focus lines,
+ *    and block quotes in a luminous side frame
+ *  - a toolbar under every reply (copy / save to journal / regenerate)
+ *  - quick prompt chips above the composer to start the dialogue
+ *
+ * Order of concerns, deliberately:
+ *  1. render the conversation (local, instant)
+ *  2. stream the reply token-by-token via Edge SSE
+ *  3. persist locally as it streams, so a dropped connection loses nothing
  *  4. sync to Firestore when signed in
- *
- * Layout notes that affect the acceptance criteria:
- *  - the composer is `sticky bottom-0`, and the transcript has bottom padding
- *    equal to the composer height, so the keyboard never covers the field and
- *    the focused bubble is never hidden behind it.
- *  - the streaming bubble reserves its height from the first token (`min-h`),
- *    so tokens arriving cannot shift anything already on screen. This is the
- *    CLS criterion: no element that exists changes size because of streaming.
- *  - `dir="auto"` on every message, so a line mixing Arabic and an English term
- *    reads correctly without the container guessing from the first character.
  */
 
-/**
- * The three opening questions.
- *
- * Fixed, not randomised: a reader who returns should find the same door, and a
- * rotating list would be filler with no reason behind it. Each asks something
- * with a genuine philosophical answer rather than prompting a platitude.
- */
+/** Fixed opening questions — same door for returning readers. */
 const OPENING_QUESTIONS = [
   "ما الفرق بين أن تعيش حياة، وأن تكون حيّاً فحسب؟",
   "إذا كانت الفضيلة فعلاً، فما الذي يجعل الفعل فعلاً لا مجرّد نية؟",
   "أين تقف حدود العقل، وما الذي لا يستطيع تبريره؟",
+] as const;
+
+/** Quick prompts shown above the composer when the composer is empty. */
+const QUICK_PROMPTS = [
+  "حدثني عن معنى الصبر في الفلسفة.",
+  "ما هي السعادة وفقاً لأفلاطون؟",
+  "كيف أتجاوز medoّتي من المجهول؟",
+  "هل العقلvised أم عاطفي؟",
 ] as const;
 
 type Status = "idle" | "streaming" | "error";
@@ -57,6 +69,7 @@ type Status = "idle" | "streaming" | "error";
 export function WisdomChat() {
   const { state: authState, uid } = useSession();
   const isMember = useAppStore((s) => s.tier === "oracle" || s.tier === "sanctum");
+  const router = useRouter();
   const attemptsLeft = useAppStore((s) => s.attemptsLeft);
   const setAttemptsLeft = useAppStore((s) => s.setAttemptsLeft);
   const openGate = useAppStore((s) => s.openGate);
@@ -72,6 +85,8 @@ export function WisdomChat() {
   const removeConversation = useConversations((s) => s.remove);
   const syncTo = useConversations((s) => s.syncTo);
 
+  const addNote = useJournal((s) => s.addNote);
+
   const active = conversations.find((c) => c.id === activeId) ?? null;
   const personaId = active?.personaId ?? "plato";
   const persona = getPersona(personaId);
@@ -84,6 +99,11 @@ export function WisdomChat() {
   const [online, setOnline] = useState(true);
   const [renaming, setRenaming] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [bottomSheetContent, setBottomSheetContent] = useState<{
+    title: string;
+    content: string;
+  } | null>(null);
 
   const abortRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -94,20 +114,13 @@ export function WisdomChat() {
     hydrate();
   }, [hydrate]);
 
-  // Push local work to Firestore when identity resolves. This is also what
-  // carries a guest's conversations across sign-up: they were written locally
-  // under the pre-auth uid and are still marked unsynced.
   useEffect(() => {
     if (authState === "unavailable") return;
     void syncTo(uid);
   }, [authState, uid, syncTo]);
 
-  // Network state, so a dropped connection is named rather than guessed at.
   useEffect(() => {
-    const up = () => {
-      setOnline(true);
-      setError(null);
-    };
+    const up = () => { setOnline(true); setError(null); };
     const down = () => setOnline(false);
     setOnline(navigator.onLine);
     window.addEventListener("online", up);
@@ -118,9 +131,6 @@ export function WisdomChat() {
     };
   }, []);
 
-  // Follow the newest content only while the reader is already at the bottom.
-  // Yanking them back while they are reading earlier turns is worse than not
-  // scrolling at all.
   useEffect(() => {
     const el = transcriptRef.current;
     if (!el) return;
@@ -147,7 +157,6 @@ export function WisdomChat() {
       const assistantMessageId = crypto.randomUUID();
 
       if (opts?.replaceMessageId) {
-        // Regenerate: drop the previous attempt rather than stacking a second.
         const target = conversation.messages.find(
           (m) => m.id === opts.replaceMessageId
         );
@@ -206,8 +215,6 @@ export function WisdomChat() {
         if (!res.ok) {
           const body = await readErrorBody(res);
           if (body?.code === "GATE") {
-            // The gate is a choice, not a wall. "Later" is dismissible and
-            // equal in weight.
             setAttemptsLeft(0);
             openGate();
             setError(null);
@@ -223,8 +230,6 @@ export function WisdomChat() {
           res.body,
           {
             onDelta: (chunk) => {
-              // Patch on each delta so the local copy is always current: a tab
-              // closed mid-stream keeps what was already on screen.
               patchMessage(conversation.id, assistantMessageId, { content: "" });
               setStatus("streaming");
               void chunk;
@@ -234,8 +239,6 @@ export function WisdomChat() {
           controller.signal
         );
 
-        // The final content is set once, from the accumulated text, so the store
-        // is not rewritten per token.
         if (outcome.text) {
           patchMessage(conversation.id, assistantMessageId, {
             content: outcome.text,
@@ -266,22 +269,11 @@ export function WisdomChat() {
       }
     },
     [
-      active,
-      createConversation,
-      draft,
-      openGate,
-      online,
-      personaId,
-      patchMessage,
-      appendMessage,
-      setAttemptsLeft,
-      status,
+      active, createConversation, draft, openGate, online, personaId,
+      patchMessage, appendMessage, setAttemptsLeft, status,
     ]
   );
 
-  // Streaming content lives in component state, not the store: writing the
-  // store on every token would re-render the whole conversation list per
-  // character.
   const [streamText, setStreamText] = useState("");
 
   const sendLive = useCallback(
@@ -367,7 +359,6 @@ export function WisdomChat() {
         setStatus("idle");
       } catch (err) {
         if ((err as Error)?.name === "AbortError") {
-          // Keep whatever arrived before the cancel.
           if (streamText) {
             appendMessage(conversation.id, {
               id: assistantId,
@@ -426,29 +417,48 @@ export function WisdomChat() {
     void conversation;
   }
 
+  /** Save an assistant reply as a note in the bento workspace and open it. */
+  async function saveToNote(content: string) {
+    try {
+      const clean = sanitizeContent(content);
+      const firstLine = clean.split("\n")[0].trim();
+      const title =
+        firstLine.length > 0 ? firstLine.slice(0, 60) : "فكرة من الحوار";
+      addNote({
+        title: sanitizeTitle(title),
+        content: clean,
+        category: "philosophical",
+        color: "amber",
+        pinned: false,
+      });
+      setBottomSheetContent({ title: sanitizeTitle(title), content: clean });
+      setBottomSheetOpen(true);
+      setNotice("حُفظت في المفكرة كملاحظة.");
+    } catch {
+      setError("تعذّر الحفظ في المفكرة.");
+    }
+  }
+
   const exhausted = !isMember && attemptsLeft !== null && attemptsLeft <= 0;
 
-  // Read as hooks at the top of the component so the early return below does
-  // not change hook order. Subscribing rather than `getState()` also means the
-  // dialog actually re-renders when it opens.
   const gateOpen = useAppStore((s) => s.gateOpen);
   const closeGate = useAppStore((s) => s.closeGate);
 
-  /* â”€â”€ Empty state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ═══ Empty state ═══════════════════════════════════════════════════════════════════════════════════ */
   if (!active) {
     return (
       <div className="mx-auto w-full max-w-2xl px-5 py-10">
         <header className="mb-8">
-          <h1 className="display-arabic text-2xl font-bold text-gold-light">اسأل الحكيم</h1>
-          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
+          <h1 className="display-arabic text-2xl font-bold text-zinc-100">اسأل الحكيم</h1>
+          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-zinc-400">
             ASK THE WISE
           </p>
-          <p className="display-arabic mt-4 leading-loose text-gold-muted">
+          <p className="display-arabic mt-4 leading-loose text-zinc-400/80">
             اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.
           </p>
         </header>
 
-        <h2 className="display-arabic mb-3 text-sm font-semibold text-gold-light">
+        <h2 className="display-arabic mb-3 text-sm font-semibold text-amber-400/90">
           اختر فيلسوفك
         </h2>
         <PersonaCards
@@ -458,7 +468,7 @@ export function WisdomChat() {
           }}
         />
 
-        <h2 className="display-arabic mb-3 mt-8 text-sm font-semibold text-gold-light">
+        <h2 className="display-arabic mb-3 mt-8 text-sm font-semibold text-amber-400/90">
           أو ابدأ من هنا
         </h2>
         <ul className="flex flex-col gap-2">
@@ -470,7 +480,7 @@ export function WisdomChat() {
                   const c = createConversation(personaId);
                   void sendLiveFor(c, q);
                 }}
-                className="glass w-full px-4 py-3 text-start text-[0.9rem] leading-relaxed text-gold-muted transition-colors hover:border-gold/40 hover:text-gold-light"
+                className="glass w-full px-4 py-3 text-start text-[0.9rem] leading-relaxed text-zinc-200/80 transition-colors hover:border-amber-500/30 hover:text-zinc-100"
               >
                 {q}
               </button>
@@ -508,16 +518,13 @@ export function WisdomChat() {
   }
 
   async function sendLiveFor(conversation: Conversation, text: string) {
-    // Reuse the live path by seeding the draft and the active conversation.
     setActive(conversation.id);
     setDraft(text);
-    // The effect below sends whatever is in the draft.
     queueMicrotask(() => {
       const el = inputRef.current;
       el?.focus();
     });
     setStreamText("");
-    // Directly invoke with the text so the state update is not a race.
     await sendLiveWith(conversation, text);
   }
 
@@ -595,7 +602,7 @@ export function WisdomChat() {
     }
   }
 
-  /* â”€â”€ Transcript â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ═══ Transcript ════════════════════════════════════════════════════════════════════════════════════════════ */
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <Header
@@ -616,23 +623,17 @@ export function WisdomChat() {
         }}
         onNew={() => setActive(null)}
         onChangePersona={(id) => {
-          // The philosopher belongs to the conversation, so switching starts a
-          // new thread rather than rewriting what earlier turns meant.
           setActive(createConversation(id).id);
         }}
       />
 
       <div
         ref={transcriptRef}
-        /* An explicit state hook, so "the reply finished" is observable rather
-           than inferred from the DOM. The streaming placeholder bubble and the
-           finished bubble share styling, so counting them cannot tell the two
-           apart â€” which made a test wait pass mid-stream. */
         data-streaming={status === "streaming" ? "1" : "0"}
         data-bubbles={active.messages.length}
         className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-4 pb-4"
       >
-        <ul className="flex flex-col gap-5 pt-4">
+        <ul className="flex flex-col gap-6 pt-4">
           {active.messages.map((message) => {
             const isUser = message.role === "user";
             return (
@@ -640,78 +641,100 @@ export function WisdomChat() {
                 key={message.id}
                 className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
               >
-                <div
-                  // `dir="auto"` so a mixed Arabic/English line orders correctly.
-                  dir="auto"
-                  className={`max-w-[92%] rounded-2xl px-4 py-3 text-[0.95rem] leading-loose sm:max-w-[82%] ${
-                    isUser
-                      ? "rounded-ee-sm bg-gold text-black"
-                      : "gold-frame rounded-es-sm border border-gold/15 bg-[#0A0A0A]/80 text-gold-light backdrop-blur-xl"
-                  }`}
-                >
-                  <Markdown text={message.content} />
-                </div>
+                {/* User message */}
+                {isUser && (
+                  <div
+                    dir="auto"
+                    className="max-w-[86%] rounded-2xl px-4 py-3 text-[0.95rem] leading-relaxed bg-amber-500/5 border border-amber-500/10 text-zinc-100 sm:max-w-[80%]"
+                  >
+                    <Markdown text={message.content} />
+                  </div>
+                )}
 
-                {!isUser && message.content && (
-                  <MessageActions
-                    content={message.content}
-                    copied={copiedId === message.id}
-                    busy={status === "streaming"}
-                    onCopy={() => void copyMessage(message.id, message.content)}
-                    onRegenerate={() => {
-                      const index = active.messages.findIndex(
-                        (m) => m.id === message.id
-                      );
-                      const prior = active.messages
-                        .slice(0, index)
-                        .reverse()
-                        .find((m) => m.role === "user");
-                      if (prior) {
-                        void send(prior.content, { replaceMessageId: message.id });
-                      }
-                    }}
-                    onSave={() => void saveToJournal(active, message.content)}
-                  />
+                {/* Assistant message — Wisdom Document card */}
+                {!isUser && (
+                  <>
+                    <div className="flex items-start gap-2 mb-1 ps-1">
+                      <span
+                        aria-hidden="true"
+                        className="size-5 shrink-0 text-amber-400/70"
+                      >
+                        {persona.symbol}
+                      </span>
+                      <span className="display-latin text-[10px] tracking-[0.2em] text-zinc-500/70 uppercase font-medium">
+                        {persona.nameEn ?? "Philosopher"}
+                      </span>
+                      <span className="display-arabic text-[11px] font-semibold text-amber-400/80">
+                        {persona.nameAr}
+                      </span>
+                    </div>
+
+                    <div
+                      dir="auto"
+                      className={`max-w-[92%] rounded-2xl px-4 py-3 text-[0.95rem] leading-relaxed border border-white/10 shadow-2xl backdrop-blur-xl sm:max-w-[82%] ${
+                        message.complete
+                          ? "bg-white/[0.04] text-zinc-100"
+                          : "bg-white/[0.03] text-zinc-200/90 animate-pulse"
+                      }`}
+                    >
+                      {message.complete ? (
+                        <Markdown text={message.content} />
+                      ) : (
+                        <div className="flex items-center gap-2 text-zinc-400/70">
+                          <Sparkles className="size-4 animate-pulse text-amber-400" />
+                          <span className="display-arabic text-sm leading-relaxed">
+                            الحكيم يصوغ الفكرة…
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {message.complete && (
+                      <ResponseToolbar
+                        content={message.content}
+                        copied={copiedId === message.id}
+                        busy={status === "streaming"}
+                        onCopy={() => void copyMessage(message.id, message.content)}
+                        onRegenerate={() => {
+                          const index = active.messages.findIndex(
+                            (m) => m.id === message.id
+                          );
+                          const prior = active.messages
+                            .slice(0, index)
+                            .reverse()
+                            .find((m) => m.role === "user");
+                          if (prior) {
+                            void send(prior.content, { replaceMessageId: message.id });
+                          }
+                        }}
+                        onSave={() => void saveToJournal(active, message.content)}
+                        onSaveToNote={() => void saveToNote(message.content)}
+                      />
+                    )}
+                  </>
+                )}
+
+                {/* Streaming placeholder bubble */}
+                {!isUser && status === "streaming" && !message.content && message.id === active.messages[active.messages.length - 1]?.id && (
+                  <div className="max-w-[92%] rounded-2xl px-4 py-3 border border-white/10 bg-white/[0.03] text-zinc-200/90 backdrop-blur-xl shadow-2xl sm:max-w-[82%]">
+                    <div className="flex items-center gap-2 text-zinc-400/70">
+                      <Sparkles className="size-4 animate-pulse text-amber-400" />
+                      <span className="display-arabic text-sm leading-relaxed">
+                        الحكيم يصوغ الفكرة…
+                      </span>
+                    </div>
+                  </div>
                 )}
               </li>
             );
           })}
-
-          {/* The streaming bubble. Reserved height from the first token, so
-              tokens arriving cannot reflow anything already on screen. */}
-          {status === "streaming" && (
-            <li className="flex flex-col items-start">
-              <div
-                dir="auto"
-                className="gold-frame min-h-[3.5rem] max-w-[92%] rounded-2xl rounded-es-sm border border-gold/15 bg-[#0A0A0A]/80 px-4 py-3 text-[0.95rem] leading-loose text-gold-light backdrop-blur-xl sm:max-w-[82%]"
-              >
-                {streamText ? (
-                  <Markdown text={streamText} />
-                ) : (
-                  <span className="display-arabic flex items-center gap-1.5 text-gold-muted">
-                    يتأمّل
-                    <span className="flex gap-1" aria-hidden="true">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="size-1 animate-pulse rounded-full bg-gold"
-                          style={{ animationDelay: `${i * 0.18}s` }}
-                        />
-                      ))}
-                    </span>
-                  </span>
-                )}
-              </div>
-            </li>
-          )}
         </ul>
         <div ref={bottomRef} />
       </div>
 
+      {/* Composer — sticky bottom */}
       <div
-        // `sticky bottom-0` plus the safe-area inset keeps the field above the
-        // keyboard and clear of the bottom navigation.
-        className="sticky bottom-0 z-20 border-t border-gold/10 bg-volcanic/92 px-4 py-3 backdrop-blur-xl"
+        className="sticky bottom-0 z-20 border-t border-white/10 bg-white/[0.04] px-4 py-3 backdrop-blur-xl"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto w-full max-w-2xl">
@@ -722,19 +745,41 @@ export function WisdomChat() {
           />
 
           {error && (
-            <p role="alert" className="display-arabic mt-2 text-center text-xs text-gold-light">
+            <p role="alert" className="display-arabic mt-2 text-center text-xs text-amber-400/90">
               {error}
             </p>
           )}
           {notice && (
-            <p role="status" className="display-arabic mt-2 text-center text-xs text-gold-muted">
+            <p role="status" className="display-arabic mt-2 text-center text-xs text-zinc-400/70">
               {notice}
             </p>
           )}
           {!online && (
-            <p role="status" className="display-arabic mt-2 text-center text-xs text-gold-light">
+            <p role="status" className="display-arabic mt-2 text-center text-xs text-amber-400/90">
               لا يوجد اتصال. ما تكتبه يُحفظ على جهازك.
             </p>
+          )}
+
+          {/* Quick prompts when composer is empty */}
+          {!draft && status === "idle" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <p className="mr-2 text-[10px] tracking-[0.2em] text-zinc-500/60 uppercase font-medium">
+                اقتراحات سريعة
+              </p>
+              {QUICK_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => {
+                    setDraft(prompt);
+                    void sendLive();
+                  }}
+                  className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] text-zinc-300 transition-colors hover:border-amber-500/30 hover:text-amber-400/90"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           )}
 
           <form
@@ -742,7 +787,7 @@ export function WisdomChat() {
               e.preventDefault();
               void sendLive();
             }}
-            className="mt-2 flex items-end gap-2"
+            className="mt-3 flex items-end gap-2"
           >
             <label htmlFor="wisdom-input" className="sr-only">
               اسأل الحكيم
@@ -753,15 +798,6 @@ export function WisdomChat() {
               rows={1}
               dir="auto"
               value={draft}
-              /*
-               * Deliberately NOT disabled when the allowance is spent.
-               *
-               * The server is the authority on the quota, and the sixth question
-               * is what opens the gate â€” so the field has to stay usable for that
-               * request to happen at all. Refusing it client-side would hide the
-               * gate behind a dead control, and the visitor would never learn
-               * that signing up is possible from here.
-               */
               disabled={status === "streaming"}
               onChange={(e) => {
                 setDraft(e.target.value);
@@ -769,9 +805,7 @@ export function WisdomChat() {
                 e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
               }}
               onKeyDown={(e) => {
-                // Enter sends; Shift+Enter is a newline. On a touch keyboard
-                // there is no Shift, so the send button is the path there.
-                if (e.key === "Enter" && !e.shiftKey && !isMobile) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   void sendLive();
                 }
@@ -783,14 +817,16 @@ export function WisdomChat() {
               type="submit"
               disabled={status === "streaming" || !draft.trim()}
               aria-label="أرسل"
-              className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gold text-black transition-transform duration-300 hover:scale-105 disabled:opacity-35"
+              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500 text-black transition-transform duration-300 hover:scale-105 disabled:opacity-35 disabled:cursor-not-allowed"
             >
-              <SendIcon />
+              <svg viewBox="0 0 24 24" className="size-4" fill="none" aria-hidden="true">
+                <path d="M12 19V5m0 0-6 6m6-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           </form>
 
           {exhausted && (
-            <button type="button" onClick={openGate} className="btn-gold mt-3 w-full py-3">
+            <button type="button" onClick={openGate} className="mt-3 w-full py-3 btn-gold">
               <span>أنشئ حساباً — 14 يوماً بلا حدود</span>
             </button>
           )}
@@ -798,35 +834,53 @@ export function WisdomChat() {
       </div>
 
       <GateDialog open={gateOpen} onClose={closeGate} remaining={attemptsLeft} />
+
+      {/* Bottom Sheet على الهاتف — عرض الملاحظة المحفوظة */}
+      <BottomSheet
+        open={bottomSheetOpen}
+        onClose={() => setBottomSheetOpen(false)}
+        headerTitle="تم الحفظ في المفكرة"
+        headerIcon={<BookOpen className="size-5" />}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="bg-white/[0.03] rounded-xl p-4 border border-white/5">
+            <h4 className="display-arabic font-bold text-zinc-100 text-sm mb-1">
+              {bottomSheetContent?.title}
+            </h4>
+            <p className="display-arabic text-zinc-300/80 text-xs leading-relaxed">
+              {bottomSheetContent?.content}
+            </p>
+          </div>
+          <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/5">
+            <button
+              type="button"
+              onClick={() => {
+                setBottomSheetOpen(false);
+                void router.push("/journal");
+              }}
+              className="btn-gold px-6 py-2.5 text-sm font-semibold"
+            >
+              افتح في المفكرة
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
 
-/** Mobile detection, for the Enter-to-send behaviour only. */
-const isMobile =
-  typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-function SendIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-5" fill="none" aria-hidden="true">
-      <path
-        d="M12 19V5m0 0-6 6m6-6 6 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function MessageActions({
+/**
+ * Toolbar under every completed assistant reply:
+ * Copy • Save to journal • Regenerate
+ */
+function ResponseToolbar({
   content,
   copied,
   busy,
   onCopy,
   onRegenerate,
   onSave,
+  onSaveToNote,
 }: {
   content: string;
   copied: boolean;
@@ -834,21 +888,26 @@ function MessageActions({
   onCopy: () => void;
   onRegenerate: () => void;
   onSave: () => void;
+  onSaveToNote: () => void;
 }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="mt-1.5 flex items-center gap-1 ps-1">
-      <ActionButton label={copied ? "نُسخ" : "نسخ"} onClick={onCopy} active={copied}>
+    <div className="mt-2 flex items-center gap-1 ps-1">
+      <ActionButton label={copied ? "نُسخ" : "نسخ الرد"} onClick={onCopy} active={copied}>
         {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
       </ActionButton>
 
-      <ActionButton label="إعادة توليد" onClick={onRegenerate} disabled={busy}>
-        <RefreshCw className="size-3" />
+      <ActionButton label="احفظ في المفكرة" onClick={onSave}>
+        <BookOpen className="size-3" />
       </ActionButton>
 
-      <ActionButton label="احفظ في المفكرة" onClick={onSave}>
-        <MessageSquarePlus className="size-3" />
+      <ActionButton label="احفظ كملاحظة في المفكرة" onClick={onSaveToNote}>
+        <Sparkles className="size-3" />
+      </ActionButton>
+
+      <ActionButton label="إعادة الصياغة" onClick={onRegenerate} disabled={busy}>
+        <RefreshCw className="size-3" />
       </ActionButton>
 
       <ActionButton
@@ -860,16 +919,16 @@ function MessageActions({
       </ActionButton>
 
       {open && (
-        <span className="display-arabic flex items-center gap-1.5 text-[0.7rem] text-gold-muted/70">
-          <span className="max-w-[16rem] truncate">{content.slice(0, 40)}â€¦</span>
+        <span className="display-arabic flex items-center gap-1.5 text-[0.7rem] text-zinc-400/60">
+          <span className="max-w-[16rem] truncate">{content.slice(0, 40)}…</span>
           <Link
             href="/quotes"
-            className="text-gold-light underline underline-offset-2"
+            className="text-amber-400/90 underline underline-offset-2 transition-colors hover:text-amber-400"
             onClick={() => setOpen(false)}
           >
             إلى الأرشيف
           </Link>
-          <span className="text-ink-3">(قريباً)</span>
+          <span className="text-zinc-500">(قريباً)</span>
         </span>
       )}
     </div>
@@ -882,14 +941,12 @@ function ActionButton({
   onClick,
   disabled,
   active,
-  ariaExpanded,
 }: {
   children: React.ReactNode;
   label: string;
   onClick: () => void;
   disabled?: boolean;
   active?: boolean;
-  ariaExpanded?: boolean;
 }) {
   return (
     <button
@@ -898,11 +955,10 @@ function ActionButton({
       disabled={disabled}
       aria-label={label}
       title={label}
-      aria-expanded={ariaExpanded}
       className={`flex size-7 items-center justify-center rounded-full border transition-colors disabled:opacity-30 ${
         active
-          ? "border-gold/50 text-gold-light"
-          : "border-gold/20 text-gold-muted/60 hover:border-gold/45 hover:text-gold-light"
+          ? "border-amber-500/50 text-amber-400"
+          : "border-white/10 text-zinc-400/60 hover:border-amber-500/30 hover:text-zinc-100"
       }`}
     >
       {children}
@@ -937,14 +993,14 @@ function Header({
   const { conversations, setActive, remove } = useConversations();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-gold/10 bg-volcanic/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-white/[0.04] backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-2xl items-center gap-3 px-4 py-3">
         <button
           type="button"
           onClick={onNew}
           aria-label="محادثة جديدة"
           title="محادثة جديدة"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-gold/25 text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-zinc-400 transition-colors hover:border-amber-500/30 hover:text-zinc-100"
         >
           <MessageSquarePlus className="size-4" />
         </button>
@@ -961,14 +1017,14 @@ function Header({
               }}
               autoFocus
               aria-label="اسم المحادثة"
-              className="w-full border-b border-gold/40 bg-transparent pb-0.5 text-sm text-gold-light outline-none"
+              className="w-full border-b border-amber-500/40 bg-transparent pb-0.5 text-sm text-zinc-100 outline-none"
             />
           ) : (
             <button
               type="button"
               onClick={onStartRename}
               aria-label={`إعادة تسمية المحادثة: ${conversation.title}`}
-              className="block max-w-full truncate text-start text-sm text-gold-light"
+              className="block max-w-full truncate text-start text-sm text-zinc-100"
             >
               {conversation.title}
             </button>
@@ -978,7 +1034,7 @@ function Header({
             onClick={() => setPickerOpen((v) => !v)}
             aria-expanded={pickerOpen}
             aria-haspopup="dialog"
-            className="display-arabic mt-0.5 flex items-center gap-1.5 text-xs text-gold-muted/60 transition-colors hover:text-gold-light"
+            className="display-arabic mt-0.5 flex items-center gap-1.5 text-xs text-zinc-400/60 transition-colors hover:text-zinc-100"
           >
             <span aria-hidden="true">{persona.symbol}</span>
             {persona.nameAr}
@@ -987,7 +1043,7 @@ function Header({
 
         {uid && conversations.length > 1 && (
           <details className="relative shrink-0">
-            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-full border border-gold/25 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light">
+            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-full border border-white/20 text-xs text-zinc-400 transition-colors hover:border-amber-500/30 hover:text-zinc-100">
               السجل
             </summary>
             <div className="glass-strong absolute end-0 z-40 mt-2 w-72 rounded-2xl p-2">
@@ -997,9 +1053,7 @@ function Header({
                     <button
                       type="button"
                       onClick={() => setActive(c.id)}
-                      className={`min-w-0 flex-1 truncate rounded-lg px-2 py-2 text-start text-xs transition-colors hover:bg-gold/10 ${
-                        c.id === conversation.id ? "text-gold-light" : "text-gold-muted/70"
-                      }`}
+                      className={`min-w-0 flex-1 truncate rounded-lg px-2 py-2 text-start text-xs transition-colors hover:bg-amber-500/5 ${c.id === conversation.id ? "text-zinc-100" : "text-zinc-400/70"}`}
                     >
                       {c.title}
                     </button>
@@ -1007,7 +1061,7 @@ function Header({
                       type="button"
                       onClick={() => remove(c.id)}
                       aria-label={`احذف المحادثة ${c.title}`}
-                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-ink-3 transition-colors hover:text-gold-light"
+                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-zinc-400/60 transition-colors hover:text-amber-400"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -1021,14 +1075,14 @@ function Header({
 
       {pickerOpen && (
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">
-          <p className="display-arabic mb-2 text-xs text-ink-3">
+          <p className="display-arabic mb-2 text-xs text-zinc-400/60">
             تغيير الفيلسوف يبدأ محادثة جديدة، حتى لا تتغيّر معنى الأسطر السابقة.
           </p>
           <PersonaCards selectedId={conversation.personaId} onSelect={onChangePersona} />
           <button
             type="button"
             onClick={() => setPickerOpen(false)}
-            className="mt-3 w-full text-center text-xs text-ink-3"
+            className="mt-3 w-full text-center text-xs text-zinc-400/60"
           >
             إغلاق
           </button>
@@ -1063,7 +1117,7 @@ function ConversationList({
 
   return (
     <section className="mt-10">
-      <h2 className="display-arabic mb-3 text-sm font-semibold text-gold-light">
+      <h2 className="display-arabic mb-3 text-sm font-semibold text-amber-400/90">
         محادثاتك
       </h2>
       <ul className="flex flex-col gap-2">
@@ -1079,13 +1133,13 @@ function ConversationList({
                 }}
                 autoFocus
                 aria-label="اسم المحادثة"
-                className="min-w-0 flex-1 border-b border-gold/40 bg-transparent text-sm text-gold-light outline-none"
+                className="min-w-0 flex-1 border-b border-amber-500/40 bg-transparent text-sm text-zinc-100 outline-none"
               />
             ) : (
               <button
                 type="button"
                 onClick={() => onOpen(c)}
-                className="display-arabic min-w-0 flex-1 truncate text-start text-sm text-gold-muted"
+                className="display-arabic min-w-0 flex-1 truncate text-start text-sm text-zinc-300"
               >
                 {c.title}
               </button>
@@ -1094,7 +1148,7 @@ function ConversationList({
               type="button"
               onClick={() => onStartRename(c.id, c.title)}
               aria-label={`إعادة تسمية ${c.title}`}
-              className="text-xs text-ink-3 hover:text-gold-light"
+              className="text-xs text-zinc-400/60 hover:text-amber-400"
             >
               تسمية
             </button>
@@ -1102,7 +1156,7 @@ function ConversationList({
               type="button"
               onClick={() => onDelete(c)}
               aria-label={`حذف ${c.title}`}
-              className="flex size-7 items-center justify-center rounded-full text-ink-3 hover:text-gold-light"
+              className="flex size-7 items-center justify-center rounded-full text-zinc-400/60 hover:text-amber-400"
             >
               <Trash2 className="size-3" />
             </button>
@@ -1110,7 +1164,7 @@ function ConversationList({
         ))}
       </ul>
       {!uid && (
-        <p className="display-arabic mt-3 text-xs leading-relaxed text-ink-3">
+        <p className="display-arabic mt-3 text-xs leading-relaxed text-zinc-400/60">
           محادثاتك محفوظة على هذا الجهاز. أنشئ حساباً لتحملها معك إلى أي جهاز آخر.
         </p>
       )}

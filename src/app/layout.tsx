@@ -14,6 +14,7 @@ import { LocaleProvider, LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/i18n";
 import { ShellProvider } from "@/lib/shell-config";
 import { SITE_URL } from "@/lib/seo";
 import { ViewTransitions } from "@/components/ViewTransitions";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 
 
 /*
@@ -176,28 +177,30 @@ export default async function RootLayout({
             <ShellProvider>
               <ShellChrome>
                 {/* AppShell owns auth, the paywall Gate, telemetry and overlays. */}
-                <AppShell>
-                  <Shortcuts />
-                  <ThemeColorUpdater />
-                  <ViewTransitions />
-                  {/*
-                    Inside the app shell, so the toggle is never rendered while a
-                    paywall gate or a dialog owns the screen. It is fixed-position
-                    and self-dismissing; it holds no state the tree needs.
-                  */}
-                  <AmbientAudioToggle />
-                  {/*
-                    `.shell-content` insets the content past the fixed rail on
-                    desktop; see the comment on that rule in globals.css for
-                    why it is CSS and not a Tailwind arbitrary value.
+                <AuthProvider>
+                  <AppShell>
+                    <Shortcuts />
+                    <ThemeColorUpdater />
+                    <ViewTransitions />
+                    {/*
+                      Inside the app shell, so the toggle is never rendered while a
+                      paywall gate or a dialog owns the screen. It is fixed-position
+                      and self-dismissing; it holds no state the tree needs.
+                    */}
+                    <AmbientAudioToggle />
+                    {/*
+                      `.shell-content` insets the content past the fixed rail on
+                      desktop; see the comment on that rule in globals.css for
+                      why it is CSS and not a Tailwind arbitrary value.
 
-                    No `<main>` here. `ShellChrome` above owns the single main
-                    landmark in both of its branches, so wrapping the children
-                    again produced two `<main id="main">` on every route with
-                    chrome, and made the skip-link target ambiguous.
-                  */}
-                  {children}
-                </AppShell>
+                      No `<main>` here. `ShellChrome` above owns the single main
+                      landmark in both of its branches, so wrapping the children
+                      again produced two `<main id="main">` on every route with
+                      chrome, and made the skip-link target ambiguous.
+                    */}
+                    {children}
+                  </AppShell>
+                </AuthProvider>
               </ShellChrome>
             </ShellProvider>
           </LocaleProvider>

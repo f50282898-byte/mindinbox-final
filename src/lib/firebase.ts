@@ -97,6 +97,7 @@ export const paths = {
   userDays: (uid: string) => `users/${uid}/days` as const,
   userHabits: (uid: string) => `users/${uid}/habits` as const,
   userPrinciples: (uid: string) => `users/${uid}/principles` as const,
+  userNotes: (uid: string) => `users/${uid}/notes` as const,
   userSettings: (uid: string) => `users/${uid}/settings` as const,
   userEvents: (uid: string) => `users/${uid}/events` as const,
   userPuzzles: (uid: string) => `users/${uid}/puzzles` as const,

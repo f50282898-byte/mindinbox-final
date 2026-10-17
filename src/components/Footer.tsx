@@ -19,7 +19,7 @@ export function Footer() {
 
   return (
     <footer
-      className="border-t border-gold/10 bg-black/20"
+      className="border-t border-white/10 bg-white/[0.03]"
       role="contentinfo"
       aria-label="تذييل الصفحة"
     >

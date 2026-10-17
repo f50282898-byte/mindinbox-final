@@ -106,7 +106,7 @@ export function DesktopHeader() {
                     <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
                     <line x1="1" y1="12" x2="3" y2="12" />
                     <line x1="21" y1="12" x2="23" y2="23" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                   </svg>
                   <span className="hidden sm:inline">داكن</span>
@@ -121,8 +121,10 @@ export function DesktopHeader() {
 }
 
 /**
- * Mobile bottom tab bar — 4 primary items, fixed, safe-area aware.
- * Touch targets ≥ 44px, no top chrome on mobile.
+ * Mobile bottom tab bar — Native app feel.
+ *
+ * Floating glass bar at the bottom with 4 primary destinations.
+ * Backdrop blur, gold accent on active, and generous 44px+ touch targets.
  */
 export function MobileBottomBar() {
   const pathname = usePathname();
@@ -130,39 +132,41 @@ export function MobileBottomBar() {
   return (
     <nav
       aria-label="التنقل السريع"
-      className="fixed bottom-0 left-0 right-0 z-40 md:hidden"
+      className="fixed bottom-4 left-4 right-4 z-50 md:hidden rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-2xl"
     >
-      <div className="glass-strong border-t border-gold/12">
-        <ul className="grid grid-cols-4" role="tablist">
-          {mobilePrimary(FALLBACK_NAV).map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <li key={item.id} role="presentation">
-                <Link
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  role="tab"
-                  aria-selected={active}
-                  className={`flex flex-col items-center justify-center gap-1 px-1 py-2.5 transition-colors ${
-                    active ? "text-gold-light" : "text-gold-muted/70"
-                  }`}
-                >
-                  <span className="relative" aria-hidden="true">
-                    {(() => {
-                      const Icon = iconFor(item.icon);
-                      return <Icon className="size-5" />;
-                    })()}
-                    {active && (
-                      <span className="absolute -bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-gold" />
-                    )}
-                  </span>
-                  <span className="text-[10px] leading-tight truncate">{item.short.ar}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <ul className="flex items-center justify-center gap-1 px-2 py-2.5" role="tablist">
+        {mobilePrimary(FALLBACK_NAV).map((item) => {
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <li key={item.id} role="presentation">
+              <Link
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                role="tab"
+                aria-selected={active}
+                className={`flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-2xl transition-all duration-200 min-w-[56px] ${
+                  active
+                    ? "bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+                    : "text-zinc-400/60 hover:bg-white/[0.03] hover:border-white/10 hover:text-zinc-200"
+                }`}
+              >
+                <span className="relative" aria-hidden="true">
+                  {(() => {
+                    const Icon = iconFor(item.icon);
+                    return <Icon className="size-5" />;
+                  })()}
+                  {active && (
+                    <span className="absolute -top-1 right-1 size-2 -translate-x-1/2 rounded-full bg-amber-500" />
+                  )}
+                </span>
+                <span className="text-[10px] font-medium leading-tight truncate">
+                  {item.short.ar}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </nav>
   );
 }
@@ -205,7 +209,7 @@ export function MobileHeader() {
               <circle cx="12" cy="12" r="5" />
               <line x1="12" y1="1" x2="12" y2="3" />
               <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
               <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
               <line x1="1" y1="12" x2="3" y2="12" />
               <line x1="21" y1="12" x2="23" y2="23" />

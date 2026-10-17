@@ -98,8 +98,6 @@ export function UtopiaHero() {
       style={accentStyle}
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
-      <div aria-hidden="true" className="absolute inset-0 void-vignette" />
-
       {/*
         Depth order, back to front: the horizon glow (slowest) → the box → the
         colonnade engraving → gold dust → grain. The box sits *behind* the text
@@ -138,7 +136,7 @@ export function UtopiaHero() {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          className="gold-glow display-arabic mb-8 flex size-24 items-center justify-center rounded-full border border-gold/30 bg-black/70 text-gold-light backdrop-blur-md"
+          className="gold-glow display-arabic mb-8 flex size-24 items-center justify-center rounded-full border border-white/10 bg-white/[0.07] text-zinc-100 backdrop-blur-xl shadow-2xl"
         >
           {/*
             `priority` because this is inside the first viewport and is the
@@ -150,7 +148,7 @@ export function UtopiaHero() {
         </motion.div>
 
         <h1
-          className="gold-text-glow display-arabic max-w-3xl text-4xl font-bold leading-tight text-gold-light sm:text-6xl lg:text-8xl"
+          className="gold-text-glow display-arabic max-w-3xl text-4xl font-bold leading-relaxed text-gold-light sm:text-6xl lg:text-8xl"
           aria-label={title}
         >
           {words.map((word, i) => (
@@ -180,7 +178,7 @@ export function UtopiaHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="display-latin mt-4 text-[11px] tracking-[0.45em] text-ink-3 sm:text-xs"
+          className="display-latin mt-6 mb-3 tracking-[0.25em] text-xs md:text-sm text-amber-400/80 font-medium"
         >
           MIND IN A BOX
         </motion.p>
@@ -227,7 +225,7 @@ export function UtopiaHero() {
             onChange={(e) => setQuestion(e.target.value)}
             maxLength={400}
             placeholder="اكتب تساؤلك الأول…"
-            className="field flex-1 bg-black/40 text-sm backdrop-blur-sm"
+            className="field flex-1 bg-white/[0.04] text-sm backdrop-blur-xl border border-white/10"
           />
           <button
             type="submit"

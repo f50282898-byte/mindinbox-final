@@ -150,6 +150,22 @@ export interface Principle {
   createdAt: number;
 }
 
+/** A standalone note in the bento workspace. */
+export type NoteCategory = "all" | "philosophical" | "chat" | "goals" | "habits";
+export type NoteColor = "amber" | "emerald" | "rose" | "indigo" | "slate";
+
+export interface Note {
+  id: string;
+  title: string;
+  content: string;
+  category: NoteCategory;
+  color: NoteColor;
+  pinned: boolean;
+  imageUrl?: string; // user-uploaded, rendered with fixed cinematic aspect
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** `users/{uid}/settings` */
 export interface JournalSettings {
   /** IANA zone. The single source of truth for every day key. */

@@ -77,7 +77,7 @@ export function EnterTemple() {
       {/* The question carried from the landing page. */}
       {question && (
         <aside
-          className="relative z-10 mb-10 w-full rounded-2xl border border-gold/20 bg-black/40 px-6 py-5 text-center backdrop-blur-md"
+          className="relative z-10 mb-10 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-5 text-center backdrop-blur-xl shadow-2xl"
           style={{ animationDelay: "0.2s" }}
         >
           <p className="mb-2 text-[11px] tracking-[0.3em] text-ink-3">تساؤلك الأول</p>
