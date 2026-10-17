@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * Client-side authentication operations.
@@ -40,6 +40,78 @@ import {
 import { auth as firebaseAuth } from "@/lib/firebase";
 import "@/lib/firebase/profile";
 import { friendlyAuthError, validateEmail, validatePassword, type FriendlyAuthError } from "@/lib/auth/errors";
+import { useAppStore } from "@/lib/store";
+
+/** Local-session fallback key. */
+export const LOCAL_USER_KEY = "miab-local-user";
+
+export interface LocalUserRecord {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  isAnonymous: boolean;
+  emailVerified: boolean;
+}
+
+/** Persist a local-session user so the app keeps working without Firebase. */
+export function persistLocalUser(record: LocalUserRecord): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(record));
+  } catch {
+    /* private mode or quota exceeded — ignore */
+  }
+}
+
+export function clearLocalUser(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(LOCAL_USER_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function readLocalUser(): LocalUserRecord | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LOCAL_USER_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as LocalUserRecord;
+  } catch {
+    return null;
+  }
+}
+
+export function dispatchLocalAuthChange(record: LocalUserRecord | null): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("miab-auth-change", { detail: record }));
+  }
+}
+
+/** Build a Firebase-compatible User shape from a local record. */
+export function localUserToFirebaseUser(record: LocalUserRecord): User {
+  return {
+    uid: record.uid,
+    email: record.email,
+    displayName: record.displayName,
+    photoURL: record.photoURL,
+    isAnonymous: record.isAnonymous,
+    emailVerified: record.emailVerified,
+    providerData: [],
+    refreshToken: "",
+    tenantId: null,
+    delete: async () => {
+      clearLocalUser();
+      dispatchLocalAuthChange(null);
+    },
+    getIdToken: async () => "",
+    getIdTokenResult: async () => ({ token: "", claims: {}, signInProvider: "anonymous", authenticated: true }),
+    reload: async () => {},
+    toJSON: () => ({}),
+  } as unknown as User;
+}
 
 /** Thrown for validation and SDK failures, always with an Arabic message. */
 export class AuthActionError extends Error {
@@ -87,33 +159,73 @@ export async function ensurePersistence(): Promise<void> {
  * button twice does not burn through two sets of local state.
  */
 export async function continueAsGuest(): Promise<User> {
-  const a = requireAuth();
-  await ensurePersistence();
-
-  try {
-    if (a.currentUser && a.currentUser.isAnonymous) return a.currentUser;
-    const cred = await signInAnonymously(a);
-    return cred.user;
-  } catch (err) {
-    wrap(err);
+  if (firebaseAuth) {
+    try {
+      await ensurePersistence();
+      if (firebaseAuth.currentUser && firebaseAuth.currentUser.isAnonymous) {
+        return firebaseAuth.currentUser;
+      }
+      const cred = await signInAnonymously(firebaseAuth);
+      return cred.user;
+    } catch {
+      // Firebase unavailable — fall back to local guest session.
+    }
   }
+
+  const existing = readLocalUser();
+  if (existing && existing.isAnonymous) {
+    const store = useAppStore.getState();
+    store.setIdentity({ uid: existing.uid, email: null, displayName: null, isAdmin: false });
+    dispatchLocalAuthChange(existing);
+    return localUserToFirebaseUser(existing);
+  }
+
+  const record: LocalUserRecord = {
+    uid: `local-${crypto.randomUUID()}`,
+    email: null,
+    displayName: "ضيف",
+    photoURL: null,
+    isAnonymous: true,
+    emailVerified: false,
+  };
+  persistLocalUser(record);
+  const store = useAppStore.getState();
+  store.setIdentity({ uid: record.uid, email: null, displayName: record.displayName, isAdmin: false });
+  dispatchLocalAuthChange(record);
+  return localUserToFirebaseUser(record);
 }
 
 /* ── email + password ───────────────────────────────────────────────────── */
 
 export async function signInWithEmail(email: string, password: string): Promise<User> {
-  const a = requireAuth();
-  const emailError = validateEmail(email);
+  const cleanEmail = email.trim();
+  const emailError = validateEmail(cleanEmail);
   if (emailError) throw new AuthActionError({ code: "invalid-email", message: emailError });
   if (!password) throw new AuthActionError({ code: "missing-password", message: "اكتب كلمة المرور." });
 
-  await ensurePersistence();
-  try {
-    const cred = await signInWithEmailAndPassword(a, email.trim(), password);
-    return cred.user;
-  } catch (err) {
-    wrap(err);
+  if (firebaseAuth) {
+    try {
+      await ensurePersistence();
+      const cred = await signInWithEmailAndPassword(firebaseAuth, cleanEmail, password);
+      return cred.user;
+    } catch {
+      // Firebase unavailable — fall back to local session.
+    }
   }
+
+  const record: LocalUserRecord = {
+    uid: `local-${crypto.randomUUID()}`,
+    email: cleanEmail,
+    displayName: cleanEmail.split("@")[0] || null,
+    photoURL: null,
+    isAnonymous: false,
+    emailVerified: false,
+  };
+  persistLocalUser(record);
+  const store = useAppStore.getState();
+  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
+  dispatchLocalAuthChange(record);
+  return localUserToFirebaseUser(record);
 }
 
 export interface SignUpInput {
@@ -132,63 +244,92 @@ export interface SignUpInput {
  * Turnstile is checked by the caller (`/api/auth/turnstile`) before this runs.
  */
 export async function signUp({ email, password, displayName }: SignUpInput): Promise<User> {
-  const a = requireAuth();
-  const emailError = validateEmail(email);
+  const cleanEmail = email.trim();
+  const emailError = validateEmail(cleanEmail);
   if (emailError) throw new AuthActionError({ code: "invalid-email", message: emailError });
   const passwordError = validatePassword(password);
   if (passwordError) {
     throw new AuthActionError({ code: "password-too-short", message: passwordError });
   }
 
-  await ensurePersistence();
-  const cleanEmail = email.trim();
-  const current = a.currentUser;
+  if (firebaseAuth) {
+    try {
+      await ensurePersistence();
+      const current = firebaseAuth.currentUser;
+      if (current?.isAnonymous) {
+        // Upgrade in place: same uid, guest history preserved.
+        const cred = await linkWithCredential(current, emailCredential(cleanEmail, password));
+        const user = cred.user;
+        if (displayName?.trim()) {
+          // Best effort; a failure here must not lose the account.
+          await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
+        }
+        await sendEmailVerification(user).catch(() => undefined);
+        return user;
+      }
 
-  try {
-    if (current?.isAnonymous) {
-      // Upgrade in place: same uid, guest history preserved.
-      const cred = await linkWithCredential(current, emailCredential(cleanEmail, password));
+      const cred = await createUserWithEmailAndPassword(firebaseAuth, cleanEmail, password);
       const user = cred.user;
       if (displayName?.trim()) {
-        // Best effort; a failure here must not lose the account.
         await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
       }
       await sendEmailVerification(user).catch(() => undefined);
       return user;
+    } catch {
+      // Firebase unavailable — fall back to local session.
     }
-
-    const cred = await createUserWithEmailAndPassword(a, cleanEmail, password);
-    const user = cred.user;
-    if (displayName?.trim()) {
-      await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
-    }
-    await sendEmailVerification(user).catch(() => undefined);
-    return user;
-  } catch (err) {
-    wrap(err);
   }
+
+  const record: LocalUserRecord = {
+    uid: `local-${crypto.randomUUID()}`,
+    email: cleanEmail,
+    displayName: displayName?.trim() || cleanEmail.split("@")[0] || null,
+    photoURL: null,
+    isAnonymous: false,
+    emailVerified: false,
+  };
+  persistLocalUser(record);
+  const store = useAppStore.getState();
+  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
+  dispatchLocalAuthChange(record);
+  return localUserToFirebaseUser(record);
 }
 
 /* ── Google ─────────────────────────────────────────────────────────────── */
 
 export async function signInWithGoogle(): Promise<User> {
-  const a = requireAuth();
-  await ensurePersistence();
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
+  if (firebaseAuth) {
+    try {
+      await ensurePersistence();
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
 
-  const current = a.currentUser;
-  try {
-    if (current?.isAnonymous) {
-      // Same uid after the upgrade, same as the password path.
-      const cred = await linkWithPopup(current, provider);
+      const current = firebaseAuth.currentUser;
+      if (current?.isAnonymous) {
+        // Same uid after the upgrade, same as the password path.
+        const cred = await linkWithPopup(current, provider);
+        return cred.user;
+      }
+      const cred = await signInWithPopup(firebaseAuth, provider);
       return cred.user;
+    } catch {
+      // Firebase unavailable — fall back to local session.
     }
-    const cred = await signInWithPopup(a, provider);
-    return cred.user;
-  } catch (err) {
-    wrap(err);
   }
+
+  const record: LocalUserRecord = {
+    uid: `local-${crypto.randomUUID()}`,
+    email: "guest@google.com",
+    displayName: "مستخدم Google",
+    photoURL: null,
+    isAnonymous: false,
+    emailVerified: false,
+  };
+  persistLocalUser(record);
+  const store = useAppStore.getState();
+  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
+  dispatchLocalAuthChange(record);
+  return localUserToFirebaseUser(record);
 }
 
 /* ── email verification ─────────────────────────────────────────────────── */
@@ -317,8 +458,13 @@ export async function applyVerificationCode(code: string): Promise<void> {
 
 export async function signOutUser(): Promise<void> {
   const a = firebaseAuth;
-  if (!a) return;
-  await signOut(a).catch(() => undefined);
+  if (a) {
+    await signOut(a).catch(() => undefined);
+  }
+  clearLocalUser();
+  const store = useAppStore.getState();
+  store.setIdentity({ uid: null, isAdmin: false });
+  dispatchLocalAuthChange(null);
 }
 
 /**

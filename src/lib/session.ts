@@ -25,6 +25,7 @@ import { useEffect, useRef, useState } from "react";
 import { auth, db, paths } from "@/lib/firebase";
 import { useAppStore, type EntryKind } from "@/lib/store";
 import type { Tier } from "@/lib/tiers";
+import { readLocalUser } from "@/lib/auth/client";
 
 export type AuthState = "loading" | "anonymous" | "member" | "unavailable";
 
@@ -49,23 +50,79 @@ export function useSession(): { state: AuthState; uid: string | null } {
   const setAuthResolved = useAppStore((s) => s.setAuthResolved);
   const setMembership = useAppStore((s) => s.setMembership);
   const setEntries = useAppStore((s) => s.setEntries);
-  const [state, setState] = useState<AuthState>(auth ? "loading" : "unavailable");
+  const [state, setState] = useState<AuthState>("loading");
   const seenUid = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!auth) {
-      setAuthResolved(true);
-      setState("unavailable");
-      return;
+    const applyLocal = (): boolean => {
+      const local = readLocalUser();
+      if (local) {
+        seenUid.current = local.uid;
+        setIdentity({
+          uid: local.uid,
+          email: local.email,
+          displayName: local.displayName,
+          isAdmin: false,
+        });
+        setState("member");
+        setAuthResolved(true);
+        return true;
+      }
+      return false;
+    };
+
+    const handleAuthChange = (e?: Event) => {
+      const custom = e as CustomEvent<{ uid: string; email: string | null; displayName: string | null } | null> | undefined;
+      const record = custom?.detail !== undefined ? custom.detail : readLocalUser();
+      if (record) {
+        seenUid.current = record.uid;
+        setIdentity({
+          uid: record.uid,
+          email: record.email,
+          displayName: record.displayName,
+          isAdmin: false,
+        });
+        setState("member");
+        setAuthResolved(true);
+      } else {
+        seenUid.current = null;
+        setIdentity({ uid: null, isAdmin: false });
+        setState("anonymous");
+        setAuthResolved(true);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("miab-auth-change", handleAuthChange);
+      window.addEventListener("storage", handleAuthChange);
     }
 
-    return onAuthStateChanged(auth, async (user) => {
+    const hasLocal = applyLocal();
+
+    if (!auth) {
+      if (!hasLocal) {
+        setState("anonymous");
+      }
+      setAuthResolved(true);
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("miab-auth-change", handleAuthChange);
+          window.removeEventListener("storage", handleAuthChange);
+        }
+      };
+    }
+
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        if (applyLocal()) {
+          return;
+        }
         seenUid.current = null;
         setIdentity({ uid: null, isAdmin: false });
         setMembership("free", null);
         setEntries([]);
         setState("anonymous");
+        setAuthResolved(true);
         return;
       }
 
@@ -80,6 +137,7 @@ export function useSession(): { state: AuthState; uid: string | null } {
         isAdmin: false,
       });
       setState("member");
+      setAuthResolved(true);
 
       if (!db) return;
 
@@ -98,6 +156,14 @@ export function useSession(): { state: AuthState; uid: string | null } {
         // Offline or rules-denied: fall back to free tier, keep the session.
       }
     });
+
+    return () => {
+      unsub();
+      if (typeof window !== "undefined") {
+        window.removeEventListener("miab-auth-change", handleAuthChange);
+        window.removeEventListener("storage", handleAuthChange);
+      }
+    };
   }, [setIdentity, setAuthResolved, setMembership, setEntries]);
 
   const uid = useAppStore((s) => s.uid);

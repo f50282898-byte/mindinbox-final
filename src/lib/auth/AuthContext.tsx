@@ -16,8 +16,10 @@ import {
   continueAsGuest,
   signInWithGoogle,
   signOutUser,
+  readLocalUser,
 } from "@/lib/auth/client";
 import { validateEmail, validatePassword } from "@/lib/auth/errors";
+import { useAppStore } from "@/lib/store";
 
 /** Forma of the user exposed to every component through `useAuth()`. */
 export interface AuthUser {
@@ -70,20 +72,93 @@ function toAuthUser(user: User | null): AuthUser | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const setIdentity = useAppStore((s) => s.setIdentity);
 
   useEffect(() => {
+    const syncLocal = (): boolean => {
+      const local = readLocalUser();
+      if (local) {
+        setUser({
+          uid: local.uid,
+          email: local.email,
+          displayName: local.displayName,
+          photoURL: local.photoURL,
+          isAnonymous: local.isAnonymous,
+          emailVerified: local.emailVerified,
+        });
+        setIdentity({
+          uid: local.uid,
+          email: local.email,
+          displayName: local.displayName,
+          isAdmin: false,
+        });
+        setIsLoading(false);
+        return true;
+      }
+      return false;
+    };
+
+    const handleAuthChange = (e?: Event) => {
+      const custom = e as CustomEvent<AuthUser | null> | undefined;
+      const record = custom?.detail !== undefined ? custom.detail : readLocalUser();
+      if (record) {
+        setUser({
+          uid: record.uid,
+          email: record.email,
+          displayName: record.displayName,
+          photoURL: record.photoURL ?? null,
+          isAnonymous: record.isAnonymous,
+          emailVerified: record.emailVerified,
+        });
+        setIdentity({
+          uid: record.uid,
+          email: record.email,
+          displayName: record.displayName,
+          isAdmin: false,
+        });
+      } else {
+        setUser(null);
+        setIdentity({ uid: null, isAdmin: false });
+      }
+      setIsLoading(false);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("miab-auth-change", handleAuthChange);
+      window.addEventListener("storage", handleAuthChange);
+    }
+
+    syncLocal();
+
     if (!firebaseAuth) {
       setIsLoading(false);
-      return;
+      return () => {
+        if (typeof window !== "undefined") {
+          window.removeEventListener("miab-auth-change", handleAuthChange);
+          window.removeEventListener("storage", handleAuthChange);
+        }
+      };
     }
 
     const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-      setUser(toAuthUser(firebaseUser));
+      if (firebaseUser) {
+        setUser(toAuthUser(firebaseUser));
+      } else {
+        if (!syncLocal()) {
+          setUser(null);
+        }
+      }
       setIsLoading(false);
     });
 
-    return () => unsub();
-  }, []);
+    return () => {
+      unsub();
+      if (typeof window !== "undefined") {
+        window.removeEventListener("miab-auth-change", handleAuthChange);
+        window.removeEventListener("storage", handleAuthChange);
+      }
+    };
+  }, [setIdentity]);
 
   const handleSignInWithEmail = useCallback(
     async (email: string, password: string) => {

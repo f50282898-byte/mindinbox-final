@@ -63,14 +63,16 @@ const CONNECT_SRC = [
 /** Frames we allow to embed us — none, but the reader may embed these. */
 const FRAME_SRC = [
   "'self'",
+  "https://accounts.google.com",
+  "https://*.firebaseapp.com",
   // Turnstile renders itself in a frame.
   "https://challenges.cloudflare.com",
   // Lectures. `-nocookie` only — see the note above.
   "https://www.youtube-nocookie.com",
 ].join(" ");
 
-/** Scripts we execute. No third-party origin belongs here. */
-const SCRIPT_SRC = ["'self'"].join(" ");
+/** Scripts we execute. */
+const SCRIPT_SRC = ["'self'", "https://apis.google.com"].join(" ");
 
 const IMG_SRC = [
   "'self'",
@@ -107,10 +109,10 @@ export function cspDirectives(options: CspOptions = {}): Record<string, string[]
 
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
-    "script-src": [scriptSrc],
+    "script-src": scriptSrc.split(" "),
     // Next's build emits `<link rel=preload as=script>`; without this the
     // strict-dynamic policy refuses the preloads it just authorised.
-    "script-src-elem": [scriptSrc],
+    "script-src-elem": scriptSrc.split(" "),
     "style-src": STYLE_SRC.split(" "),
     "img-src": IMG_SRC.split(" "),
     "font-src": FONT_SRC.split(" "),

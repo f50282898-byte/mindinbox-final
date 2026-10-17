@@ -109,6 +109,7 @@ export function WisdomChat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const handledInitialQueryRef = useRef(false);
 
   useEffect(() => {
     hydrate();
@@ -273,6 +274,28 @@ export function WisdomChat() {
       patchMessage, appendMessage, setAttemptsLeft, status,
     ]
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || handledInitialQueryRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get("philosopher");
+    const q = params.get("q");
+    if (!p && !q) return;
+    handledInitialQueryRef.current = true;
+
+    const persona = getPersona(p);
+    const questionText = (q ?? "").trim();
+    if (questionText) {
+      const conv = createConversation(persona.id, questionText);
+      setActive(conv.id);
+      window.history.replaceState({}, "", "/wisdom");
+      void send(questionText);
+    } else if (p) {
+      const conv = createConversation(persona.id, persona.nameAr);
+      setActive(conv.id);
+      window.history.replaceState({}, "", "/wisdom");
+    }
+  }, [createConversation, setActive, send]);
 
   const [streamText, setStreamText] = useState("");
 

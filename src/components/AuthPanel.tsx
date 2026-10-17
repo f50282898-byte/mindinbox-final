@@ -13,11 +13,7 @@ import {
   signUp,
 } from "@/lib/auth/client";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/errors";
-import { firebaseConfigured } from "@/lib/firebase";
-import {
-  FirebaseRequired,
-  useFirebaseNotice,
-} from "@/lib/firebase/FirebaseRequired";
+import { useFirebaseNotice } from "@/lib/firebase/FirebaseRequired";
 import { Turnstile } from "@/components/Turnstile";
 import { Logo } from "@/components/Logo";
 
@@ -50,6 +46,8 @@ export function AuthPanel() {
   const [notice, setNotice] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileNonce, setTurnstileNonce] = useState(0);
+  const [urlPhilosopher, setUrlPhilosopher] = useState<string | null>(null);
+  const [urlQuestion, setUrlQuestion] = useState<string | null>(null);
 
   // Logs the missing-variable names to the console, once per session. See the note on
   // the unavailable screen below for why this is not shown to the reader.
@@ -68,11 +66,27 @@ export function AuthPanel() {
     reset();
   }, [mode, reset]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    setUrlPhilosopher(sp.get("philosopher") ?? null);
+    setUrlQuestion(sp.get("q") ?? null);
+    if (sp.get("mode") === "signup") {
+      setMode("signup");
+    }
+  }, []);
+
   async function withTurnstile(action: () => Promise<void>) {
     setError(null);
     setNotice(null);
 
-    if (mode === "signup") {
+    const siteKey =
+      typeof process !== "undefined"
+        ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()
+        : "";
+    const turnstileEnabled = Boolean(siteKey);
+
+    if (mode === "signup" && turnstileEnabled) {
       if (!turnstileToken) {
         setError("أكمل التحقق الأمني أولاً.");
         return;
@@ -106,7 +120,8 @@ export function AuthPanel() {
         setError(err.message);
         // A used Turnstile token is single-use, so a failed signup needs a new
         // challenge even when the failure was something else.
-        if (mode === "signup") setTurnstileNonce((n) => n + 1);
+        if (mode === "signup" && turnstileEnabled)
+          setTurnstileNonce((n) => n + 1);
       } else {
         setError("تعذّر إتمام العملية. حاول مرة أخرى.");
       }
@@ -115,23 +130,7 @@ export function AuthPanel() {
     }
   }
 
-  /*
-   * Firebase is absent from this build.
-   *
-   * The reader is told the surface is unavailable and is offered somewhere to go. They
-   * are not told which variables are missing: that sentence used to be on this page,
-   * and it was a map of the keys worth stealing. The diagnosis now goes to the console
-   * (`useFirebaseNotice`), which is the only audience that can act on it.
-   */
-  if (!firebaseConfigured) {
-    return (
-      <FirebaseRequired title="المدخل">
-        <p>
-          تسجيل الدخول غير متاح الآن. يمكنك قراءة الحكمة وحوار الفلاسفة والاقتباسات دون حساب.
-        </p>
-      </FirebaseRequired>
-    );
-  }
+
 
   /* ── forgot password ─────────────────────────────────────────────────── */
   if (mode === "forgot") {
@@ -283,7 +282,7 @@ export function AuthPanel() {
       {error && <Notice kind="error">{error}</Notice>}
       {notice && <Notice kind="ok">{notice}</Notice>}
 
-      {signingUp && (
+      {signingUp && Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()) && (
         <div className="my-5">
           <Turnstile onToken={setTurnstileToken} resetSignal={turnstileNonce} />
         </div>
@@ -302,8 +301,12 @@ export function AuthPanel() {
             } else {
               await signInWithEmail(email, password);
             }
-            router.push("/dialogue");
-            router.refresh();
+            const afterAuthTo =
+              urlPhilosopher || urlQuestion
+                ? `/wisdom?philosopher=${encodeURIComponent(urlPhilosopher ?? "")}&q=${encodeURIComponent(urlQuestion ?? "")}`
+                : "/dialogue";
+            void router.push(afterAuthTo);
+            void router.refresh();
           })
         }
         disabled={busy || !email.trim() || password.length < (signingUp ? MIN_PASSWORD_LENGTH : 1)}
@@ -318,8 +321,12 @@ export function AuthPanel() {
         onClick={() =>
           void withTurnstile(async () => {
             await signInWithGoogle();
-            router.push("/dialogue");
-            router.refresh();
+            const afterAuthTo =
+              urlPhilosopher || urlQuestion
+                ? `/wisdom?philosopher=${encodeURIComponent(urlPhilosopher ?? "")}&q=${encodeURIComponent(urlQuestion ?? "")}`
+                : "/dialogue";
+            void router.push(afterAuthTo);
+            void router.refresh();
           })
         }
         disabled={busy}
@@ -332,8 +339,12 @@ export function AuthPanel() {
         onClick={() =>
           void withTurnstile(async () => {
             await continueAsGuest();
-            router.push("/dialogue");
-            router.refresh();
+            const afterAuthTo =
+              urlPhilosopher || urlQuestion
+                ? `/wisdom?philosopher=${encodeURIComponent(urlPhilosopher ?? "")}&q=${encodeURIComponent(urlQuestion ?? "")}`
+                : "/dialogue";
+            void router.push(afterAuthTo);
+            void router.refresh();
           })
         }
         disabled={busy}

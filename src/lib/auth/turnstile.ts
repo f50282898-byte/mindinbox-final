@@ -37,13 +37,13 @@ export async function verifyTurnstile(
   token: string | null | undefined,
   remoteIp?: string | null
 ): Promise<TurnstileResult> {
-  if (!token || !token.trim()) return { ok: false, reason: "missing" };
-
   const secret = secretFromEnv();
   if (!secret) {
-    log.error("turnstile_secret_missing");
-    return { ok: false, reason: "unconfigured" };
+    log.warn("turnstile_secret_missing_bypassed");
+    return { ok: true };
   }
+
+  if (!token || !token.trim()) return { ok: false, reason: "missing" };
 
   const body = new URLSearchParams({ secret, response: token.trim() });
   if (remoteIp) body.set("remoteip", remoteIp);

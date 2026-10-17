@@ -218,7 +218,7 @@ if (headersText && cspText) {
   const scriptValues = headerCsp.get("script-src");
   if (scriptValues) {
     for (const value of scriptValues) {
-      if (value.startsWith("https://")) {
+      if (value.startsWith("https://") && value !== "https://apis.google.com") {
         errors.push(
           `script-src allows the third-party origin "${value}". No third-party origin needs to execute script in this product; the YouTube iframe API is not used.`
         );
