@@ -1,4 +1,6 @@
-﻿import type { MetadataRoute } from "next";
+export const runtime = "edge";
+
+import type { MetadataRoute } from "next";
 import { HIDDEN_ROUTES } from "@/lib/nav";
 import { SITE_URL } from "@/lib/seo";
 

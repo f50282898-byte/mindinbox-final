@@ -23,11 +23,10 @@ const nextConfig = {
 
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
-  },
-
-  turbopack: {
-    resolveAlias: {
-      "@/*": "./src/*",
+    turbo: {
+      resolveAlias: {
+        "@/*": "./src/*",
+      },
     },
   },
 
