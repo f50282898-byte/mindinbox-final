@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { z } from "zod";
 import { getDocument, setDocument } from "@/lib/google/firestore-rest";
 import { bearerFromHeaders, verifyIdToken } from "@/lib/auth/server";

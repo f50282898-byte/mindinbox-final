@@ -1,4 +1,6 @@
-﻿import type { Metadata } from "next";
+﻿export const runtime = 'edge';
+
+import type { Metadata } from "next";
 import { LegalDocument, type LegalSection } from "@/components/LegalDocument";
 import { absoluteUrl } from "@/lib/seo";
 

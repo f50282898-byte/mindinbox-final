@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import Link from "next/link";
 import { Compass } from "lucide-react";
 import { Logo } from "@/components/Logo";

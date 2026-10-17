@@ -1,4 +1,6 @@
-﻿import type { Metadata } from "next";
+﻿export const runtime = 'edge';
+
+import type { Metadata } from "next";
 import { QuotesApp } from "@/components/quotes/QuotesApp";
 import { absoluteUrl } from "@/lib/seo";
 

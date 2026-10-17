@@ -1,4 +1,6 @@
-﻿import type { Metadata } from "next";
+﻿export const runtime = 'edge';
+
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasAdminSession, adminSessionUid } from "@/lib/admin/session";
 import { AdminGate } from "@/components/admin/AdminGate";

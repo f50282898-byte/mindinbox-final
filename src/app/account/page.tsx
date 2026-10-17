@@ -1,4 +1,6 @@
-﻿import type { Metadata } from "next";
+﻿export const runtime = 'edge';
+
+import type { Metadata } from "next";
 import { AccountPanel } from "@/components/AccountPanel";
 import { absoluteUrl } from "@/lib/seo";
 

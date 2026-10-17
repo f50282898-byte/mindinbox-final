@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { JournalApp } from "@/components/journal/JournalApp";
 

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { authenticatedUser, requireAdmin } from "@/lib/auth/guards";

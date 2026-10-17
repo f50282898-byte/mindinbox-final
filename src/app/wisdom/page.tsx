@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { WisdomChat } from "@/components/WisdomChat";
 import { ArtLayer } from "@/components/art/ArtLayer";

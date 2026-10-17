@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { DailyTracker } from "@/components/DailyTracker";
 import { ArtLayer } from "@/components/art/ArtLayer";

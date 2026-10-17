@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { NextResponse } from "next/server";
 import { requireUser, requireAdmin, authenticatedUser } from "@/lib/auth/guards";
 import { ADMIN_COOKIE, ADMIN_COOKIE_OPTIONS, issueAdminSession } from "@/lib/admin/session";

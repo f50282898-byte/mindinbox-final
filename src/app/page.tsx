@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { UtopiaHero } from "@/components/UtopiaHero";

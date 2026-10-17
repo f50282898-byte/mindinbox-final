@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { z } from "zod";
 import { runChain } from "@/lib/ai/chain";
 import { usableChain } from "@/lib/ai/providers";

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata } from "next";
 import { MemberLibrary } from "@/components/MemberLibrary";
 import { absoluteUrl } from "@/lib/seo";

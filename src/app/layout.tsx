@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Amiri, Cinzel, IBM_Plex_Sans_Arabic } from "next/font/google";

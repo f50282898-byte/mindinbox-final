@@ -30,15 +30,10 @@
     "test:rules": "firebase emulators:exec --project mind-in-a-box-rules-test --only firestore \"vitest run --config vitest.rules.config.ts\"",
     "test:rules:storage": "firebase emulators:exec --project mind-in-a-box-rules-test --only firestore,storage \"vitest run --config vitest.rules.config.ts\"",
     "start": "next start",
-    "build:worker": "opennextjs-cloudflare build",
-    "preview:worker": "opennextjs-cloudflare preview",
-    "deploy:worker": "npm run build:cf && opennextjs-cloudflare deploy",
-    "upload:worker": "npm run build:cf && opennextjs-cloudflare upload",
-    "cf-typegen": "wrangler types",
     "check:keys": "node scripts/check-no-keys.mjs",
     "check:headers": "node scripts/check-headers.mjs",
     "check:no-riddle-leak": "node scripts/check-no-riddle-leak.mjs",
-    "build:cf": "npm run check:env && npm run check:api && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run check:headers && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run build:worker && npm run check:worker && npm run check:no-riddle-leak",
+    "build:cf": "npm run check:env && npm run check:api && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run check:headers && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run check:no-riddle-leak",
     "lighthouse": "node scripts/lighthouse.mjs",
     "pwa:generate": "node scripts/generate-pwa.mjs",
     "bundle:analyze": "ANALYZE=true npm run build",
@@ -62,9 +57,10 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1",
     "@firebase/rules-unit-testing": "^3.0.4",
     "@lhci/cli": "^0.15.1",
-    "@opennextjs/cloudflare": "1.20.11",
+
     "@playwright/test": "^1.64.0",
     "@types/node": "^20",
     "@types/react": "18.3.31",

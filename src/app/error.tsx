@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = 'edge';
+
 import { useEffect } from "react";
 import { log } from "@/lib/log";
 import { Logo } from "@/components/Logo";

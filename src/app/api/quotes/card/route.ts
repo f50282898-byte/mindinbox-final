@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { z } from "zod";
 import { verifiedQuote } from "@/lib/quotes/library";
 import { getEntitlements } from "@/lib/entitlements";
