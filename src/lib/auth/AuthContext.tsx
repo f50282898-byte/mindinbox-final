@@ -221,16 +221,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const DEFAULT_AUTH_VALUE: AuthContextValue = {
+  user: null,
+  isLoading: false,
+  isFirebaseConfigured: false,
+  signInWithEmail: async () => {},
+  signUp: async () => {},
+  signInWithGoogle: async () => {},
+  continueAsGuest: async () => {},
+  signOut: async () => {},
+};
+
 /**
  * `useAuth()` — call this in any component that needs the signed-in user or
- * auth actions. Throws a clear error if used outside `AuthProvider`.
+ * auth actions. Returns safe defaults if accessed outside `AuthProvider`.
  */
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error(
-      "useAuth() must be used inside <AuthProvider>. Did you wrap layout.tsx?"
-    );
-  }
-  return ctx;
+  return ctx ?? DEFAULT_AUTH_VALUE;
 }

@@ -175,9 +175,9 @@ export default async function RootLayout({
         <ThemeProvider>
           <LocaleProvider>
             <ShellProvider>
-              <ShellChrome>
-                {/* AppShell owns auth, the paywall Gate, telemetry and overlays. */}
-                <AuthProvider>
+              <AuthProvider>
+                <ShellChrome>
+                  {/* AppShell owns the paywall Gate, telemetry and overlays. */}
                   <AppShell>
                     <Shortcuts />
                     <ThemeColorUpdater />
@@ -200,8 +200,8 @@ export default async function RootLayout({
                     */}
                     {children}
                   </AppShell>
-                </AuthProvider>
-              </ShellChrome>
+                </ShellChrome>
+              </AuthProvider>
             </ShellProvider>
           </LocaleProvider>
         </ThemeProvider>
