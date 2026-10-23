@@ -299,6 +299,67 @@ service cloud.firestore {
                   && request.resource.data.historyDaysLimit <= 100000));
       }
 
+      /* ── users/{uid}/notes — آمن كلياً لمالك الحساب فقط (بدون صلاحية أدمن) ──── */
+
+      match /notes/{noteId} {
+        // القراءة والحذف confined إلى مالك الحساب نفسه؛ لا أدمن يقرأ ملاحظات أحد.
+        allow read, delete: if isSelf(uid);
+
+        // الإنشاء والتحديث لمحاولة مالك الحساب نفسه، مع التحقق الصارم من الحقل والحجم.
+        allow create, update: if isSelf(uid)
+          && request.resource.data.keys().hasOnly([
+            'id', 'title', 'content', 'category', 'color', 'pinned', 'imageUrl', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.id == noteId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 200
+          && request.resource.data.content is string
+          && request.resource.data.content.size() <= 20000
+          && request.resource.data.category in ['all', 'philosophical', 'chat', 'goals', 'habits']
+          && request.resource.data.color in ['amber', 'emerald', 'rose', 'indigo', 'slate']
+          && request.resource.data.pinned is bool
+          && (!('imageUrl' in request.resource.data)
+              || (request.resource.data.imageUrl is string
+                  && (request.resource.data.imageUrl.startsWith('data:image/')
+                      || request.resource.data.imageUrl.startsWith('https://'))))
+          && request.resource.data.createdAt is int
+          && request.resource.data.updatedAt is int;
+      }
+
+      /* ── users/{uid}/conversations — آمن كلياً لمالك الحساب فقط (بدون صلاحية أدمن) ─ */
+
+      match /conversations/{convId} {
+        // القراءة والحذف confined إلى مالك الحساب نفسه؛ لا أدمن يقرأ محادثات أحد.
+        allow read, delete: if isSelf(uid);
+
+        // الإنشاء والتحديث لمحاولة مالك الحساب نفسه، مع التحقق الصارم من الحقل والحجم.
+        allow create, update: if isSelf(uid)
+          && request.resource.data.keys().hasOnly([
+            'id', 'title', 'personaId', 'messages', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.id == convId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 200
+          && request.resource.data.personaId in ['plato', 'rumi', 'dostoevsky', 'aesop']
+          && request.resource.data.messages is list
+          && request.resource.data.messages.size() <= 200
+          && request.resource.data.messages.all(m,
+              m is map
+              && m.keys().hasOnly(['id', 'role', 'content', 'personaId', 'via', 'createdAt', 'complete'])
+              && m.id is string
+              && m.role in ['user', 'assistant']
+              && m.content is string
+              && m.content.size() <= 4000
+              && (!('personaId' in m) || m.personaId in ['plato', 'rumi', 'dostoevsky', 'aesop'])
+              && (!('via' in m) || m.via is string)
+              && m.createdAt is int
+              && m.complete is bool)
+          && request.resource.data.createdAt is int
+          && request.resource.data.updatedAt is int;
+      }
+
       /* ── legacy user subcollections ───────────────────────────────────── */
 
       match /entries/{entryId} {

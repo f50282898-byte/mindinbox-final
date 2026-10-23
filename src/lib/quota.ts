@@ -39,6 +39,33 @@ export const FREE_INTERACTIONS = 5;
 /** Per-IP daily ceiling. Higher than the per-uid limit on purpose. */
 export const IP_DAILY_LIMIT = 30;
 
+/** Sliding-window burst cap: 8 requests per minute per key or IP. */
+export const BURST_WINDOW_MS = 60_000;
+export const BURST_MAX_REQUESTS = 8;
+
+/** In-memory sliding-window burst limiter (per-isolate, resets on restart). */
+const burstWindows = new Map<string, number[]>();
+
+/** Records one request in the sliding window and returns true if under the cap. */
+function recordBurst(key: string, now = Date.now()): boolean {
+  const windowStart = now - BURST_WINDOW_MS;
+  const hits = burstWindows.get(key) ?? [];
+  const recent = hits.filter((t) => t > windowStart);
+  if (recent.length >= BURST_MAX_REQUESTS) {
+    burstWindows.set(key, recent);
+    return false;
+  }
+  recent.push(now);
+  burstWindows.set(key, recent);
+  return true;
+}
+
+/** Checks whether `uid` or `ip` has exceeded the burst cap. */
+export function checkBurst(uid: string | null, ip: string | null): boolean {
+  const key = uid ?? (ip ?? "unknown");
+  return recordBurst(key);
+}
+
 export type QuotaDecision =
   | { allowed: true; remaining: number }
   | { allowed: false; code: "GATE"; remaining: 0; reason: "uid_exhausted" | "ip_exhausted" };

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { requireUser, requireAdmin, authenticatedUser } from "@/lib/auth/guards";
 import { ADMIN_COOKIE, ADMIN_COOKIE_OPTIONS, issueAdminSession } from "@/lib/admin/session";
 import { log } from "@/lib/log";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,9 @@ export const dynamic = "force-dynamic";
  * "you are not an admin" and send the operator hunting in the wrong place.
  */
 export async function POST(request: Request) {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireUser(request);
   if (denied) return denied;
 

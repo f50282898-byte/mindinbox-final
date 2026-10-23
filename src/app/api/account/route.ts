@@ -9,6 +9,7 @@ import {
   listDocuments,
 } from "@/lib/google/firestore-rest";
 import { log } from "@/lib/log";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,9 @@ const USER_SUBCOLLECTIONS = [
 ];
 
 export async function GET(request: Request) {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireUser(request);
   if (denied) return denied;
 
@@ -122,6 +126,9 @@ export async function GET(request: Request) {
  * locked out of an account whose data still exists.
  */
 export async function DELETE(request: Request) {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireUser(request);
   if (denied) return denied;
 

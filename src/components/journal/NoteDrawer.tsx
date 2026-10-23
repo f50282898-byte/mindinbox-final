@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookOpen, ArrowLeft, Pin } from "lucide-react";
 import { type Note, type NoteCategory, type NoteColor } from "@/lib/journal/types";
 import { COLOR_CLASSES, COLOR_LABELS, CATEGORY_LABELS, CATEGORY_ICONS } from "@/components/journal/design-tokens";
@@ -29,6 +29,15 @@ interface NoteDrawerProps {
   onPin: (id: string) => void;
   onClose: () => void;
 }
+
+/** Background fill for each color circle — makes the choice visible at a glance. */
+const COLOR_BG: Record<NoteColor, string> = {
+  amber: "bg-amber-500",
+  emerald: "bg-emerald-500",
+  rose: "bg-rose-500",
+  indigo: "bg-indigo-500",
+  slate: "bg-slate-400",
+};
 
 /** Compress an image file to a JPEG data URL capped at 1200px on the longest side. */
 async function compressImage(file: File): Promise<string> {
@@ -73,6 +82,7 @@ export function NoteDrawer({
   onClose,
 }: NoteDrawerProps) {
   const titleRef = useRef<HTMLInputElement | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && titleRef.current) {
@@ -166,7 +176,7 @@ export function NoteDrawer({
                       type="button"
                       onClick={() => setDraft({ ...draft, color: color as NoteColor })}
                       aria-label={COLOR_LABELS[color as NoteColor]}
-                      className={`size-6 rounded-full border transition-colors ${isActive ? "ring-2 ring-amber-500" : "border-white/10"}`}
+                      className={`size-6 rounded-full border transition-colors ${COLOR_BG[color as NoteColor]} ${isActive ? "ring-2 ring-offset-1 ring-amber-500" : "border-white/10"}`}
                     />
                   );
                 })}
@@ -177,16 +187,29 @@ export function NoteDrawer({
               <label className="block text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium mb-2">صورة مرفقة (اختياري)</label>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
+                  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+                  if (!allowedTypes.includes(file.type)) {
+                    setUploadError("نوع الملف غير مدعوم. يُسمح فقط بصور JPEG أو PNG أو WEBP.");
+                    return;
+                  }
+                  if (file.size > 5 * 1024 * 1024) {
+                    setUploadError("حجم الصورة كبير جداً. الحد الأقصى 5 ميغابايت.");
+                    return;
+                  }
+                  setUploadError(null);
                   void compressImage(file).then((dataUrl) =>
                     setDraft({ ...draft, imageUrl: dataUrl })
                   );
                 }}
                 className="block w-full text-xs text-zinc-400/60 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold/10 file:text-gold-light" aria-hidden={true}
               />
+              {uploadError && (
+                <p className="mt-1 text-xs text-rose-400">{uploadError}</p>
+              )}
               {((draft.imageUrl ?? note?.imageUrl) && (
                 <div className="mt-3 aspect-video overflow-hidden rounded-xl border border-white/10 relative">
                   <img

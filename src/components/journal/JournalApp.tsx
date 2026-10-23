@@ -129,7 +129,7 @@ export function JournalApp() {
     addNote(note);
     setNewNoteDraft({ title: "", content: "", category: "all", color: "amber", imageUrl: undefined });
     setSelectedNoteId(note.id);
-    setIsDrawerOpen(true);
+    setIsDrawerOpen(false);
   }, [addNote, newNoteDraft]);
 
   const saveDraft = useCallback(() => {
@@ -268,12 +268,13 @@ export function JournalApp() {
               isActive={selectedNoteId === note.id}
               onSelect={() => {
                 setSelectedNoteId(note.id);
-                setEditingNote(null);
+                setEditingNote(note);
                 setNewNoteDraft({
                   title: note.title,
                   content: note.content,
                   category: note.category,
                   color: note.color,
+                  imageUrl: note.imageUrl,
                 });
                 setIsDrawerOpen(true);
               }}
@@ -281,11 +282,13 @@ export function JournalApp() {
               onDelete={handleDelete}
               onEdit={() => {
                 setEditingNote(note);
+                setSelectedNoteId(note.id);
                 setNewNoteDraft({
                   title: note.title,
                   content: note.content,
                   category: note.category,
                   color: note.color,
+                  imageUrl: note.imageUrl,
                 });
                 setIsDrawerOpen(true);
               }}

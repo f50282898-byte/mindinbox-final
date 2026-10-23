@@ -50,14 +50,12 @@ import { sanitizeContent, sanitizeTitle } from "@/lib/security/sanitize";
  *  4. sync to Firestore when signed in
  */
 
-/** Fixed opening questions — same door for returning readers. */
 const OPENING_QUESTIONS = [
   "ما الفرق بين أن تعيش حياة، وأن تكون حيّاً فحسب؟",
   "إذا كانت الفضيلة فعلاً، فما الذي يجعل الفعل فعلاً لا مجرّد نية؟",
   "أين تقف حدود العقل، وما الذي لا يستطيع تبريره؟",
 ] as const;
 
-/** Quick prompts shown above the composer when the composer is empty. */
 const QUICK_PROMPTS = [
   "كيف أجد السكينة وسط ضجيج التفكير المستمر؟",
   "ما الفرق بين الصبر عن وعي والاستسلام للواقع؟",
@@ -307,129 +305,6 @@ export function WisdomChat() {
     }
   }, [createConversation, setActive, send]);
 
-  const [streamText, setStreamText] = useState("");
-
-  const sendLive = useCallback(
-    async (textOverride?: string) => {
-      const text = (textOverride ?? draft).trim();
-      if (!text || status === "streaming") return;
-      setStreamText("");
-
-      const conversation = active ?? createConversation(personaId, text);
-      setError(null);
-      setNotice(null);
-      setDraft("");
-
-      appendMessage(conversation.id, {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: text,
-        createdAt: Date.now(),
-        complete: true,
-      });
-      const assistantId = crypto.randomUUID();
-
-      abortRef.current?.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
-      setStatus("streaming");
-
-      const history = conversation.messages
-        .filter((m) => m.content.trim())
-        .map((m) => ({ role: m.role, content: m.content }));
-
-      try {
-        const res = await fetch("/api/ai", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: [...history, { role: "user", content: text }],
-            personaId,
-          }),
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          const body = await readErrorBody(res);
-          if (body?.code === "GATE") {
-            setAttemptsLeft(0);
-            openGate();
-          } else {
-            setError(body?.error ?? "تعذّر الاتصال بالخدمة.");
-          }
-          setStatus("idle");
-          return;
-        }
-
-        let accumulated = "";
-        const outcome = await consumeStream(
-          res.body,
-          {
-            onDelta: (chunk) => {
-              accumulated += chunk;
-              setStreamText(accumulated);
-            },
-            onQuota: (remaining) => setAttemptsLeft(remaining),
-          },
-          controller.signal
-        );
-
-        appendMessage(conversation.id, {
-          id: assistantId,
-          role: "assistant",
-          content: outcome.text || accumulated,
-          personaId,
-          via: undefined,
-          createdAt: Date.now(),
-          complete: outcome.completed,
-        });
-        setStreamText("");
-
-        if (outcome.error) setError(outcome.error);
-        else if (!outcome.completed && outcome.text) {
-          setError("انقطع الرد قبل اكتماله.");
-        }
-        setStatus("idle");
-      } catch (err) {
-        if ((err as Error)?.name === "AbortError") {
-          if (streamText) {
-            appendMessage(conversation.id, {
-              id: assistantId,
-              role: "assistant",
-              content: streamText,
-              personaId,
-              createdAt: Date.now(),
-              complete: false,
-            });
-          }
-          setStreamText("");
-          setStatus("idle");
-          return;
-        }
-        if (streamText) {
-          appendMessage(conversation.id, {
-            id: assistantId,
-            role: "assistant",
-            content: streamText,
-            personaId,
-            createdAt: Date.now(),
-            complete: false,
-          });
-          setStreamText("");
-        }
-        setError(
-          online
-            ? "انقطع الاتصال. تحقّق من الشبكة ثم أعد المحاولة."
-            : "لا يوجد اتصال. سيُحفظ ما كتبته، وأعد المحاولة عند عودة الشبكة."
-        );
-        setStatus("idle");
-      } finally {
-        if (abortRef.current === controller) abortRef.current = null;
-      }
-    },
-    [active, appendMessage, createConversation, draft, online, openGate, personaId, setAttemptsLeft, status, streamText]
-  );
-
   async function copyMessage(messageId: string, content: string) {
     try {
       await navigator.clipboard.writeText(markdownToText(content));
@@ -511,7 +386,8 @@ export function WisdomChat() {
                 type="button"
                 onClick={() => {
                   const c = createConversation(personaId);
-                  void sendLiveFor(c, q);
+                  setActive(c.id);
+                  void send(q);
                 }}
                 className="glass w-full px-4 py-3 text-start text-[0.9rem] leading-relaxed text-zinc-200/80 transition-colors hover:border-gold/40 hover:text-zinc-100"
               >
@@ -550,92 +426,7 @@ export function WisdomChat() {
     );
   }
 
-  async function sendLiveFor(conversation: Conversation, text: string) {
-    setActive(conversation.id);
-    setDraft(text);
-    queueMicrotask(() => {
-      const el = inputRef.current;
-      el?.focus();
-    });
-    setStreamText("");
-    await sendLiveWith(conversation, text);
-  }
-
-  async function sendLiveWith(conversation: Conversation, text: string) {
-    setError(null);
-    setNotice(null);
-    setDraft("");
-
-    appendMessage(conversation.id, {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: text,
-      createdAt: Date.now(),
-      complete: true,
-    });
-    const assistantId = crypto.randomUUID();
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setStatus("streaming");
-
-    try {
-      const res = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: text }],
-          personaId: conversation.personaId,
-        }),
-        signal: controller.signal,
-      });
-
-      if (!res.ok) {
-        const body = await readErrorBody(res);
-        if (body?.code === "GATE") {
-          setAttemptsLeft(0);
-          openGate();
-        } else {
-          setError(body?.error ?? "تعذّر الاتصال بالخدمة.");
-        }
-        setStatus("idle");
-        return;
-      }
-
-      let accumulated = "";
-      const outcome = await consumeStream(
-        res.body,
-        {
-          onDelta: (chunk) => {
-            accumulated += chunk;
-            setStreamText(accumulated);
-          },
-          onQuota: (remaining) => setAttemptsLeft(remaining),
-        },
-        controller.signal
-      );
-
-      appendMessage(conversation.id, {
-        id: assistantId,
-        role: "assistant",
-        content: outcome.text || accumulated,
-        personaId: conversation.personaId,
-        createdAt: Date.now(),
-        complete: outcome.completed,
-      });
-      setStreamText("");
-      if (outcome.error) setError(outcome.error);
-      setStatus("idle");
-    } catch {
-      setStreamText("");
-      setError("انقطع الاتصال. تحقّق من الشبكة ثم أعد المحاولة.");
-      setStatus("idle");
-    } finally {
-      if (abortRef.current === controller) abortRef.current = null;
-    }
-  }
-
-  /* ═══ Transcript ════════════════════════════════════════════════════════════════════════════════════════════ */
+  /* ═══ Transcript ═══════════════════════════════════════════════════════════════════════════════════════════ */
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <Header
@@ -711,9 +502,9 @@ export function WisdomChat() {
                     {/* Card body — a page from a modern royal manuscript. */}
                     <div
                       dir="auto"
-                      className={`bg-[#0E121B]/90 border border-gold/20 shadow-2xl rounded-3xl p-5 sm:p-6 ${message.complete ? "text-zinc-100" : "text-zinc-200/90 animate-pulse"}`}
+                      className={`bg-[#0E121B]/90 border border-gold/20 shadow-2xl rounded-3xl p-5 sm:p-6 text-zinc-100`}
                     >
-                      {message.complete ? (
+                      {message.content.trim().length > 0 ? (
                         <div className="text-[1rem] leading-[2]">
                           <Markdown text={message.content} />
                         </div>
@@ -750,18 +541,6 @@ export function WisdomChat() {
                       />
                     )}
                   </article>
-                )}
-
-                {/* Streaming placeholder bubble */}
-                {!isUser && status === "streaming" && !message.content && message.id === active.messages[active.messages.length - 1]?.id && (
-                  <div className="max-w-[92%] rounded-2xl px-4 py-3 border border-gold/20 bg-[#0E121B]/80 text-zinc-200/90 backdrop-blur-xl shadow-2xl sm:max-w-[82%]">
-                    <div className="flex items-center gap-2 text-zinc-400/70">
-                      <Sparkles className="size-4 animate-pulse text-gold-light" />
-                      <span className="display-arabic text-sm leading-relaxed">
-                        الحكيم يصوغ الفكرة…
-                      </span>
-                    </div>
-                  </div>
                 )}
               </li>
             );
@@ -809,8 +588,7 @@ export function WisdomChat() {
                   key={prompt}
                   type="button"
                   onClick={() => {
-                    setDraft(prompt);
-                    void sendLive();
+                    void send(prompt);
                   }}
                   className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] text-zinc-300 transition-colors hover:border-gold/40 hover:text-gold-light"
                 >
@@ -823,7 +601,7 @@ export function WisdomChat() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              void sendLive();
+              void send();
             }}
             className="mt-3 flex items-end gap-2"
           >
@@ -845,7 +623,7 @@ export function WisdomChat() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  void sendLive();
+                  void send();
                 }
               }}
               placeholder="اطرح سؤالك…"

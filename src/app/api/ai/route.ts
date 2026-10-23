@@ -18,7 +18,8 @@ import { getEntitlements } from "@/lib/entitlements";
 import { log } from "@/lib/log";
 import { clientIp } from "@/lib/http";
 import { recordUsage } from "@/lib/metrics";
-import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
+import { checkBurst, checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -163,9 +164,12 @@ const ANON_COOKIE_MAX_AGE = 30 * 24 * 3600;
  */
 function resolveAnonIdentity(request: Request): { key: string; setCookie: string | null } {
   const cookieHeader = request.headers.get("cookie") ?? "";
-  const existing = new RegExp(`${ANON_COOKIE}=([a-zA-Z0-9_-]{16,64})`).exec(cookieHeader);
+  const existing = new RegExp(`${ANON_COOKIE}=([a-f0-9]{32})`).exec(cookieHeader);
 
-  if (existing) {
+  // Verify strict format: `anon-` followed by exactly 32 hex characters.
+  // Any other value (longer, shorter, non-hex, or a different prefix) is
+  // treated as absent so a forged cookie cannot be reused as an identity key.
+  if (existing && /^anon-[a-f0-9]{32}$/.test(`anon-${existing[1]}`)) {
     return { key: `anon-${existing[1]}`, setCookie: null };
   }
 
@@ -188,6 +192,13 @@ function resolveAnonIdentity(request: Request): { key: string; setCookie: string
 
 export async function POST(request: Request) {
   const startedAt = Date.now();
+
+  /* ── 0. Same-origin CSRF guard ───────────────────────────────────────────
+     Reject cross-origin POSTs before any other processing so an attacker
+     cannot trigger AI generation from another site. */
+  if (!verifySameOrigin(request)) {
+    return jsonError({ error: "cross_origin_forbidden" }, 403);
+  }
 
   let parsed: z.infer<typeof bodySchema>;
   {
@@ -285,6 +296,15 @@ export async function POST(request: Request) {
   const cookieHeader: Record<string, string> = anon?.setCookie
     ? { "Set-Cookie": anon.setCookie }
     : {};
+
+  /* ── Burst rate limit: 8 requests per minute per key/IP ───────────────── */
+  if (!checkBurst(key, ip)) {
+    return jsonError(
+      { ok: false, code: "RATE_LIMITED", error: "عديد الطلبات. انتظر قليلاً ثم أعد المحاولة." },
+      429,
+      cookieHeader
+    );
+  }
 
   if (!entitled) {
     const decision = await checkQuota(key, ip);

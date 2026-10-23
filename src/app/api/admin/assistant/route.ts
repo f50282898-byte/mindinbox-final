@@ -3,6 +3,7 @@ export const runtime = 'edge';
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { authenticatedUser, requireAdmin } from "@/lib/auth/guards";
+import { verifySameOrigin } from "@/lib/security/origin";
 import { getDocument, listDocuments } from "@/lib/google/firestore-rest";
 import { log } from "@/lib/log";
 import { recordWrite } from "@/lib/admin/audit";
@@ -80,6 +81,9 @@ async function readFunnel(days: number, now: number): Promise<Record<string, num
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireAdmin(request);
   if (denied) return denied;
 

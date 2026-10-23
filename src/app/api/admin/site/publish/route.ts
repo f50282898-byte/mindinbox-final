@@ -9,6 +9,7 @@ import {
   readDraft,
   readPublished,
 } from "@/lib/admin/site-store";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,9 @@ const publishSchema = z.object({
 const NO_STORE = { "Cache-Control": "no-store" } as const;
 
 export async function POST(request: Request): Promise<Response> {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireAdmin(request);
   if (denied) return denied;
 

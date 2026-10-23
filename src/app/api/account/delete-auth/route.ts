@@ -5,6 +5,8 @@ import { z } from "zod";
 import { requireUser, authenticatedUser } from "@/lib/auth/guards";
 import { getAccessToken, serviceProjectId } from "@/lib/google/token";
 import { log } from "@/lib/log";
+import { readJsonBody, BODY_REJECTED_MESSAGE, bodyErrorStatus } from "@/lib/security/body";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -31,21 +33,23 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireUser(request);
   if (denied) return denied;
 
   const { uid } = authenticatedUser(request);
 
   let parsed: z.infer<typeof bodySchema>;
-  try {
-    const json: unknown = await request.json();
-    parsed = bodySchema.parse(json);
-  } catch {
+  const body = await readJsonBody(request, bodySchema, "auth");
+  if (!body.ok) {
     return NextResponse.json(
-      { error: "invalid_request", message: "طلب غير صالح." },
-      { status: 400, headers: { "Cache-Control": "no-store" } }
+      { error: BODY_REJECTED_MESSAGE },
+      { status: bodyErrorStatus(body), headers: { "Cache-Control": "no-store" } }
     );
   }
+  parsed = body.value;
 
   // The token's uid is authoritative; a mismatch means the caller is acting on
   // a stale session and must re-authenticate.

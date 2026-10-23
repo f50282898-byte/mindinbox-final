@@ -7,6 +7,7 @@ import { log } from "@/lib/log";
 import { recordWrite } from "@/lib/admin/audit";
 import { validateSiteContent } from "@/lib/admin/site-schema";
 import { readDraft, writeDraft } from "@/lib/admin/site-store";
+import { verifySameOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,9 @@ const putSchema = z.object({
 const NO_STORE = { "Cache-Control": "no-store" } as const;
 
 export async function GET(request: Request): Promise<Response> {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireAdmin(request);
   if (denied) return denied;
 
@@ -48,6 +52,9 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function PUT(request: Request): Promise<Response> {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireAdmin(request);
   if (denied) return denied;
 

@@ -81,3 +81,37 @@ export function sanitizeContent(input: string): string {
 export function sanitizeMessage(input: string): string {
   return sanitizeText(input).slice(0, 4_000);
 }
+
+/**
+ * Sanitises an image URL before it is stored or rendered.
+ *
+ * Allows only:
+ *  - `data:image/jpeg;base64,…`
+ *  - `data:image/png;base64,…`
+ *  - `data:image/webp;base64,…`
+ *  - `https://…` absolute URLs
+ *
+ * Anything else — `javascript:`, `data:` of other types, relative paths with
+ * `..`, or empty strings — returns `undefined` so the caller never stores an
+ * unsafe reference that could become a Stored XSS vector.
+ */
+export function sanitizeImageUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+
+  const allowedDataPrefixes = [
+    "data:image/jpeg;base64,",
+    "data:image/png;base64,",
+    "data:image/webp;base64,",
+  ];
+
+  if (allowedDataPrefixes.some((prefix) => url.startsWith(prefix))) return url;
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === "https:") return url;
+  } catch {
+    // Not a parseable URL at all.
+  }
+
+  return undefined;
+}

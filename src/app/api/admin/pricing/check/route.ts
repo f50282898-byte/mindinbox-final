@@ -3,6 +3,7 @@ export const runtime = 'edge';
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { authenticatedUser, requireAdmin } from "@/lib/auth/guards";
+import { verifySameOrigin } from "@/lib/security/origin";
 import { TIER_DEFINITIONS } from "@/lib/tiers";
 // import { recordWrite } from "@/lib/admin/audit";
 import { checkPricingConsistency } from "@/lib/admin/site-store";
@@ -46,6 +47,9 @@ const schema = z.object({
 const NO_STORE = { "Cache-Control": "no-store" } as const;
 
 export async function POST(request: Request): Promise<Response> {
+  if (!verifySameOrigin(request)) {
+    return NextResponse.json({ error: "cross_origin_forbidden" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
   const denied = await requireAdmin(request);
   if (denied) return denied;
 

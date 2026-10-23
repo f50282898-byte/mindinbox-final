@@ -20,7 +20,8 @@ import { clientIp } from "@/lib/http";
 import { log } from "@/lib/log";
 import { recordUsage } from "@/lib/metrics";
 import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
-import { checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
+import { checkBurst, checkQuota, spendInteraction, FREE_INTERACTIONS } from "@/lib/quota";
+import { verifySameOrigin } from "@/lib/security/origin";
 import {
   FULL_ROUNDS,
   // PREVIEW_ROUNDS,
@@ -75,6 +76,11 @@ const bodySchema = z.discriminatedUnion("mode", [
  */
 export async function POST(request: Request): Promise<Response> {
   const startedAt = Date.now();
+
+  /* ── 0. Same-origin CSRF guard ─────────────────────────────────────────── */
+  if (!verifySameOrigin(request)) {
+    return jsonError({ error: "cross_origin_forbidden" }, 403);
+  }
 
   let parsed: z.infer<typeof bodySchema>;
   {
@@ -150,6 +156,11 @@ export async function POST(request: Request): Promise<Response> {
     ? { "Set-Cookie": anon.setCookie }
     : {};
   const ip = clientIp(request.headers);
+
+  /* ── Burst rate limit: 8 requests per minute per key/IP ───────────────── */
+  if (!checkBurst(key, ip)) {
+    return jsonError({ ok: false, code: "RATE_LIMITED", error: "عديد الطلبات. انتظر قليلاً ثم أعد المحاولة." }, 429, cookieHeader);
+  }
 
   /* ── The summary: members only ─────────────────────────────────────────────
      Charged like any reply, and refused outright to a non-member. The summary is

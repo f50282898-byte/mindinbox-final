@@ -69,13 +69,13 @@ export interface AiSettings {
 export const DEFAULT_AI_SETTINGS: AiSettings = {
   providers: {
     anthropic: {
-      models: { chat: "claude-sonnet-5-5", analysis: "claude-opus-5-5", admin: "claude-haiku-4-5" },
+      models: { chat: "claude-3-5-sonnet-latest", analysis: "claude-3-5-sonnet-latest", admin: "claude-3-5-haiku-latest" },
     },
     gemini: {
-      models: { chat: "gemini-3.8-flash", analysis: "gemini-3.8-flash", admin: "gemini-3.5-flash-lite" },
+      models: { chat: "gemini-2.5-flash", analysis: "gemini-2.5-flash", admin: "gemini-2.5-flash-lite" },
     },
     groq: {
-      models: { chat: "openai/gpt-oss-120b", analysis: "openai/gpt-oss-120b", admin: "openai/gpt-oss-20b" },
+      models: { chat: "llama-3.3-70b-versatile", analysis: "llama-3.3-70b-versatile", admin: "llama-3.1-8b-instant" },
     },
     nvidia: {
       models: {
@@ -90,7 +90,7 @@ export const DEFAULT_AI_SETTINGS: AiSettings = {
 
   chains: {
     // Chat is the hot path: fastest credible models first, cheapest last.
-    chat: ["anthropic", "gemini", "groq", "nvidia"],
+    chat: ["gemini", "groq", "anthropic", "nvidia"],
     // Analysis reads longer, so the strongest models lead.
     analysis: ["anthropic", "nvidia", "gemini", "groq"],
     // Admin work is rare and mechanical: cheap models lead.
@@ -98,7 +98,7 @@ export const DEFAULT_AI_SETTINGS: AiSettings = {
   },
 
   maxOutputChars: 6000,
-  firstTokenTimeoutMs: 12_000,
+  firstTokenTimeoutMs: 8_000,
   totalTimeoutMs: 90_000,
   attemptsPerProvider: 2, // one try + one retry
   breakerThreshold: 3,
