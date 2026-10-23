@@ -11,6 +11,7 @@ import { Logo } from "@/components/Logo";
 import { SpatialBox } from "@/components/spatial/SpatialBox";
 import { PhilosopherLenses } from "@/components/lenses/PhilosopherLenses";
 import { lensById, type Lens } from "@/components/lenses/lensToken";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 /**
  * The landing.
@@ -67,6 +68,9 @@ export function UtopiaHero() {
 
   const lens: Lens | null = lensById(selectedId);
 
+  const { user } = useAuth();
+  const isLoggedIn = Boolean(user);
+
   /*
     `--lens-accent` is set once, on the hero root, and inherited by every descendant.
     That is how the halo the reader chooses on the strip reaches the 3D box: no
@@ -77,7 +81,7 @@ export function UtopiaHero() {
     "--lens-accent": lens ? lens.accentVar : "var(--gold-antique)",
   } as React.CSSProperties;
 
-  const enterHref = enterHrefFor(selectedId, question);
+  const targetHref = targetHrefFor(selectedId, question, isLoggedIn);
 
   const commit = useCallback(
     (id: string) => {
@@ -89,8 +93,8 @@ export function UtopiaHero() {
   );
 
   const onAsk = useCallback(() => {
-    router.push(enterHref);
-  }, [enterHref, router]);
+    router.push(targetHref);
+  }, [targetHref, router]);
 
   return (
     <div
@@ -246,9 +250,9 @@ export function UtopiaHero() {
             The label is the selection. With a philosopher it says who waits on
             the other side; without one it stays the invitation it always was.
             The href carries the same two values the form does, so the two routes
-            into `/enter` agree on what they carry.
+            agree on what they carry.
           */}
-          <Link href={enterHref} className="btn-gold px-10 py-5 text-base sm:px-12 sm:text-lg">
+          <Link href={targetHref} className="btn-gold px-10 py-5 text-base sm:px-12 sm:text-lg">
             <span className="tracking-wide">
               {lens ? `ادخل العزلة مع ${lens.nameAr}` : "ابدأ رحلة الوعي"}
             </span>
@@ -260,22 +264,18 @@ export function UtopiaHero() {
 }
 
 /**
- * The one place `/enter`'s query string is assembled.
+ * The one place the portal's query string is assembled.
  *
- * A plain function, not a hook: it reads only its arguments and calls no React
- * API, and naming it `use*` would make the linter treat it as one. `q` is only
- * appended when there is something to say, so the common case stays
- * `/enter?philosopher=…` and a reader who arrived by clicking the button gets a
- * clean URL. `URLSearchParams` rather than a hand-rolled escape — an Arabic
- * question contains `&` and `?` as often as not.
+ * If the user is logged in, routes directly to /wisdom; otherwise to /enter.
  */
-function enterHrefFor(philosopherId: string | null, question: string): string {
+function targetHrefFor(philosopherId: string | null, question: string, isLoggedIn: boolean): string {
+  const base = isLoggedIn ? "/wisdom" : "/enter";
   const params = new URLSearchParams();
   if (philosopherId) params.set("philosopher", philosopherId);
   const q = question.trim();
   if (q) params.set("q", q);
   const qs = params.toString();
-  return qs ? `/enter?${qs}` : "/enter";
+  return qs ? `${base}?${qs}` : base;
 }
 
 export default UtopiaHero;

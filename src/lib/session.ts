@@ -9,7 +9,7 @@
  * never the thing that grants access.
  */
 
-import { onAuthStateChanged, type User } from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, type User } from "firebase/auth";
 import {
   collection,
   doc,
@@ -25,7 +25,7 @@ import { useEffect, useRef, useState } from "react";
 import { auth, db, paths } from "@/lib/firebase";
 import { useAppStore, type EntryKind } from "@/lib/store";
 import type { Tier } from "@/lib/tiers";
-import { readLocalUser } from "@/lib/auth/client";
+import { readLocalUser, syncAuthSuccess } from "@/lib/auth/client";
 
 export type AuthState = "loading" | "anonymous" | "member" | "unavailable";
 
@@ -112,6 +112,15 @@ export function useSession(): { state: AuthState; uid: string | null } {
       };
     }
 
+    // Process redirect result from mobile Google OAuth flow
+    void getRedirectResult(auth)
+      .then((cred) => {
+        if (cred && cred.user) {
+          syncAuthSuccess(cred.user);
+        }
+      })
+      .catch(() => undefined);
+
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         if (applyLocal()) {
@@ -125,6 +134,9 @@ export function useSession(): { state: AuthState; uid: string | null } {
         setAuthResolved(true);
         return;
       }
+
+      // Sync Firebase user to local storage and store
+      syncAuthSuccess(user);
 
       // Returning user: react to re-auth without re-running the full profile load.
       if (seenUid.current === user.uid) return;

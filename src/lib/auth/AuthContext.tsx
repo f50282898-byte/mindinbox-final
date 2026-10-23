@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { onAuthStateChanged, type User } from "firebase/auth";
+import { getRedirectResult, onAuthStateChanged, type User } from "firebase/auth";
 import { auth as firebaseAuth } from "@/lib/firebase";
 import {
   signInWithEmail,
@@ -17,6 +17,7 @@ import {
   signInWithGoogle,
   signOutUser,
   readLocalUser,
+  syncAuthSuccess,
 } from "@/lib/auth/client";
 import { validateEmail, validatePassword } from "@/lib/auth/errors";
 import { useAppStore } from "@/lib/store";
@@ -140,8 +141,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
+    // Process redirect result from mobile Google OAuth flow
+    void getRedirectResult(firebaseAuth)
+      .then((cred) => {
+        if (cred && cred.user) {
+          syncAuthSuccess(cred.user);
+          setUser(toAuthUser(cred.user));
+        }
+      })
+      .catch(() => undefined);
+
     const unsub = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
       if (firebaseUser) {
+        syncAuthSuccess(firebaseUser);
         setUser(toAuthUser(firebaseUser));
       } else {
         if (!syncLocal()) {

@@ -26,6 +26,7 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import {
   firebaseProjectIdOrEmpty,
   isFirebaseConfigured,
@@ -42,13 +43,24 @@ export type { FirebaseEnvKey };
  * legitimate state, and this module's entire job is to represent it without throwing.
  */
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? "",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? "",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ?? "",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ?? "",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? "",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "",
+  apiKey:
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY ||
+    "AIzaSyDGgTDrDJsRvulhzK1p59AbuhJwQYSUufI",
+  authDomain:
+    process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ||
+    "mindinbox-50d84.firebaseapp.com",
+  projectId:
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "mindinbox-50d84",
+  storageBucket:
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+    "mindinbox-50d84.firebasestorage.app",
+  messagingSenderId:
+    process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "1087016266441",
+  appId:
+    process.env.NEXT_PUBLIC_FIREBASE_APP_ID ||
+    "1:1087016266441:web:da1b3f31fad97e44ee3b18",
+  measurementId:
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-SVSYPPTCX2",
 };
 
 /**
@@ -66,6 +78,15 @@ export const firebaseProjectId = firebaseProjectIdOrEmpty();
 let app: FirebaseApp | null = null;
 if (firebaseConfigured) {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+
+  // Initialize Analytics safely — browser only, never on Edge/SSR.
+  if (typeof window !== "undefined") {
+    void isSupported()
+      .then((yes) => {
+        if (yes && app) getAnalytics(app);
+      })
+      .catch(() => undefined);
+  }
 }
 
 export const auth: Auth | null = app ? getAuth(app) : null;

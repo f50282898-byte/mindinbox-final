@@ -54,6 +54,7 @@ const ALLOWED_LATIN = new Set([
   "edge",
   "admin",
   "free",
+  "google",
   "oracle",
   "sanctum",
   "mind",

@@ -158,8 +158,13 @@ export const useAppStore = create<AppState>()(
         if (typeof window !== "undefined") return localStorage;
         return { getItem: () => null, setItem: () => {}, removeItem: () => {} };
       }),
-      // Identity and entitlement are re-derived from Firebase on every load.
+      // Persist identity, membership, preferences, and local entries
       partialize: (state) => ({
+        uid: state.uid,
+        email: state.email,
+        displayName: state.displayName,
+        tier: state.tier,
+        trialEnd: state.trialEnd,
         philosopherId: state.philosopherId,
         entries: state.entries,
         puzzles: state.puzzles,

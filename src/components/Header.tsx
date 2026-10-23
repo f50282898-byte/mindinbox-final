@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { Logo } from "@/components/Logo";
 import { desktopPrimary, mobilePrimary, FALLBACK_NAV } from "@/lib/nav";
 import * as Icons from "lucide-react";
@@ -20,6 +21,7 @@ function iconFor(name: string) {
 export function DesktopHeader() {
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
+  const { user } = useAuth();
 
   return (
     <header
@@ -68,10 +70,10 @@ export function DesktopHeader() {
           {/* Account + Theme */}
           <div className="flex items-center gap-3 shrink-0">
             <Link
-              href="/enter"
-              className="hidden sm:flex items-center gap-2 rounded-full border border-gold/25 px-4 py-2 text-sm font-medium text-gold-light transition-colors hover:bg-gold/5"
+              href={user ? "/account" : "/enter"}
+              className="hidden sm:flex items-center gap-2 rounded-full border border-gold/25 px-4 py-2 text-sm font-medium text-gold-light transition-colors hover:bg-gold/5 max-w-[140px] truncate"
             >
-              <span>المدخل</span>
+              <span className="truncate">{user ? (user.displayName || "حسابي") : "المدخل"}</span>
             </Link>
 
             <button
@@ -179,6 +181,7 @@ export function MobileHeader() {
   const pathname = usePathname();
   const isLanding = pathname === "/";
   const { toggle } = useTheme();
+  const { user } = useAuth();
 
   if (isLanding) return null;
 
@@ -198,25 +201,34 @@ export function MobileHeader() {
             <Logo size={24} ariaLabel="شعار عقل في صندوق" />
           </Link>
 
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label="تبديل الثيم"
-            title="تبديل الثيم"
-            className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
-          >
-            <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="23" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              href={user ? "/account" : "/enter"}
+              className="flex items-center gap-1.5 rounded-full border border-gold/25 px-3 py-1.5 text-xs font-medium text-gold-light transition-colors hover:bg-gold/5 max-w-[110px] truncate"
+            >
+              <span className="truncate">{user ? (user.displayName || "حسابي") : "المدخل"}</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label="تبديل الثيم"
+              title="تبديل الثيم"
+              className="flex items-center gap-2 rounded-full border border-gold/25 px-3 py-2 text-xs text-gold-muted transition-colors hover:border-gold/60 hover:text-gold-light"
+            >
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="23" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </header>

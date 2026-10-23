@@ -33,6 +33,7 @@ const MESSAGES: Record<string, string> = {
   "auth/missing-password": "اكتب كلمة المرور.",
   "auth/popup-closed-by-user": "أُغلقت نافذة الدخول قبل الانتهاء.",
   "auth/cancelled-popup-request": "أُلغي طلب الدخول.",
+  "auth/unauthorized-domain": "هذا النطاق غير مصرح به في إعدادات Firebase.",
   "auth/account-exists-with-different-credential":
     "يوجد حساب بهذا البريد، لكن الدخول عبر مزوّد مختلف. سجّل الدخول بالطريقة الأصلية.",
   "auth/requires-recent-login": "سجّل الدخول من جديد ثم أعد المحاولة.",

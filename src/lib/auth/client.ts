@@ -25,6 +25,7 @@ import {
   createUserWithEmailAndPassword,
   linkWithCredential,
   linkWithPopup,
+  linkWithRedirect,
   reauthenticateWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
@@ -32,6 +33,7 @@ import {
   signInAnonymously,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   updatePassword,
   verifyBeforeUpdateEmail,
@@ -149,6 +151,51 @@ export async function ensurePersistence(): Promise<void> {
   await setPersistence(firebaseAuth, browserLocalPersistence).catch(() => undefined);
 }
 
+export function syncAuthSuccess(user: User): LocalUserRecord {
+  const record: LocalUserRecord = {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    isAnonymous: user.isAnonymous,
+    emailVerified: user.emailVerified,
+  };
+  persistLocalUser(record);
+  useAppStore.getState().setIdentity({
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    isAdmin: false,
+  });
+  dispatchLocalAuthChange(record);
+  return record;
+}
+
+function shouldFallbackToLocal(err: unknown): boolean {
+  const raw = err && typeof err === "object" && "code" in err ? String((err as { code: unknown }).code) : "";
+  const code = raw.includes("/") ? raw.slice(raw.indexOf("/") + 1) : raw;
+  if (
+    code === "wrong-password" ||
+    code === "invalid-credential" ||
+    code === "invalid-login-credentials" ||
+    code === "user-not-found" ||
+    code === "user-disabled" ||
+    code === "email-already-in-use" ||
+    code === "invalid-email" ||
+    code === "weak-password" ||
+    code === "popup-closed-by-user" ||
+    code === "cancelled-popup-request" ||
+    code === "unauthorized-domain" ||
+    code === "too-many-requests"
+  ) {
+    return false;
+  }
+  if (code === "operation-not-allowed" || code === "network-request-failed") {
+    return true;
+  }
+  return false;
+}
+
 /* ── guest ──────────────────────────────────────────────────────────────── */
 
 /**
@@ -163,12 +210,17 @@ export async function continueAsGuest(): Promise<User> {
     try {
       await ensurePersistence();
       if (firebaseAuth.currentUser && firebaseAuth.currentUser.isAnonymous) {
+        syncAuthSuccess(firebaseAuth.currentUser);
         return firebaseAuth.currentUser;
       }
       const cred = await signInAnonymously(firebaseAuth);
+      syncAuthSuccess(cred.user);
       return cred.user;
-    } catch {
-      // Firebase unavailable — fall back to local guest session.
+    } catch (err) {
+      if (!shouldFallbackToLocal(err)) {
+        wrap(err);
+      }
+      // Firebase unavailable or operation-not-allowed — fall back to local guest session.
     }
   }
 
@@ -207,9 +259,13 @@ export async function signInWithEmail(email: string, password: string): Promise<
     try {
       await ensurePersistence();
       const cred = await signInWithEmailAndPassword(firebaseAuth, cleanEmail, password);
+      syncAuthSuccess(cred.user);
       return cred.user;
-    } catch {
-      // Firebase unavailable — fall back to local session.
+    } catch (err) {
+      if (!shouldFallbackToLocal(err)) {
+        wrap(err);
+      }
+      // Firebase operation-not-allowed or network unavailable — fall back to local session.
     }
   }
 
@@ -265,6 +321,7 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
           await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
         }
         await sendEmailVerification(user).catch(() => undefined);
+        syncAuthSuccess(user);
         return user;
       }
 
@@ -274,9 +331,13 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
         await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
       }
       await sendEmailVerification(user).catch(() => undefined);
+      syncAuthSuccess(user);
       return user;
-    } catch {
-      // Firebase unavailable — fall back to local session.
+    } catch (err) {
+      if (!shouldFallbackToLocal(err)) {
+        wrap(err);
+      }
+      // Firebase operation-not-allowed or network unavailable — fall back to local session.
     }
   }
 
@@ -299,21 +360,53 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
 
 export async function signInWithGoogle(): Promise<User> {
   if (firebaseAuth) {
-    try {
-      await ensurePersistence();
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" });
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    await ensurePersistence();
 
-      const current = firebaseAuth.currentUser;
+    const current = firebaseAuth.currentUser;
+    try {
       if (current?.isAnonymous) {
         // Same uid after the upgrade, same as the password path.
         const cred = await linkWithPopup(current, provider);
+        syncAuthSuccess(cred.user);
         return cred.user;
       }
       const cred = await signInWithPopup(firebaseAuth, provider);
+      syncAuthSuccess(cred.user);
       return cred.user;
-    } catch {
-      // Firebase unavailable — fall back to local session.
+    } catch (err: unknown) {
+      const raw = err && typeof err === "object" && "code" in err ? String((err as { code: unknown }).code) : "";
+      const code = raw.includes("/") ? raw.slice(raw.indexOf("/") + 1) : raw;
+
+      if (code === "popup-blocked") {
+        try {
+          if (current?.isAnonymous) {
+            await linkWithRedirect(current, provider);
+          } else {
+            await signInWithRedirect(firebaseAuth, provider);
+          }
+          return undefined as unknown as User;
+        } catch (redirErr) {
+          wrap(redirErr);
+        }
+      }
+
+      if (
+        code === "popup-closed-by-user" ||
+        code === "cancelled-popup-request" ||
+        code === "unauthorized-domain" ||
+        code === "account-exists-with-different-credential" ||
+        code === "user-disabled"
+      ) {
+        wrap(err);
+      }
+
+      if (code === "operation-not-allowed") {
+        // Fall back to local session below
+      } else {
+        wrap(err);
+      }
     }
   }
 

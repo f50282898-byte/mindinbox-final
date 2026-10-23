@@ -14,6 +14,7 @@ import {
 } from "@/lib/auth/client";
 import { MIN_PASSWORD_LENGTH } from "@/lib/auth/errors";
 import { useFirebaseNotice } from "@/lib/firebase/FirebaseRequired";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { Turnstile } from "@/components/Turnstile";
 import { Logo } from "@/components/Logo";
 
@@ -34,6 +35,7 @@ const FREE_ATTEMPTS = 5;
  */
 export function AuthPanel() {
   const router = useRouter();
+  const { user, signOut } = useAuth();
   const [mode, setMode] = useState<Mode>("signin");
 
   const [email, setEmail] = useState("");
@@ -131,6 +133,64 @@ export function AuthPanel() {
   }
 
 
+
+  /* ── already logged in ──────────────────────────────────────────────── */
+  if (user) {
+    const wisdomHref =
+      urlPhilosopher || urlQuestion
+        ? `/wisdom?philosopher=${encodeURIComponent(urlPhilosopher ?? "")}&q=${encodeURIComponent(urlQuestion ?? "")}`
+        : "/wisdom";
+
+    return (
+      <Card
+        title="مرحباً بك مجدداً"
+        subtitle="أنت في ملاذك الفكري، وجلستك مفعلة."
+      >
+        <div className="mb-6 rounded-2xl border border-gold/25 bg-gold/[0.04] p-5 text-center">
+          <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold-light shadow-lg">
+            <span className="text-xl font-bold">
+              {(user.displayName || user.email || "ع").charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <h2 className="display-arabic text-lg font-bold text-gold-light">
+            {user.displayName || "صديق الوعي"}
+          </h2>
+          {user.email && (
+            <p className="mt-1 text-xs text-gold-muted/80 direction-ltr font-mono">
+              {user.email}
+            </p>
+          )}
+          {user.isAnonymous && (
+            <span className="mt-2 inline-block rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-[11px] text-amber-300">
+              جلسة ضيف
+            </span>
+          )}
+        </div>
+
+        <Link
+          href={wisdomHref}
+          className="btn-gold mb-3 flex w-full items-center justify-center rounded-full px-6 py-3.5 text-center text-sm font-bold shadow-lg"
+        >
+          متابعة إلى الحكيم
+        </Link>
+
+        <Link
+          href="/journal"
+          className="btn-ghost mb-3 flex w-full items-center justify-center rounded-full px-6 py-3 text-center text-sm font-semibold"
+        >
+          الذهاب إلى المفكرة
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => void signOut()}
+          className="mt-2 w-full text-center text-xs text-gold-muted/65 underline-offset-4 hover:text-rose-400 hover:underline"
+        >
+          تسجيل الخروج
+        </button>
+      </Card>
+    );
+  }
 
   /* ── forgot password ─────────────────────────────────────────────────── */
   if (mode === "forgot") {
