@@ -157,14 +157,6 @@ export function DailyTracker() {
       </FirebaseRequired>
     );
   }
-  if (state !== "member") {
-    return (
-      <Panel
-        title="متتبع الوعي"
-        empty="سجّل الدخول لتبدأ التتبّع. سجلّك يُحفظ في حسابك ويبقى متاحاً دون اتصال."
-      />
-    );
-  }
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8 px-5 py-10 sm:py-14">
@@ -172,8 +164,8 @@ export function DailyTracker() {
         <h1 className="gold-text-glow display-arabic text-3xl font-bold text-gold-light sm:text-4xl">
           متتبع الوعي
         </h1>
-        <p className="display-latin mt-1 text-[11px] tracking-[0.3em] text-ink-3">
-          DAILY TRACKER
+        <p className="display-arabic mt-3 text-sm text-gold-muted/70">
+          راقب عاداتك وأفكارك ومجرى وقتك يوماً بيوم
         </p>
       </header>
 
@@ -181,7 +173,7 @@ export function DailyTracker() {
       <section className="panel p-6 sm:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs tracking-widest text-ink-3">الأسبوع</p>
+            <p className="text-xs text-ink-3">الأسبوع</p>
             <p className="display-arabic mt-1 text-lg text-gold-light">{total} إدخال</p>
           </div>
           <div className="flex items-center gap-5 text-xs text-gold-muted/65">
@@ -212,11 +204,11 @@ export function DailyTracker() {
                   }`}
                 />
                 <span
-                  className={`text-center text-[10px] ${
+                  className={`text-center text-[11px] font-medium ${
                     isToday ? "text-gold-light" : "text-ink-3"
                   }`}
                 >
-                  {bucket.label.slice(0, 3)}
+                  {bucket.label}
                 </span>
               </div>
             );
@@ -329,21 +321,8 @@ export function DailyTracker() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] tracking-widest text-ink-3">{label}</p>
+      <p className="text-[10px] text-ink-3">{label}</p>
       <p className="display-arabic mt-0.5 text-sm text-gold-light">{value}</p>
-    </div>
-  );
-}
-
-function Panel({ title, empty }: { title: string; empty: string }) {
-  return (
-    <div className="mx-auto w-full max-w-4xl px-5 py-10 sm:py-14">
-      <h1 className="gold-text-glow display-arabic text-center text-3xl font-bold text-gold-light">
-        {title}
-      </h1>
-      <p className="display-arabic mx-auto mt-8 max-w-md text-center text-sm leading-relaxed text-gold-muted/60">
-        {empty}
-      </p>
     </div>
   );
 }

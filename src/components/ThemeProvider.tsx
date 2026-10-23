@@ -45,34 +45,16 @@ function isTheme(v: unknown): v is Theme {
  */
 export const THEME_BOOTSTRAP_SCRIPT = `(function(){try{var k=${JSON.stringify(
   STORAGE_KEY
-)};var s=localStorage.getItem(k);if(s==="dark"||s==="light"){document.documentElement.dataset.theme=s;return;}var m=window.matchMedia("(prefers-color-scheme: light)").matches;document.documentElement.dataset.theme=m?"light":"dark";}catch(e){}})();`;
+)};var s=localStorage.getItem(k);if(s==="dark"||s==="light"){document.documentElement.dataset.theme=s;return;}document.documentElement.dataset.theme="dark";}catch(e){}})();`;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
 
-  // Adopt whatever the bootstrap script already decided.
+  // Adopt whatever the bootstrap script already decided (always "dark" unless the
+  // user has explicitly chosen Parchment).
   useEffect(() => {
     const attr = document.documentElement.dataset.theme;
     if (isTheme(attr)) setThemeState(attr);
-  }, []);
-
-  // Track OS changes, but only while the user has not chosen explicitly.
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: light)");
-    const onChange = (e: MediaQueryListEvent) => {
-      let stored: string | null = null;
-      try {
-        stored = localStorage.getItem(STORAGE_KEY);
-      } catch {
-        stored = null;
-      }
-      if (isTheme(stored)) return;
-      const next: Theme = e.matches ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
-      setThemeState(next);
-    };
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   const setTheme = useCallback((t: Theme) => {

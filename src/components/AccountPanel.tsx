@@ -15,6 +15,10 @@ import { MIN_PASSWORD_LENGTH } from "@/lib/auth/errors";
 import { firebaseConfigured } from "@/lib/firebase";
 import { useLocale } from "@/lib/i18n";
 import { useTheme } from "@/components/ThemeProvider";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { useAppStore } from "@/lib/store";
+import { useConversations } from "@/lib/conversations";
+import { useJournal } from "@/lib/journal/store";
 
 interface Entitlements {
   tier: string;
@@ -29,17 +33,27 @@ interface Entitlements {
  *
  * Three groups, in the order that matters to a person:
  *   1. who you are (email, verification, sign out)
- *   2. preferences (language, theme) â€” local, instant, no round trip
- *   3. your data (export, delete) â€” export first, delete last, and never
+ *   2. preferences (language, theme) — local, instant, no round trip
+ *   3. your data (export, delete) — export first, delete last, and never
  *      silently: deletion asks for the password and names what will go.
  *
  * Export is deliberately above delete and both are independent, so a user can
  * take their data with them and still keep the account.
+ *
+ * Local-first: when signed out, identity, preferences, and data export work
+ * entirely from local storage. When signed in, Firebase is used for identity
+ * and entitlements, while local data still mirrors instantly.
  */
 export function AccountPanel() {
   const router = useRouter();
   const { locale, setLocale, t } = useLocale();
   const { theme, setTheme } = useTheme();
+  const { user, signOut } = useAuth();
+
+  const tier = useAppStore((s) => s.tier);
+  const entries = useAppStore((s) => s.entries);
+  const conversations = useConversations((s) => s.conversations);
+  const notes = useJournal((s) => s.notes);
 
   const [email, setEmail] = useState<string | null>(null);
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -70,17 +84,20 @@ export function AccountPanel() {
   }, []);
 
   useEffect(() => {
+    // Mirror local identity into state for display.
+    const storeUser = user;
+    setEmail(storeUser?.email ?? null);
+    setIsAnonymous(Boolean(storeUser?.isAnonymous));
+
     if (!auth) return;
     let cancelled = false;
 
     void (async () => {
       const { auth: a } = await import("@/lib/firebase");
-      const user = a?.currentUser;
-      if (!user || cancelled) return;
+      const firebaseUser = a?.currentUser;
+      if (!firebaseUser || cancelled) return;
 
-      setEmail(user.email);
-      setIsAnonymous(user.isAnonymous);
-      setVerified(user.emailVerified);
+      setVerified(firebaseUser.emailVerified);
 
       // Entitlements are asked of the server, which derives them from
       // subscriptions / grants / trial. Never computed on the client.
@@ -99,25 +116,62 @@ export function AccountPanel() {
     return () => {
       cancelled = true;
     };
-  }, [auth, idToken]);
+  }, [auth, idToken, user]);
 
+  /* ═══ Export data ═══
+   * Exports conversations, notes, and tracker entries as a downloadable JSON
+   * file. Works entirely from local storage when signed out / offline, and
+   * augments with Firestore data when signed in.
+   */
   async function exportData() {
     setBusy("export");
     setError(null);
     setNotice(null);
     try {
-      const token = await idToken();
-      if (!token) throw new AuthActionError({ code: "unavailable", message: "سجّل الدخول أولاً." });
+      const exportedAt = new Date().toISOString();
+      const data: Record<string, unknown> = {
+        exportedAt,
+        account: {
+          uid: user?.uid ?? null,
+          email: user?.email ?? null,
+          displayName: user?.displayName ?? null,
+          tier,
+          isAnonymous: Boolean(user?.isAnonymous),
+        },
+        conversations: conversations.map((c) => ({
+          id: c.id,
+          title: c.title,
+          personaId: c.personaId,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+          messages: c.messages,
+        })),
+        notes: notes.map((n) => ({
+          id: n.id,
+          title: n.title,
+          content: n.content,
+          category: n.category,
+          color: n.color,
+          pinned: n.pinned,
+          imageUrl: n.imageUrl,
+          createdAt: n.createdAt,
+          updatedAt: n.updatedAt,
+        })),
+        tracker: entries.map((e) => ({
+          id: e.id,
+          kind: e.kind,
+          text: e.text,
+          createdAt: e.createdAt,
+        })),
+      };
 
-      const res = await fetch("/api/account", { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) {
-        throw new AuthActionError({ code: "export", message: "تعذّر تصدير البيانات." });
-      }
-      const blob = await res.blob();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json; charset=utf-8",
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "mind-in-a-box-data.json";
+      a.download = `mind-in-a-box-data-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
       setNotice("نُزّل ملف بياناتك. احتفظ به إن أردت.");
@@ -129,63 +183,28 @@ export function AccountPanel() {
   }
 
   /**
-   * Deletion, in the only safe order: Firestore first, then the Auth account.
-   * Reversing it would strand data behind an account nobody can sign into.
+   * Sign out: clears Firebase session and local session, then redirects to
+   * the homepage smoothly.
    */
-  async function deleteAccount() {
-    setBusy("delete");
+  async function handleSignOut() {
+    setBusy("signout");
     setError(null);
     setNotice(null);
     try {
-      const token = await idToken();
-      const { auth: a } = await import("@/lib/firebase");
-      const uid = a?.currentUser?.uid;
-      if (!token || !uid) {
-        throw new AuthActionError({ code: "unavailable", message: "سجّل الدخول أولاً." });
-      }
-
-      const dataRes = await fetch("/api/account", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}`, "x-confirm-delete": uid },
-      });
-      if (!dataRes.ok) {
-        const body = (await dataRes.json().catch(() => null)) as { message?: string } | null;
-        throw new AuthActionError({
-          code: "delete-data",
-          message: body?.message ?? "تعذّر حذف البيانات. لم يُحذف حسابك.",
-        });
-      }
-
-      const authRes = await fetch("/api/account/delete-auth", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ uid }),
-      });
-      if (!authRes.ok) {
-        const body = (await authRes.json().catch(() => null)) as { message?: string } | null;
-        throw new AuthActionError({
-          code: "delete-auth",
-          message:
-            body?.message ??
-            "حُذفت بياناتك، وتعذّر حذف حساب الدخول. سجّل الدخول وأعد المحاولة.",
-        });
-      }
-
-      await signOutUser();
+      await signOut();
+      // Clear local store identity and data mirrors so nothing leaks.
+      const resetStore = useAppStore.getState().reset;
+      if (resetStore) resetStore();
       router.push("/");
       router.refresh();
     } catch (err) {
-      setError(err instanceof AuthActionError ? err.message : "تعذّر حذف الحساب.");
+      setError(err instanceof AuthActionError ? err.message : "تعذّر تسجيل الخروج.");
     } finally {
       setBusy(null);
-      setDeleteOpen(false);
     }
   }
 
-  if (!auth) {
+  if (!user && !auth) {
     return (
       <div className="glass p-7">
         <h1 className="display-arabic text-2xl font-bold text-gold-light">الحساب</h1>
@@ -205,95 +224,114 @@ export function AccountPanel() {
         <p className="display-latin mt-1 text-lg text-gold-muted/70">Account</p>
       </header>
 
-      {/* â”€â”€ 1. identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ═══ 1. identity ═══ */}
       <Section title="بيانات الحساب">
-        <Row label="البريد الإلكتروني" value={isAnonymous ? "حساب ضيف" : (email ?? "â€”")} />
-
-        {!isAnonymous && verified && (
-          <Notice kind="ok">بريدك مُفعّل.</Notice>
-        )}
-
-        {!isAnonymous && !verified && (
-          <>
-            <Notice kind="warn">بريدك غير مُفعّل بعد. بعض الوظائف تحتاج تفعيلاً.</Notice>
-            <Button
-              onClick={() => {
-                void (async () => {
-                  setBusy("verify");
-                  setError(null);
-                  try {
-                    const { auth: a } = await import("@/lib/firebase");
-                    if (a?.currentUser) await sendVerification(a.currentUser);
-                    setNotice("أُرسلت رسالة تفعيل إلى بريدك.");
-                  } catch (err) {
-                    setError(err instanceof AuthActionError ? err.message : "تعذّر الإرسال.");
-                  } finally {
-                    setBusy(null);
-                  }
-                })();
-              }}
-              disabled={busy !== null}
-              variant="ghost"
+        {!user ? (
+          <div className="glass-strong p-6 rounded-3xl border border-gold/20 text-center">
+            <h2 className="display-arabic text-xl font-bold text-gold-light mb-3">
+              مرحباً بك في عقل في صندوق
+            </h2>
+            <p className="display-arabic mt-2 leading-loose text-gold-muted/80 max-w-md mx-auto mb-5">
+              يمكنك التصفح والقراءة دون حساب، لكن ما تكتبه يبقى على هذا الجهاز فقط.
+              أنشئ حساباً لتحفظ محادثاتك وملاحظاتك ومدخلات المتتبع وترافقك إلى أي جهاز.
+            </p>
+            <Link
+              href="/enter"
+              className="btn-gold px-8 py-3 text-sm font-semibold"
             >
-              {busy === "verify" ? "جارٍ الإرسال…" : "أرسل رسالة تفعيل"}
-            </Button>
-            <Button
-              onClick={() => {
-                void (async () => {
-                  const { auth: a } = await import("@/lib/firebase");
-                  // No non-null assertion: the session can expire between render and
-                  // click, and `a` itself is null when Firebase is not configured.
-                  // `isEmailVerified` reports `false` for a missing user, which is
-                  // the honest answer — previously this threw
-                  // "Cannot read properties of null (reading 'emailVerified')".
-                  setVerified(await isEmailVerified(a?.currentUser));
-                })();
-              }}
-              variant="ghost"
-            >
-              تحقّقت من الرابط، أعد الفحص
-            </Button>
-          </>
-        )}
-
-        {isAnonymous && (
-          <Notice kind="warn">
-            أنت داخل كضيف.{" "}
-            <Link href="/enter" className="underline underline-offset-4">
-              أنشئ حساباً
-            </Link>{" "}
-            وسنحفظ سجلّك تحت نفس المعرّف.
-          </Notice>
-        )}
-
-        {entitlements && (
+                            أنشئ حساباً أو سجّل الدخول
+            </Link>
+            <p className="mt-4 text-xs text-gold-muted/80">
+              لا حساب بعد؟ يمكنك المتابعة كضيف والتراجع لاحقاً.
+            </p>
+          </div>
+        ) : (
           <>
-            <Row label="المستوى" value={tierLabel(entitlements.tier, t)} />
-            <Row
-              label="الأساس"
-              value={sourceLabel(entitlements.source, t)}
-            />
-            {entitlements.trialActive && (
-              <Row label="تنتهي التجربة" value={`بعد ${entitlements.trialDaysLeft} يوم`} />
+            <Row label="الاسم" value={user.displayName ?? "—"} />
+            <Row label="البريد الإلكتروني" value={user.email ?? "—"} />
+            <Row label="نوع العضوية" value={tierLabel(tier)} />
+            <Row label="المحادثات المحفوظة" value={String(conversations.length)} />
+            <Row label="ملاحظات المفكرة" value={String(notes.length)} />
+            <Row label="مدخلات المتتبع" value={String(entries.length)} />
+
+            {!isAnonymous && verified && (
+              <Notice kind="ok">بريدك مُفعّل.</Notice>
             )}
+
+            {!isAnonymous && !verified && (
+              <>
+                <Notice kind="warn">
+                  بريدك غير مُفعّل بعد. بعض الوظائف تحتاج تفعيلاً.
+                </Notice>
+                <Button
+                  onClick={() => {
+                    void (async () => {
+                      setBusy("verify");
+                      setError(null);
+                      try {
+                        const { auth: a } = await import("@/lib/firebase");
+                        if (a?.currentUser) await sendVerification(a.currentUser);
+                        setNotice("أُرسلت رسالة تفعيل إلى بريدك.");
+                      } catch (err) {
+                        setError(
+                          err instanceof AuthActionError ? err.message : "تعذّر الإرسال."
+                        );
+                      } finally {
+                        setBusy(null);
+                      }
+                    })();
+                  }}
+                  disabled={busy !== null}
+                  variant="ghost"
+                >
+                  {busy === "verify" ? "جارٍ الإرسال…" : "أرسل رسالة تفعيل"}
+                </Button>
+                <Button
+                  onClick={() => {
+                    void (async () => {
+                      const { auth: a } = await import("@/lib/firebase");
+                      setVerified(await isEmailVerified(a?.currentUser));
+                    })();
+                  }}
+                  variant="ghost"
+                >
+                  تحقّقت من الرابط، أعد الفحص
+                </Button>
+              </>
+            )}
+
+            {isAnonymous && (
+              <Notice kind="warn">
+                أنت داخل كضيف.{" "}
+                <Link href="/enter" className="underline underline-offset-4">
+                  أنشئ حساباً
+                </Link>{" "}
+                وسنحفظ سجلّك تحت نفس المعرّف.
+              </Notice>
+            )}
+
+            {entitlements && (
+              <>
+                <Row label="الأساس" value={sourceLabel(entitlements.source, t)} />
+                {entitlements.trialActive && (
+                  <Row label="تنتهي التجربة" value={`بعد ${entitlements.trialDaysLeft} يوم`} />
+                )}
+              </>
+            )}
+
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+            >
+              تسجيل الخروج
+            </Button>
           </>
         )}
-
-        <Button
-          onClick={() => {
-            void (async () => {
-              await signOutUser();
-              router.push("/");
-              router.refresh();
-            })();
-          }}
-          variant="ghost"
-        >
-          تسجيل الخروج
-        </Button>
       </Section>
 
-      {/* â”€â”€ 2. preferences â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ═══ 2. preferences ═══
+       * Available to everyone — signed in or not.
+       */}
       <Section title="التفضيلات">
         <Row label="اللغة">
           <div className="flex gap-1.5" role="group" aria-label="اللغة">
@@ -339,8 +377,8 @@ export function AccountPanel() {
         </p>
       </Section>
 
-      {/* â”€â”€ password â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      {!isAnonymous && (
+      {/* ═══ 3. password ═══ */}
+      {!isAnonymous && user && (
         <Section title="كلمة المرور">
           <Field
             id="cur-pw"
@@ -371,21 +409,25 @@ export function AccountPanel() {
                   setCurrentPassword("");
                   setNewPassword("");
                 } catch (err) {
-                  setError(err instanceof AuthActionError ? err.message : "تعذّر التغيير.");
+                  setError(
+                    err instanceof AuthActionError ? err.message : "تعذّر التغيير."
+                  );
                 } finally {
                   setBusy(null);
                 }
               })();
             }}
-            disabled={busy !== null || !currentPassword || newPassword.length < MIN_PASSWORD_LENGTH}
+            disabled={
+              busy !== null || !currentPassword || newPassword.length < MIN_PASSWORD_LENGTH
+            }
           >
             {busy === "pw" ? "جارٍ الحفظ…" : "غيّر كلمة المرور"}
           </Button>
         </Section>
       )}
 
-      {/* â”€â”€ email change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      {!isAnonymous && (
+      {/* ═══ email change ═══ */}
+      {!isAnonymous && user && (
         <Section title="تغيير البريد الإلكتروني">
           <Field
             id="new-email"
@@ -415,7 +457,9 @@ export function AccountPanel() {
                   setNewEmail("");
                   setCurrentPassword("");
                 } catch (err) {
-                  setError(err instanceof AuthActionError ? err.message : "تعذّر التغيير.");
+                  setError(
+                    err instanceof AuthActionError ? err.message : "تعذّر التغيير."
+                  );
                 } finally {
                   setBusy(null);
                 }
@@ -429,10 +473,11 @@ export function AccountPanel() {
         </Section>
       )}
 
-      {/* â”€â”€ 3. data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ═══ 4. data ═══ */}
       <Section title="بياناتك">
         <p className="display-arabic text-sm leading-loose text-gold-muted/75">
-          نزّل نسخة كاملة من بياناتك كملف JSON. صدّرها قبل أن تحذف حسابك إن أردت الاحتفاظ بها.
+          نزّل نسخة كاملة من محادثاتك وملاحظاتك ومدخلات متتبعك كملف JSON.
+          تُحضّر محلياً فوراً، حتى لو لم تكن متصلاً بالخادم.
         </p>
         <Button onClick={() => void exportData()} disabled={busy !== null} variant="ghost">
           {busy === "export" ? "جارٍ التصدير…" : "صدّر بياناتي (JSON)"}
@@ -443,7 +488,8 @@ export function AccountPanel() {
         {!deleteOpen ? (
           <>
             <p className="display-arabic text-sm leading-loose text-gold-muted/75">
-              الحذف نهائي. سيُحذف ملفك وكل ما كتبته في المفكرة والمتتبع، ولا يمكن استرجاعه.
+              الحذف نهائي. سيُحذف ملفك وكل ما كتبته في المفكرة والمتتبع، ولا يمكن
+              استرجاعه.
             </p>
             <Button onClick={() => setDeleteOpen(true)} variant="ghost">
               حذف حسابي
@@ -470,7 +516,78 @@ export function AccountPanel() {
             />
             <div className="flex gap-2">
               <Button
-                onClick={() => void deleteAccount()}
+                onClick={() => {
+                  void (async () => {
+                    const token = await idToken();
+                    const { auth: a } = await import("@/lib/firebase");
+                    const uid = a?.currentUser?.uid;
+                    setBusy("delete");
+                    setError(null);
+                    setNotice(null);
+                    try {
+                      if (!token || !uid) {
+                        throw new AuthActionError({
+                          code: "unavailable",
+                          message: "سجّل الدخول أولاً.",
+                        });
+                      }
+
+                      const dataRes = await fetch("/api/account", {
+                        method: "DELETE",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "x-confirm-delete": uid,
+                        },
+                      });
+                      if (!dataRes.ok) {
+                        const body =
+                          (await dataRes.json().catch(() => null)) as {
+                            message?: string;
+                          } | null;
+                        throw new AuthActionError({
+                          code: "delete-data",
+                          message:
+                            body?.message ??
+                            "تعذّر حذف البيانات. لم يُحذف حسابك.",
+                        });
+                      }
+
+                      const authRes = await fetch("/api/account/delete-auth", {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ uid }),
+                      });
+                      if (!authRes.ok) {
+                        const body =
+                          (await authRes.json().catch(() => null)) as {
+                            message?: string;
+                          } | null;
+                        throw new AuthActionError({
+                          code: "delete-auth",
+                          message:
+                            body?.message ??
+                            "حُذفت بياناتك، وتعذّر حذف حساب الدخول. سجّل الدخول وأعد المحاولة.",
+                        });
+                      }
+
+                      await signOutUser();
+                      const resetStore = useAppStore.getState().reset;
+                      if (resetStore) resetStore();
+                      router.push("/");
+                      router.refresh();
+                    } catch (err) {
+                      setError(
+                        err instanceof AuthActionError ? err.message : "تعذّر حذف الحساب."
+                      );
+                    } finally {
+                      setBusy(null);
+                      setDeleteOpen(false);
+                    }
+                  })();
+                }}
                 disabled={
                   busy !== null ||
                   deleteConfirm.trim() !== "احذف" ||
@@ -494,16 +611,20 @@ export function AccountPanel() {
   );
 }
 
-/* â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ═══ helpers ═══ */
 
-function tierLabel(tier: string, t: (p: { ar: string; en: string }) => string): string {
-  return t({
-    ar: tier === "sanctum" ? "المحراب" : tier === "oracle" ? "العرّاف" : "الزائر",
-    en: tier === "sanctum" ? "The Sanctum" : tier === "oracle" ? "The Oracle" : "The Free Seeker",
-  });
+function tierLabel(tier: string): string {
+  return tier === "sanctum"
+    ? "المحراب"
+    : tier === "oracle"
+      ? "العرّاف"
+      : "الزائر";
 }
 
-function sourceLabel(source: string, t: (p: { ar: string; en: string }) => string): string {
+function sourceLabel(
+  source: string,
+  t: (p: { ar: string; en: string }) => string
+): string {
   const map: Record<string, { ar: string; en: string }> = {
     subscription: { ar: "اشتراك ساري", en: "Active subscription" },
     grant: { ar: "منحة", en: "Grant" },

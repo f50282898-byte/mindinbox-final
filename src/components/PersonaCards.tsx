@@ -3,14 +3,14 @@
 import { PERSONAS, type Persona } from "@/lib/ai/personas";
 
 /**
- * Persona picker.
+ * Persona picker — each persona is a luxury glass card.
  *
  * Cards rather than a dropdown, because a philosopher is a choice worth seeing
  * not making blind: the line under each name is what the reader is choosing
  * between. A dropdown would hide exactly the information that makes the choice
  * meaningful.
  *
- * The selection is stored per conversation, not globally â€” switching philosopher
+ * The selection is stored per conversation, not globally — switching philosopher
  * mid-thread should not rewrite what the earlier turns meant.
  */
 export function PersonaCards({
@@ -24,7 +24,7 @@ export function PersonaCards({
     <div
       role="radiogroup"
       aria-label="اختر فيلسوفك"
-      className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
     >
       {PERSONAS.map((p) => (
         <PersonaCard
@@ -53,37 +53,43 @@ function PersonaCard({
       role="radio"
       aria-checked={selected}
       onClick={() => onSelect(persona.id)}
-      className={`group flex items-start gap-4 rounded-2xl border p-4 text-start transition-colors ${
+      className={`group flex flex-col items-start gap-2 rounded-3xl border p-5 text-start transition-all duration-500 ${
         selected
-          ? "border-gold/55 bg-gold/[0.08]"
-          : "border-gold/15 bg-gold/[0.04] hover:border-gold/35 hover:bg-gold/[0.07]"
+          ? "glass-strong border-gold/55 bg-gold/[0.08] shadow-[0_0_24px_rgba(212,175,55,0.10)]"
+          : "glass border-gold/15 bg-white/[0.03] hover:border-gold/35 hover:bg-white/[0.05]"
       }`}
     >
       {/* Fixed square so the mark cannot reflow the row as cards differ. */}
       <span
         aria-hidden="true"
-        className={`mt-0.5 flex size-11 shrink-0 items-center justify-center rounded-full border text-lg transition-colors ${
-          selected ? "border-gold/50 text-gold-light" : "border-gold/25 text-gold-muted/70"
+        className={`flex size-12 shrink-0 items-center justify-center rounded-full border text-2xl transition-colors ${
+          selected
+            ? "border-gold/50 text-gold-light bg-gold/[0.10]"
+            : "border-gold/25 text-gold-muted/60"
         }`}
       >
         {persona.symbol}
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="display-arabic flex flex-wrap items-baseline gap-x-2 text-[0.98rem] font-bold text-gold-light">
+        <span className="display-arabic font-bold text-gold-light text-lg leading-tight">
           {persona.nameAr}
-          <span className="display-latin text-[10px] tracking-widest text-ink-3">
-            {persona.nameEn}
-          </span>
+        </span>
+        <span className="display-latin text-[10px] tracking-widest text-gold-muted/80 mt-0.5 block">
+          {persona.nameEn}
         </span>
 
-        {/* The style line: the reason to pick this one over another. */}
-        <span className="display-arabic mt-1 block text-[0.8rem] leading-relaxed text-gold-muted/75">
+        {/* The school of thought: the reason to pick this one over another. */}
+        <span className="display-arabic mt-2 block text-[11px] tracking-[0.22em] uppercase text-gold-muted/60">
+          {persona.epithetAr}
+        </span>
+
+        <span className="mt-2 block text-[0.88rem] leading-relaxed text-gold-muted/75">
           {persona.focusAr}
         </span>
 
-        <span className="mt-1.5 block text-[0.7rem] text-ink-3">
-          {persona.epithetAr} Â· {persona.years}
+        <span className="mt-3 block text-[11px] tracking-[0.16em] text-gold-muted/80">
+          {persona.years}
         </span>
       </span>
     </button>

@@ -33,7 +33,7 @@ function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
     case "paragraph":
       return (
-        <p className="mb-4 leading-loose last:mb-0 text-zinc-200">
+        <p className="mb-4 leading-[2] last:mb-0 text-zinc-100">
           <InlineView nodes={block.inline} />
         </p>
       );
@@ -53,9 +53,9 @@ function BlockView({ block }: { block: Block }) {
 
     case "bullet":
       return (
-        <ul className="mb-4 space-y-2 ps-6 last:mb-0 list-disc marker:text-amber-400/70">
+        <ul className="mb-4 space-y-2 ps-6 last:mb-0 list-disc marker:text-gold-light">
           {block.items.map((item, i) => (
-            <li key={i} className="leading-loose text-zinc-200">
+            <li key={i} className="leading-[2] text-zinc-100">
               <InlineView nodes={item} />
             </li>
           ))}
@@ -64,9 +64,9 @@ function BlockView({ block }: { block: Block }) {
 
     case "ordered":
       return (
-        <ol className="mb-4 list-decimal space-y-2 ps-6 last:mb-0 marker:text-amber-400/70">
+        <ol className="mb-4 list-decimal space-y-2 ps-6 last:mb-0 marker:text-gold-light">
           {block.items.map((item, i) => (
-            <li key={i} className="leading-loose text-zinc-200">
+            <li key={i} className="leading-[2] text-zinc-100">
               <InlineView nodes={item} />
             </li>
           ))}
@@ -75,7 +75,7 @@ function BlockView({ block }: { block: Block }) {
 
     case "quote":
       return (
-        <blockquote className="mb-4 border-r-2 border-amber-500/60 bg-amber-500/5 pr-4 py-2 rounded-l-lg last:mb-0 italic text-zinc-200/90">
+        <blockquote className="mb-4 border-r-2 border-gold/20 bg-gold/5 pr-4 py-2 rounded-l-lg last:mb-0 italic text-zinc-100">
           <InlineView nodes={block.inline} />
         </blockquote>
       );
@@ -103,7 +103,7 @@ function InlineView({ nodes }: { nodes: Inline[] }): ReactNode {
             return <Fragment key={i}>{node.text}</Fragment>;
           case "bold":
             return (
-              <strong key={i} className="font-bold text-amber-400/90">
+              <strong key={i} className="font-bold text-gold-light">
                 {node.text}
               </strong>
             );

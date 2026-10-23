@@ -147,6 +147,7 @@ export const FALLBACK_NAV: NavItem[] = [
     label: { ar: "الحساب", en: "Account" },
     short: { ar: "الحساب", en: "Account" },
     icon: "User",
+    primaryMobile: true,
     requires: "free",
     group: "account",
   },
@@ -208,9 +209,9 @@ export function navVisibleTo(items: NavItem[], tier: keyof typeof TIER_RANK): Na
   return items.filter((item) => TIER_RANK[item.requires] <= TIER_RANK[tier]);
 }
 
-/** The four items pinned to the mobile bottom bar. */
+/** The five items pinned to the mobile bottom bar. */
 export function mobilePrimary(items: NavItem[]): NavItem[] {
-  return items.filter((i) => i.primaryMobile).slice(0, 4);
+  return items.filter((i) => i.primaryMobile).slice(0, 5);
 }
 
 /** The four items shown in the desktop header. */

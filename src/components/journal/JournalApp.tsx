@@ -40,6 +40,7 @@ interface NoteDraft {
   content: string;
   category: NoteCategory;
   color: NoteColor;
+  imageUrl?: string;
 }
 
 export function JournalApp() {
@@ -75,6 +76,7 @@ export function JournalApp() {
     content: "",
     category: "all",
     color: "amber",
+    imageUrl: undefined,
   });
   const [offline, setOffline] = useState(false);
 
@@ -89,6 +91,8 @@ export function JournalApp() {
       window.removeEventListener("offline", down);
     };
   }, []);
+
+  const pinnedCount = useMemo(() => notes.filter((n) => n.pinned).length, [notes]);
 
   const filteredNotes = useMemo(() => {
     return notes
@@ -117,12 +121,13 @@ export function JournalApp() {
       content: newNoteDraft.content.trim(),
       category: newNoteDraft.category,
       color: newNoteDraft.color,
+      imageUrl: newNoteDraft.imageUrl,
       pinned: false,
       createdAt: now,
       updatedAt: now,
     };
     addNote(note);
-    setNewNoteDraft({ title: "", content: "", category: "all", color: "amber" });
+    setNewNoteDraft({ title: "", content: "", category: "all", color: "amber", imageUrl: undefined });
     setSelectedNoteId(note.id);
     setIsDrawerOpen(true);
   }, [addNote, newNoteDraft]);
@@ -176,7 +181,7 @@ export function JournalApp() {
           <button
             type="button"
             onClick={() => {
-              setNewNoteDraft({ title: "", content: "", category: "all", color: "amber" });
+              setNewNoteDraft({ title: "", content: "", category: "all", color: "amber", imageUrl: undefined });
               setEditingNote(null);
               setIsDrawerOpen(true);
             }}
@@ -225,15 +230,17 @@ export function JournalApp() {
 
       <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-3" style={{ scrollbarWidth: "none" }}>
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <h2 className="display-arabic text-sm font-semibold text-zinc-100">
-            workspace
-          </h2>
-          <p className="display-latin text-xs tracking-[0.2em] text-zinc-500/60 uppercase ml-1">
-            لوحة العمل
-          </p>
+          <div className="flex items-center gap-2">
+            <h2 className="display-arabic text-sm font-semibold text-gold-light">
+              مفكرتي الخاصة
+            </h2>
+            <span className="text-xs text-gold-muted/60">
+              {notes.length} ملاحظة{pinnedCount > 0 ? ` · ${pinnedCount} مثبت` : ""}
+            </span>
+          </div>
 
           {filteredNotes.length === 0 && searchQuery && (
-            <p className="ml-auto text-xs text-zinc-500/60">لا توجد نتائج</p>
+            <p className="ml-auto text-xs text-gold-muted/60">لا توجد نتائج</p>
           )}
         </div>
 
@@ -288,7 +295,7 @@ export function JournalApp() {
       </div>
 
       <NoteDrawer
-        open={isDrawerOpen && !!selectedNote}
+        open={isDrawerOpen}
         note={selectedNote ?? undefined}
         _isEditing={!!editingNote}
         draft={newNoteDraft}
@@ -301,6 +308,7 @@ export function JournalApp() {
               content: newNoteDraft.content,
               category: newNoteDraft.category,
               color: newNoteDraft.color,
+              imageUrl: newNoteDraft.imageUrl,
             });
             setEditingNote(null);
             setIsDrawerOpen(false);
@@ -312,7 +320,7 @@ export function JournalApp() {
           setIsDrawerOpen(false);
           setSelectedNoteId(null);
           setEditingNote(null);
-          setNewNoteDraft({ title: "", content: "", category: "all", color: "amber" });
+          setNewNoteDraft({ title: "", content: "", category: "all", color: "amber", imageUrl: undefined });
         }}
       />
 
@@ -390,7 +398,7 @@ function NoteCard({
             })}
           </span>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
           <button
             type="button"
             onClick={(e) => {

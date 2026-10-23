@@ -193,8 +193,9 @@ export function useTrackerEntries(enabled: boolean) {
   const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
-    if (!enabled || !uid || !db) {
-      setEntries([]);
+    if (!enabled) return;
+    if (!uid || !db) {
+      // Guest / offline: keep whatever is in the local mirror; do not clear it.
       return;
     }
 
@@ -231,25 +232,31 @@ export function useTrackerEntries(enabled: boolean) {
   return { error, syncing };
 }
 
-/** Appends a tracker entry to Firestore (queued offline) and to the mirror. */
+/** Appends a tracker entry to the local mirror first, then to Firestore (queued offline). */
 export async function writeEntry(kind: EntryKind, text: string): Promise<boolean> {
   const { uid } = useAppStore.getState();
   const trimmed = text.trim();
-  if (!uid || !db || !trimmed) return false;
+  if (!trimmed) return false;
 
   const addEntry = useAppStore.getState().addEntry;
+  // Always write to the local mirror first so the UI updates instantly —
+  // even for guests or offline sessions without Firebase.
+  addEntry({ id: crypto.randomUUID(), kind, text: trimmed, createdAt: Date.now() });
+
+  if (!uid || !db) {
+    // Guest / offline: persisted locally only; synced when Firebase configures.
+    return false;
+  }
+
   try {
     await setDoc(
       doc(collection(db, paths.userEntries(uid))),
       { kind, text: trimmed, createdAt: serverTimestamp() },
       { merge: false }
     );
-    addEntry({ id: crypto.randomUUID(), kind, text: trimmed, createdAt: Date.now() });
     return true;
   } catch {
-    // Offline: keep it locally; Firestore will sync when the client reconnects
-    // only if the write was queued. Surface failure rather than pretend.
-    addEntry({ id: crypto.randomUUID(), kind, text: trimmed, createdAt: Date.now() });
+    // Offline: the local entry is already saved; Firestore queues the write on reconnect.
     return false;
   }
 }

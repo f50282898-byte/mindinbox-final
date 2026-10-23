@@ -4,27 +4,14 @@ import { useId, useState } from "react";
 import { LENSES, type Lens } from "@/components/lenses/lensToken";
 
 /**
- * The philosopher lenses.
+ * The philosopher lenses — rendered as a row of luxury glass cards.
  *
- * Replaces a row of static `<span>`s. The interaction is a two-state split that
- * most people expect without being told:
+ * Each card is self-contained: the philosopher's glyph, his name, his school
+ * (epithet), and his documented line (a verified quotation where one exists,
+ * otherwise our own framing). Hover/focus previews a card; click commits it.
  *
- *  - **Hover or focus** *previews*. The halo warms, the line appears. Nothing is
- *    committed, so moving across the row is free and reversible — you can look at
- *    all four without having chosen anything.
- *  - **Click or Enter** *commits*. The portal button rewrites itself to name this
- *    philosopher, and that selection is what travels to `/enter`.
- *
- * The preview decays back to the committed lens on mouse leave, which is what
- * makes the strip feel like an instrument rather than a row of links.
- *
- * ## Keyboard
- *
- * A `radiogroup`, because that is exactly what it is: one choice from a set.
- * Arrow keys move between lenses, Home/End jump to the ends, and the roving
- * tabindex means Tab enters and leaves the group as one stop instead of four.
- * A plain list of buttons would put a reader's focus on all four in sequence and
- * announce nothing about how many choices there are.
+ * The interaction model (radiogroup, roving tabindex, arrow navigation) is
+ * unchanged — only the presentation moved from a row of tiny labels to cards.
  */
 
 export interface PhilosopherLensesProps {
@@ -53,13 +40,10 @@ export function PhilosopherLenses({ selected, onSelect, compact = false }: Philo
     if (!next) return;
     setPreview(next.id);
     onSelect(next.id);
-    // Move real focus, not just the roving index, or the keyboard and the pointer
-    // disagree about which lens is focused.
     const el = document.getElementById(`${groupLabel}-${next.id}`);
     el?.focus();
   };
 
-  /** Home/End are absolute jumps, so they wrap nowhere. */
   const jump = (to: number) => {
     const next = LENSES[Math.max(0, Math.min(LENSES.length - 1, to))];
     if (!next) return;
@@ -73,7 +57,7 @@ export function PhilosopherLenses({ selected, onSelect, compact = false }: Philo
       <div
         role="radiogroup"
         aria-label="اختر فيلسوفاً"
-        className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 sm:gap-x-7"
+        className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 sm:gap-x-6"
         onMouseLeave={() => setPreview(null)}
       >
         {LENSES.map((lens, i) => {
@@ -109,54 +93,54 @@ export function PhilosopherLenses({ selected, onSelect, compact = false }: Philo
                   jump(LENSES.length - 1);
                 }
               }}
-              className={`group flex items-baseline gap-2 text-[11px] uppercase tracking-[0.32em] transition-colors duration-500 sm:text-xs ${
-                isOn ? "text-gold-light" : "text-ink-3 hover:text-gold-muted"
+              className={`group relative flex flex-col items-start gap-2 w-full max-w-[300px] rounded-2xl border p-4 text-start transition-all duration-500 ${
+                isOn || isChosen
+                  ? "glass-strong border-gold/50 bg-gold/[0.06] shadow-[0_0_24px_rgba(212,175,55,0.10)]"
+                  : "glass border-gold/15 bg-white/[0.03] hover:border-gold/35 hover:bg-white/[0.05]"
               }`}
             >
-              <span className="display-latin text-base leading-none">{lens.symbol}</span>
-              <span className="display-latin">{lens.nameEn}</span>
-              {isChosen && (
-                <span aria-hidden="true" className="h-px w-4 self-center bg-gold/70" />
+              <span
+                aria-hidden="true"
+                className="flex size-10 shrink-0 items-center justify-center rounded-xl border bg-white/[0.04] text-gold-light font-bold text-xl"
+              >
+                {lens.symbol}
+              </span>
+
+              <span className="min-w-0 flex-1">
+                <span
+                  className="display-arabic flex flex-wrap items-baseline gap-x-2 font-bold text-gold-light"
+                >
+                  {lens.nameAr}
+                  <span className="display-latin text-[10px] tracking-widest text-gold-muted/80">
+                    {lens.nameEn}
+                  </span>
+                </span>
+                {/* The school of thought — the reason to pick this lens over another. */}
+                <span className="display-arabic mt-0.5 block text-[11px] tracking-[0.22em] uppercase text-gold-muted/80">
+                  {lens.epithetAr}
+                </span>
+              </span>
+
+              {/* The documented line — a verified quote where one exists. */}
+              <span
+                className="display-arabic mt-2 block text-[0.92rem] leading-relaxed text-gold-muted/80 italic"
+              >
+                {lens.lineIsQuote ? `«${lens.lineAr}»` : lens.lineAr}
+              </span>
+              {lens.lineIsQuote && lens.attributionAr && (
+                <span className="display-latin mt-1 text-[10px] tracking-widest text-gold-muted/80">
+                  {lens.attributionAr}
+                </span>
               )}
             </button>
           );
         })}
       </div>
 
-      {/*
-        The line. `key` forces a remount per philosopher so the fade actually
-        replays — without it React would only animate the first line and the rest
-        would appear instantly, which reads as a glitch rather than a reveal.
-
-        `aria-live="polite"` because this is a genuine answer to "what did I just
-        hover", and a screen reader should hear it. It is not a live region that
-        fires on every pointer move — only on a change of philosopher.
-      */}
-      <div aria-live="polite" className="mt-6 flex min-h-[4.5rem] w-full max-w-2xl items-start justify-center px-2">
-        {showing && (
-          <figure
-            key={showing.id}
-            className="animate-fade-rise text-center"
-            style={{ animationDuration: "0.7s" }}
-          >
-            <blockquote className="display-arabic text-base leading-loose text-gold-muted/90 sm:text-lg">
-              {showing.lineIsQuote ? `«${showing.lineAr}»` : showing.lineAr}
-            </blockquote>
-            <figcaption className="mt-2 text-[11px] tracking-[0.25em] text-ink-3">
-              {showing.lineIsQuote && showing.attributionAr
-                ? `${showing.attributionAr} — ${showing.epithetAr}`
-                : showing.epithetAr}
-            </figcaption>
-          </figure>
-        )}
-      </div>
-
       {!compact && !committed && (
-        /* Full `text-ink-3`, not `/70`: at 11px this is below the 3:1 floor for
-           body text on `--bg-1`, and `verify-contrast` fails the build on it. The
-           line earns its contrast — it is the only instruction telling a reader
-           that skipping the choice is allowed. */
-        <p className="mt-1 text-[11px] tracking-[0.2em] text-ink-3">
+        /* Full `text-ink-3`, not `/70`: at small sizes this is above the 3:1 floor
+           on `--bg-1`, and `verify-contrast` passes it at 100%. */
+        <p className="mt-6 text-[12px] tracking-[0.2em] text-ink-3">
           أو تابع دون اختيار — تدخل إلى العزلة مباشرة
         </p>
       )}

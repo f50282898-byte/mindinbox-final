@@ -125,20 +125,37 @@ export function DesktopHeader() {
 /**
  * Mobile bottom tab bar — Native app feel.
  *
- * Floating glass bar at the bottom with 4 primary destinations.
- * Backdrop blur, gold accent on active, and generous 44px+ touch targets.
+ * Floating glass bar at the bottom with 5 primary destinations.
+ * Backdrop blur, royal gold accent on active, and generous 44px+ touch targets.
+ * Always visible on mobile (`md:hidden`) so the reader can jump between the
+ * sanctuary, dialogue, journal, tracker and account from any page.
  */
 export function MobileBottomBar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const items = [
+    { id: "wisdom", href: "/wisdom", label: "الحكمة", icon: "BookOpen" },
+    { id: "dialogue", href: "/dialogue", label: "الحوار", icon: "MessageSquare" },
+    { id: "journal", href: "/journal", label: "المفكرة", icon: "NotebookPen" },
+    { id: "tracker", href: "/tracker", label: "المتتبع", icon: "Activity" },
+    {
+      id: "account",
+      href: user ? "/account" : "/enter",
+      label: user ? "حسابي" : "المدخل",
+      icon: "User",
+    },
+  ];
 
   return (
     <nav
       aria-label="التنقل السريع"
-      className="fixed bottom-4 left-4 right-4 z-50 md:hidden rounded-3xl border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-2xl"
+      className="fixed bottom-3 inset-x-3 z-50 md:hidden rounded-2xl border border-gold/25 bg-[#090B10]/90 backdrop-blur-2xl shadow-2xl"
     >
       <ul className="flex items-center justify-center gap-1 px-2 py-2.5" role="tablist">
-        {mobilePrimary(FALLBACK_NAV).map((item) => {
+        {items.map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const Icon = iconFor(item.icon);
           return (
             <li key={item.id} role="presentation">
               <Link
@@ -148,7 +165,7 @@ export function MobileBottomBar() {
                 aria-selected={active}
                 className={`flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-2xl transition-all duration-200 min-w-[56px] ${
                   active
-                    ? "bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+                    ? "bg-gold/15 border-gold/40 text-gold-light shadow-[0_0_15px_rgba(212,175,55,0.15)]"
                     : "text-zinc-400/60 hover:bg-white/[0.03] hover:border-white/10 hover:text-zinc-200"
                 }`}
               >
@@ -158,11 +175,11 @@ export function MobileBottomBar() {
                     return <Icon className="size-5" />;
                   })()}
                   {active && (
-                    <span className="absolute -top-1 right-1 size-2 -translate-x-1/2 rounded-full bg-amber-500" />
+                    <span className="absolute -top-1 right-1 size-2 -translate-x-1/2 rounded-full bg-gold-light" />
                   )}
                 </span>
                 <span className="text-[10px] font-medium leading-tight truncate">
-                  {item.short.ar}
+                  {item.label}
                 </span>
               </Link>
             </li>

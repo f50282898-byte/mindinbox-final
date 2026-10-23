@@ -9,13 +9,55 @@ interface NoteDrawerProps {
   open: boolean;
   note?: Note;
   _isEditing: boolean;
-  draft: { title: string; content: string; category: NoteCategory; color: NoteColor };
-  setDraft: (v: { title: string; content: string; category: NoteCategory; color: NoteColor }) => void;
+  draft: {
+    title: string;
+    content: string;
+    category: NoteCategory;
+    color: NoteColor;
+    imageUrl?: string;
+  };
+  setDraft: (v: {
+    title: string;
+    content: string;
+    category: NoteCategory;
+    color: NoteColor;
+    imageUrl?: string;
+  }) => void;
   onSave: () => void;
   onUpdate: () => void;
   onDelete?: () => void;
   onPin: (id: string) => void;
   onClose: () => void;
+}
+
+/** Compress an image file to a JPEG data URL capped at 1200px on the longest side. */
+async function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 1200;
+      let { width, height } = img;
+      if (width > MAX || height > MAX) {
+        const scale = Math.min(MAX / width, MAX / height);
+        width *= scale;
+        height *= scale;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("canvas context unavailable"));
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("failed to load image"));
+    };
+    img.src = url;
+  });
 }
 
 export function NoteDrawer({
@@ -79,7 +121,7 @@ export function NoteDrawer({
               id="drawer-note-title"
               ref={titleRef}
               dir="auto"
-              defaultValue={draft.title}
+              value={draft.title}
               onChange={(e) => setDraft({ ...draft, title: e.target.value })}
               placeholder="عنوان الملاحظة…"
               className="w-full border-b border-white/10 bg-transparent pb-1 text-lg font-bold text-zinc-100 outline-none placeholder-zinc-500/40"
@@ -88,7 +130,7 @@ export function NoteDrawer({
             <div className="flex flex-wrap gap-2 mb-1">
               <label className="text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium">التصنيف</label>
               {Object.entries(CATEGORY_LABELS).map(([id, label]) => {
-                const isActive = (note?.category ?? "all") === id;
+                const isActive = draft.category === id;
                 return (
                   <button
                     key={id}
@@ -106,7 +148,7 @@ export function NoteDrawer({
             <textarea
               id="drawer-note-content"
               dir="auto"
-              defaultValue={draft.content}
+              value={draft.content}
               onChange={(e) => setDraft({ ...draft, content: e.target.value })}
               rows={12}
               placeholder="اكتب فكرتك هنا… لا حدود للمساحة، تتسع لما تشاء."
@@ -117,7 +159,7 @@ export function NoteDrawer({
               <span className="text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium">اللون</span>
               <div className="flex gap-2">
                 {Object.entries(COLOR_CLASSES).map(([color, _cls]) => {
-                  const isActive = (note?.color ?? "amber") === color;
+                  const isActive = draft.color === color;
                   return (
                     <button
                       key={color}
@@ -133,15 +175,35 @@ export function NoteDrawer({
 
             <div className="pt-2 border-t border-white/5">
               <label className="block text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium mb-2">صورة مرفقة (اختياري)</label>
-              <input type="file" accept="image/*" className="block w-full text-xs text-zinc-400/60 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-400" aria-hidden={true} />
-              {note?.imageUrl && (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  void compressImage(file).then((dataUrl) =>
+                    setDraft({ ...draft, imageUrl: dataUrl })
+                  );
+                }}
+                className="block w-full text-xs text-zinc-400/60 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold/10 file:text-gold-light" aria-hidden={true}
+              />
+              {((draft.imageUrl ?? note?.imageUrl) && (
                 <div className="mt-3 aspect-video overflow-hidden rounded-xl border border-white/10 relative">
-                  <img src={note.imageUrl} alt="" className="w-full h-full object-cover" />
-                  <button type="button" className="absolute top-2 right-2 size-6 rounded-full bg-black/60 backdrop-blur text-white hover:bg-black/80" aria-label="إزالة الصورة">
+                  <img
+                    src={draft.imageUrl ?? note!.imageUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setDraft({ ...draft, imageUrl: undefined })}
+                    aria-label="إزالة الصورة"
+                    className="absolute top-2 right-2 size-6 rounded-full bg-black/60 backdrop-blur text-white hover:bg-black/80"
+                  >
                     <span className="size-3.5">✕</span>
                   </button>
                 </div>
-              )}
+              ))}
             </div>
 
             <div className="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-white/10">

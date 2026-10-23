@@ -132,6 +132,40 @@ export function UtopiaHero() {
       {/* Breaks the banding a near-black gradient shows on any display. */}
       <div aria-hidden="true" className="film-grain absolute inset-0 z-20" />
 
+      {/* Top floating status bar — logo + quick links to the sanctuary, journal and account. */}
+      <header
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex w-[92%] max-w-[720px] items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-2.5 backdrop-blur-xl shadow-2xl"
+      >
+        <div className="flex items-center gap-2">
+          <Logo size={22} ariaLabel="شعار عقل في صندوق" />
+          <span className="hidden sm:block display-arabic font-bold text-gold-light">
+            عقل في صندوق
+          </span>
+        </div>
+        <div className="hidden sm:flex items-center gap-2">
+          <Link
+            href="/wisdom"
+            className="rounded-xl border border-gold/20 bg-white/[0.03] px-3 py-1.5 text-[11px] sm:text-xs font-medium text-gold-muted transition-colors hover:border-gold/50 hover:text-gold-light"
+          >
+            الملاذ الفلسفي
+          </Link>
+          <Link
+            href="/journal"
+            className="rounded-xl border border-gold/20 bg-white/[0.03] px-3 py-1.5 text-[11px] sm:text-xs font-medium text-gold-muted transition-colors hover:border-gold/50 hover:text-gold-light"
+          >
+            المفكرة
+          </Link>
+          {isLoggedIn && (
+            <Link
+              href="/account"
+              className="rounded-xl border border-gold/20 bg-white/[0.03] px-3 py-1.5 text-[11px] sm:text-xs font-medium text-gold-muted transition-colors hover:border-gold/50 hover:text-gold-light"
+            >
+              حسابي
+            </Link>
+          )}
+        </div>
+      </header>
+
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
         className="relative z-10 flex w-full flex-col items-center px-5 text-center"
@@ -152,7 +186,7 @@ export function UtopiaHero() {
         </motion.div>
 
         <h1
-          className="gold-text-glow display-arabic max-w-3xl text-4xl font-bold leading-relaxed text-gold-light sm:text-6xl lg:text-8xl"
+          className="gold-text-glow display-arabic max-w-3xl text-4xl font-bold leading-[1.45] pb-3 mb-2 text-gold-light sm:text-6xl lg:text-8xl"
           aria-label={title}
         >
           {words.map((word, i) => (
@@ -182,7 +216,7 @@ export function UtopiaHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="display-latin mt-6 mb-3 tracking-[0.25em] text-xs md:text-sm text-amber-400/80 font-medium"
+          className="display-latin mt-5 tracking-[0.32em] text-xs sm:text-sm text-gold/85 font-semibold"
         >
           MIND IN A BOX
         </motion.p>

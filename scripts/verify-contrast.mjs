@@ -124,8 +124,10 @@ function backgrounds(t) {
     "--bg-0": page,
     "--bg-1": parseColor(t["--bg-1"]),
     "--surface-solid": parseColor(t["--surface-solid"]),
-    "glass over --bg-0": composite(parseColor(t["--surface-1"]), page),
-    "overlay over --bg-0": composite(parseColor(t["--surface-2"]), page),
+    /* Translucent glass composited over the page — alpha must be honoured, so pass
+       `page` as the backdrop rather than letting `parseColor` drop it. */
+    "glass over --bg-0": parseColor(t["--surface-1"], page),
+    "overlay over --bg-0": parseColor(t["--surface-2"], page),
   };
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { DesktopHeader, MobileHeader } from "@/components/Header";
+import { DesktopHeader, MobileHeader, MobileBottomBar } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CHROMELESS_ROUTES } from "@/lib/nav";
 
@@ -34,6 +34,7 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     return (
       <main id="main" className="shell-content min-h-screen pb-24 md:pb-0 overflow-x-hidden">
         {children}
+        <MobileBottomBar />
       </main>
     );
   }
@@ -44,6 +45,7 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
       <MobileHeader />
       <main id="main" className="shell-content min-h-screen pt-16 pb-28 md:pb-0 overflow-x-hidden">
         {children}
+        <MobileBottomBar />
       </main>
       <Footer />
     </>
