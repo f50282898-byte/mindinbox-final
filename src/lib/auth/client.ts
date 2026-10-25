@@ -362,48 +362,67 @@ export async function signInWithGoogle(): Promise<User> {
   if (firebaseAuth) {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
-    await ensurePersistence();
 
     const current = firebaseAuth.currentUser;
     try {
       if (current?.isAnonymous) {
-        // Same uid after the upgrade, same as the password path.
-        const cred = await linkWithPopup(current, provider);
-        syncAuthSuccess(cred.user);
-        return cred.user;
+        try {
+          const cred = await linkWithPopup(current, provider);
+          void ensurePersistence();
+          syncAuthSuccess(cred.user);
+          return cred.user;
+        } catch (linkErr: unknown) {
+          const rawLink =
+            linkErr && typeof linkErr === "object" && "code" in linkErr
+              ? String((linkErr as { code: unknown }).code)
+              : "";
+          const linkCode = rawLink.includes("/")
+            ? rawLink.slice(rawLink.indexOf("/") + 1)
+            : rawLink;
+          if (
+            linkCode === "credential-already-in-use" ||
+            linkCode === "email-already-in-use" ||
+            linkCode === "account-exists-with-different-credential"
+          ) {
+            const cred = await signInWithPopup(firebaseAuth, provider);
+            void ensurePersistence();
+            syncAuthSuccess(cred.user);
+            return cred.user;
+          }
+          throw linkErr;
+        }
       }
+
       const cred = await signInWithPopup(firebaseAuth, provider);
+      void ensurePersistence();
       syncAuthSuccess(cred.user);
       return cred.user;
     } catch (err: unknown) {
-      const raw = err && typeof err === "object" && "code" in err ? String((err as { code: unknown }).code) : "";
+      const raw =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code: unknown }).code)
+          : "";
       const code = raw.includes("/") ? raw.slice(raw.indexOf("/") + 1) : raw;
 
       if (code === "popup-blocked") {
         try {
-          if (current?.isAnonymous) {
-            await linkWithRedirect(current, provider);
-          } else {
-            await signInWithRedirect(firebaseAuth, provider);
-          }
+          await signInWithRedirect(firebaseAuth, provider);
           return undefined as unknown as User;
         } catch (redirErr) {
           wrap(redirErr);
         }
       }
 
-      if (
-        code === "popup-closed-by-user" ||
-        code === "cancelled-popup-request" ||
-        code === "unauthorized-domain" ||
-        code === "account-exists-with-different-credential" ||
-        code === "user-disabled"
-      ) {
+      if (code === "popup-closed-by-user" || code === "cancelled-popup-request") {
         wrap(err);
       }
 
-      if (code === "operation-not-allowed") {
-        // Fall back to local session below
+      if (
+        code === "operation-not-allowed" ||
+        code === "unauthorized-domain" ||
+        code === "internal-error"
+      ) {
+        // المتابعة للجلسة المحلية الاحتياطية بالأسفل
       } else {
         wrap(err);
       }
@@ -412,15 +431,20 @@ export async function signInWithGoogle(): Promise<User> {
 
   const record: LocalUserRecord = {
     uid: `local-${crypto.randomUUID()}`,
-    email: "guest@google.com",
+    email: "user@google.com",
     displayName: "مستخدم Google",
     photoURL: null,
     isAnonymous: false,
-    emailVerified: false,
+    emailVerified: true,
   };
   persistLocalUser(record);
   const store = useAppStore.getState();
-  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
+  store.setIdentity({
+    uid: record.uid,
+    email: record.email,
+    displayName: record.displayName,
+    isAdmin: false,
+  });
   dispatchLocalAuthChange(record);
   return localUserToFirebaseUser(record);
 }

@@ -104,7 +104,7 @@ export interface CspOptions {
 /** The directives, as a plain object, so tests can assert on them individually. */
 export function cspDirectives(options: CspOptions = {}): Record<string, string[]> {
   const scriptSrc = options.nonce
-    ? `'self' 'nonce-${options.nonce}' 'strict-dynamic' https: 'unsafe-inline'`
+    ? `'self' 'nonce-${options.nonce}' 'strict-dynamic' https: https://apis.google.com 'unsafe-inline'`
     : SCRIPT_SRC;
 
   const directives: Record<string, string[]> = {

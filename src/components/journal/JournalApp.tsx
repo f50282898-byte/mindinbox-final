@@ -183,6 +183,7 @@ export function JournalApp() {
             onClick={() => {
               setNewNoteDraft({ title: "", content: "", category: "all", color: "amber", imageUrl: undefined });
               setEditingNote(null);
+              setSelectedNoteId(null);
               setIsDrawerOpen(true);
             }}
             className="flex shrink-0 items-center justify-center size-9 rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition-colors hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/5"
