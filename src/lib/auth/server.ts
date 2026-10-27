@@ -72,25 +72,14 @@ export type AuthResult =
  * micro-optimisation.
  * ---------------------------------------------------------------------- */
 
-const jwksByProject = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
-
-function jwksFor(projectId: string) {
-  let set = jwksByProject.get(projectId);
-  if (!set) {
-    set = createRemoteJWKSet(new URL(`${JWKS_ISSUER}${JWKS_AUDIENCE}`), {
-      // Re-fetch keys at most this often even if the server says otherwise.
-      cooldownDuration: 30_000,
-      timeoutDuration: 5_000,
-    });
-    jwksByProject.set(projectId, set);
-  }
-  return set;
+let keySet: ReturnType<typeof createRemoteJWKSet> | undefined;
+function jwksFor(_projectId: string) {
+  // Firebase uses one signing key endpoint; issuer and audience remain project-pinned.
+  return keySet ??= createRemoteJWKSet(new URL(`${JWKS_ISSUER}${JWKS_AUDIENCE}`), {
+    cooldownDuration: 30_000, timeoutDuration: 5_000,
+  });
 }
-
-/** Test seam: drops cached key sets so a new project id is not ignored. */
-export function resetJwksCache(): void {
-  jwksByProject.clear();
-}
+export function resetJwksCache(): void { keySet = undefined; }
 
 /* ── error mapping ──────────────────────────────────────────────────────── */
 
@@ -175,7 +164,8 @@ export async function verifyIdToken(
   }
 
   const { payload } = verified;
-  if (typeof payload.sub !== "string" || !payload.sub) {
+  if (typeof payload.sub !== "string" || !payload.sub || payload.sub.length > 128 || payload.sub.includes("/") ||
+      typeof payload.iat !== "number" || payload.iat > Date.now() / 1000 + CLOCK_TOLERANCE_SECONDS) {
     return { ok: false, reason: "malformed" };
   }
 

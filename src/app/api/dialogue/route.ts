@@ -136,7 +136,9 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   /* ── 2. Identity ────────────────────────────────────────────────────────── */
-  const verified = await verifyIdToken(bearerFromHeaders(request.headers)).catch(() => null);
+  const bearer = bearerFromHeaders(request.headers);
+  const verified = bearer ? await verifyIdToken(bearer).catch(() => null) : null;
+  if (request.headers.has("authorization") && !verified?.ok) return jsonError({ error: "invalid_token" }, 401);
   const uid = verified?.ok ? verified.user.uid : null;
 
   /* ── 3. Entitlement — the only source of the round count ────────────────── */
@@ -179,7 +181,8 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    const decision = await checkQuota(key, ip);
+    const decision = await checkQuota(key, ip).catch(() => null);
+    if (!decision) return jsonError({ error: "quota_unavailable" }, 503, cookieHeader);
     if (!decision.allowed) return gate(decision.reason, cookieHeader);
 
     const chain = usableChain(settings, "chat");
@@ -208,7 +211,11 @@ export async function POST(request: Request): Promise<Response> {
         }
 
         const remaining = entitled ? null : await spend(key, ip);
-        if (remaining !== null) emit({ type: "quota", remaining });
+        if (!entitled && remaining === null) {
+            emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
+            return;
+          }
+          if (remaining !== null) emit({ type: "quota", remaining });
 
         emit({ type: "summary_start" });
         emit({ type: "summary_delta", delta: generated.text });
@@ -254,7 +261,8 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  const decision = await checkQuota(key, ip);
+  const decision = await checkQuota(key, ip).catch(() => null);
+    if (!decision) return jsonError({ error: "quota_unavailable" }, 503, cookieHeader);
   if (!decision.allowed) return gate(decision.reason, cookieHeader);
 
   const chain = usableChain(settings, "chat");
@@ -320,6 +328,10 @@ export async function POST(request: Request): Promise<Response> {
         if (!charged) {
           charged = true;
           const remaining = entitled ? null : await spend(key, ip);
+          if (!entitled && remaining === null) {
+            emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
+            return;
+          }
           if (remaining !== null) emit({ type: "quota", remaining });
         }
 

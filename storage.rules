@@ -14,8 +14,6 @@ rules_version = '2';
  * `firestore.get()`, so the tier is read from `subscriptions/{uid}` directly.
  * The two must stay consistent: Firestore holds the authoritative record.
  *
- * Admin is "admins/{uid} exists" for the same reason as in firestore.rules:
- * a custom claim would survive for up to an hour after revocation.
  */
 service firebase.storage {
   match /b/{bucket}/o {
@@ -28,18 +26,27 @@ service firebase.storage {
       return signedIn() && request.auth.uid == uid;
     }
 
-    function isAdmin() {
-      return signedIn() && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
-    }
 
-    /** Tier straight from the billing record, or 'free' when there is none. */
-    function currentTier() {
-      return firestore.get(/databases/(default)/documents/subscriptions/$(request.auth.uid)).data.tier;
+    // Match server entitlements: trials do not confer a premium tier.
+    function unexpired(data, field) {
+      return !(field in data) || data[field] == null
+        || (data[field] is timestamp && data[field] > request.time)
+        || (data[field] is int && data[field] > request.time.toMillis());
     }
-
-    function hasOracle() {
-      return signedIn() && currentTier() in ['oracle', 'sanctum'];
+    function hasSubscription() {
+      let path = /databases/(default)/documents/subscriptions/$(request.auth.uid);
+      return firestore.exists(path)
+        && firestore.get(path).data.status == 'active'
+        && firestore.get(path).data.tier in ['oracle', 'sanctum']
+        && unexpired(firestore.get(path).data, 'currentPeriodEnd');
     }
+    function hasGrant() {
+      let path = /databases/(default)/documents/grants/$(request.auth.uid);
+      return firestore.exists(path)
+        && firestore.get(path).data.tier in ['oracle', 'sanctum']
+        && unexpired(firestore.get(path).data, 'expiresAt');
+    }
+    function hasOracle() { return signedIn() && (hasSubscription() || hasGrant()); }
 
     /* ── per-user uploads ──────────────────────────────────────────────────
        Private by default: only the owner reads. Kept small and type-limited
@@ -47,15 +54,18 @@ service firebase.storage {
        content and have it served from our own bucket.
        -------------------------------------------------------------------- */
     match /users/{uid}/{allPaths=**} {
-      allow read: if isSelf(uid) || isAdmin();
-      allow write: if isSelf(uid)
+      allow read: if isSelf(uid);
+      allow delete: if isSelf(uid);
+      allow create, update: if isSelf(uid)
         && request.resource.size < 5 * 1024 * 1024
         && request.resource.contentType.matches('^(image/(jpeg|png|webp)|application/pdf)$');
     }
 
     /* ── premium study library ─────────────────────────────────────────── */
     match /premium-library/{fileName} {
-      allow read: if hasOracle() || isAdmin();
+      // At most two Firestore documents per Storage request.
+      // Administrative file operations use the server IAM identity, not a client bypass.
+      allow read: if hasOracle();
 
       // Uploads are server-only, same as the Firestore records they mirror.
       allow write: if false;

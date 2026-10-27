@@ -102,7 +102,7 @@ export async function requireAdmin(request: Request): Promise<NextResponse | nul
   return null;
 }
 
-const AUTHENTICATED = Symbol.for("miab.authenticated");
+const AUTHENTICATED = Symbol("miab.authenticated");
 
 /**
  * Reads the identity attached by `requireUser`.
@@ -123,4 +123,17 @@ export function authenticatedUser(request: Request): AuthenticatedUser {
 /** Non-throwing variant, for handlers that want to branch instead of failing. */
 export function tryAuthenticatedUser(request: Request): AuthenticatedUser | null {
   return (request as unknown as Record<symbol, AuthenticatedUser>)[AUTHENTICATED] ?? null;
+}
+
+/** A refreshed token alone is not recent authentication. */
+export function requireRecentAuthentication(request: Request): NextResponse | null {
+  const user = authenticatedUser(request);
+  const provider = (user.claims.firebase as { sign_in_provider?: string } | undefined)?.sign_in_provider;
+  if (provider === "anonymous") return null;
+  const at = user.claims.auth_time;
+  const now = Math.floor(Date.now() / 1000);
+  if (typeof at !== "number" || at > now + 5 || now - at > 300) {
+    return jsonError(401, { error: "recent_login_required", message: "أعد تسجيل الدخول قبل حذف الحساب." });
+  }
+  return null;
 }

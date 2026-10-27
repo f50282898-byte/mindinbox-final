@@ -33,11 +33,12 @@
     "check:keys": "node scripts/check-no-keys.mjs",
     "check:headers": "node scripts/check-headers.mjs",
     "check:no-riddle-leak": "node scripts/check-no-riddle-leak.mjs",
-    "build:cf": "npm run check:env && npm run check:api && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run check:headers && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run check:no-riddle-leak",
+    "build:cf": "npm run check:env && npm run check:api && npm run check:contrast && npm run check:content && npm run check:mojibake && npm run check:keys && npm run check:headers && npm run typecheck && npm run lint && npm run test && npm run test:env-gate && npm run check:no-riddle-leak && npm run build:pages && npm run check:worker",
     "lighthouse": "node scripts/lighthouse.mjs",
     "pwa:generate": "node scripts/generate-pwa.mjs",
     "bundle:analyze": "ANALYZE=true npm run build",
-    "postinstall": "npm run pwa:generate"
+    "postinstall": "npm run pwa:generate",
+    "build:pages": "next-on-pages"
   },
   "overrides": {
     "postcss": "^8.5.30"

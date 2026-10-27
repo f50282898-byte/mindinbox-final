@@ -12,8 +12,6 @@ const CONNECT_SRC = [
   "https://www.google.com",
   "https://www.googleapis.com",
   "https://challenges.cloudflare.com",
-  "https://api.paddle.com",
-  "https://api.lemonsqueezy.com",
 ].join(" ");
 
 const FRAME_SRC = [
@@ -73,9 +71,12 @@ export function cspDirectives(options: CspOptions = {}): Record<string, string[]
     "frame-ancestors": ["'none'"],
     "object-src": ["'none'"],
     "upgrade-insecure-requests": [],
-    ...(options.extra ?? {}),
+
   };
 
+  for (const [directive, additions] of Object.entries(options.extra ?? {})) {
+    directives[directive] = [...new Set([...(directives[directive] ?? []), ...additions])];
+  }
   return directives;
 }
 

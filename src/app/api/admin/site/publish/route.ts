@@ -1,3 +1,4 @@
+import { readJsonBody, BODY_REJECTED_MESSAGE, bodyErrorStatus } from "@/lib/security/body";
 export const runtime = 'edge';
 
 import { z } from "zod";
@@ -50,7 +51,9 @@ export async function POST(request: Request): Promise<Response> {
 
   let parsed: z.infer<typeof publishSchema>;
   try {
-    parsed = publishSchema.parse(await request.json());
+    const body = await readJsonBody(request, publishSchema, "adminAction");
+    if (!body.ok) return NextResponse.json({ error: BODY_REJECTED_MESSAGE }, { status: bodyErrorStatus(body), headers: NO_STORE });
+    parsed = body.value;
   } catch {
     return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400, headers: NO_STORE });
   }

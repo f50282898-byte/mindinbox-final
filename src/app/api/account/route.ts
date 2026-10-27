@@ -1,7 +1,7 @@
 export const runtime = 'edge';
 
 import { NextResponse } from "next/server";
-import { requireUser, authenticatedUser } from "@/lib/auth/guards";
+import { requireUser, requireRecentAuthentication, authenticatedUser } from "@/lib/auth/guards";
 import {
   deleteDocument,
   deleteSubcollections,
@@ -51,6 +51,7 @@ export const dynamic = "force-dynamic";
  * Kept server-owned and literal: nothing in this list comes from a request.
  */
 const USER_SUBCOLLECTIONS = [
+  "notes",
   "days",
   "entries",
   "events",
@@ -91,20 +92,12 @@ export async function GET(request: Request) {
       const docs = await listDocuments(`users/${uid}/${sub}`, 50);
       data[sub] = docs.map((d) => ({ id: d.name, ...d.data }));
     } catch {
-      data[sub] = [];
+      return NextResponse.json({ error: "export_failed", message: "تعذّر تصدير جميع البيانات. أعد المحاولة." }, { status: 503, headers: { "Cache-Control": "no-store" } });
     }
   }
 
-  // Grants issued to this user, if any. Read across the collection by uid, so
-  // failures here degrade to an empty list rather than failing the export.
-  try {
-    const grants = await listDocuments("grants", 20);
-    data.grants = grants
-      .filter((g) => (typeof g.data.uid === "string" ? g.data.uid === uid : g.name === uid))
-      .map((g) => ({ id: g.name, ...g.data }));
-  } catch {
-    data.grants = [];
-  }
+  const grant = await getDocument(`grants/${uid}`);
+  data.grants = grant ? [{ id: uid, ...grant }] : [];
 
   log.info("account_exported", { uid });
 
@@ -131,6 +124,8 @@ export async function DELETE(request: Request) {
   }
   const denied = await requireUser(request);
   if (denied) return denied;
+  const stale = requireRecentAuthentication(request);
+  if (stale) return stale;
 
   const { uid } = authenticatedUser(request);
 
@@ -165,6 +160,7 @@ export async function DELETE(request: Request) {
     await deleteDocument(`users/${uid}`);
     await deleteDocument(`subscriptions/${uid}`);
     await deleteDocument(`usage/${uid}`);
+    await deleteDocument(`grants/${uid}`);
 
     log.info("account_data_deleted", { uid });
 

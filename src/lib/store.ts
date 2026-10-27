@@ -100,18 +100,14 @@ export const useAppStore = create<AppState>()(
           uid: patch.uid,
           email: patch.email ?? null,
           displayName: patch.displayName ?? null,
-          // Never downgrade from a verified admin to anonymous.
-          isAdmin: state.isAdmin && patch.uid === state.uid ? true : patch.isAdmin ?? false,
+          // Verified revocations must be reflected immediately.
+          isAdmin: patch.isAdmin ?? (patch.uid === state.uid ? state.isAdmin : false),
           authResolved: true,
         })),
 
       setAuthResolved: (authResolved) => set({ authResolved }),
 
-      setMembership: (tier, trialEnd) =>
-        set((state) =>
-          // Guard against a stale/offline read downgrading a paying member.
-          TIER_ORDER[state.tier] > TIER_ORDER[tier] ? state : { tier, trialEnd }
-        ),
+      setMembership: (tier, trialEnd) => set({ tier, trialEnd }),
 
       setPhilosopher: (philosopherId) => set({ philosopherId }),
       setPricing: (pricing) => set({ pricing }),

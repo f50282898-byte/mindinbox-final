@@ -549,7 +549,7 @@ export const useJournal = create<JournalState>()((set, get) => {
           if (!day) continue;
           batch.set(
             doc(db, `${paths.userDays(uid)}/${key}`),
-            { ...day, id: undefined } as never,
+            day,
             { merge: true }
           );
           queued += 1;
@@ -574,8 +574,11 @@ export const useJournal = create<JournalState>()((set, get) => {
         }
 
         if (state.dirtyNotes && state.notes.length > 0) {
-          batch.set(doc(db, paths.userNotes(uid)), { items: state.notes }, { merge: true });
-          queued += 1;
+          for (const note of state.notes) {
+            const data = Object.fromEntries(Object.entries(note).filter(([, value]) => value !== undefined));
+            batch.set(doc(db, `${paths.userNotes(uid)}/${note.id}`), data, { merge: true });
+            queued += 1;
+          }
         }
 
         if (queued > 0) await batch.commit();
@@ -680,10 +683,8 @@ function observeRemote(uid: string): void {
     }));
   });
 
-  onSnapshot(doc(db, paths.userNotes(uid)), (snap) => {
-    if (!snap.exists()) return;
-    const data = snap.data() as { items?: Note[] };
-    useJournal.setState({ notes: Array.isArray(data.items) ? data.items : [] });
+  onSnapshot(collection(db, paths.userNotes(uid)), (snap) => {
+    useJournal.setState({ notes: snap.docs.map((d) => ({ ...d.data(), id: d.id } as Note)) });
   });
 }
 

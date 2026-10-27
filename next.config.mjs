@@ -25,15 +25,6 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
 
-  webpack: (config) => {
-    config.optimization = {
-      ...config.optimization,
-      usedExports: true,
-      sideEffects: false,
-    };
-    return config;
-  },
-
   /** Security headers applied to every response from this Next.js app. */
   async headers() {
     return [

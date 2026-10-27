@@ -9,11 +9,10 @@
  * never the thing that grants access.
  */
 
-import { getRedirectResult, onAuthStateChanged, type User } from "firebase/auth";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import {
   collection,
   doc,
-  getDoc,
   limit,
   onSnapshot,
   orderBy,
@@ -21,29 +20,13 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, db, paths } from "@/lib/firebase";
 import { useAppStore, type EntryKind } from "@/lib/store";
 import type { Tier } from "@/lib/tiers";
-import { readLocalUser, syncAuthSuccess } from "@/lib/auth/client";
+import { readLocalUser } from "@/lib/auth/client";
 
 export type AuthState = "loading" | "anonymous" | "member" | "unavailable";
-
-/** Asks the server route whether this token really carries `admin: true`. */
-async function checkAdminClaim(user: User): Promise<boolean> {
-  try {
-    const token = await user.getIdToken();
-    const res = await fetch("/api/admin/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return false;
-    const data = (await res.json()) as { isAdmin?: boolean };
-    return data.isAdmin === true;
-  } catch {
-    return false;
-  }
-}
 
 export function useSession(): { state: AuthState; uid: string | null } {
   const setIdentity = useAppStore((s) => s.setIdentity);
@@ -51,130 +34,47 @@ export function useSession(): { state: AuthState; uid: string | null } {
   const setMembership = useAppStore((s) => s.setMembership);
   const setEntries = useAppStore((s) => s.setEntries);
   const [state, setState] = useState<AuthState>("loading");
-  const seenUid = useRef<string | null>(null);
 
   useEffect(() => {
-    const applyLocal = (): boolean => {
-      const local = readLocalUser();
-      if (local) {
-        seenUid.current = local.uid;
-        setIdentity({
-          uid: local.uid,
-          email: local.email,
-          displayName: local.displayName,
-          isAdmin: false,
-        });
-        setState("member");
-        setAuthResolved(true);
-        return true;
-      }
-      return false;
-    };
-
-    const handleAuthChange = (e?: Event) => {
-      const custom = e as CustomEvent<{ uid: string; email: string | null; displayName: string | null } | null> | undefined;
-      const record = custom?.detail !== undefined ? custom.detail : readLocalUser();
-      if (record) {
-        seenUid.current = record.uid;
-        setIdentity({
-          uid: record.uid,
-          email: record.email,
-          displayName: record.displayName,
-          isAdmin: false,
-        });
-        setState("member");
-        setAuthResolved(true);
-      } else {
-        seenUid.current = null;
-        setIdentity({ uid: null, isAdmin: false });
-        setState("anonymous");
-        setAuthResolved(true);
-      }
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("miab-auth-change", handleAuthChange);
-      window.addEventListener("storage", handleAuthChange);
-    }
-
-    const hasLocal = applyLocal();
-
-    if (!auth) {
-      if (!hasLocal) {
-        setState("anonymous");
-      }
+    let generation = 0;
+    let disposed = false;
+    const apply = async (user: User | null) => {
+      const revision = ++generation;
+      const local = user ? null : readLocalUser();
+      setIdentity({ uid: user?.uid ?? local?.uid ?? null, email: user?.email ?? null,
+        displayName: user?.displayName ?? local?.displayName ?? null, isAdmin: false });
+      setMembership("free", null);
+      setState(user ? "member" : "anonymous");
       setAuthResolved(true);
-      return () => {
-        if (typeof window !== "undefined") {
-          window.removeEventListener("miab-auth-change", handleAuthChange);
-          window.removeEventListener("storage", handleAuthChange);
-        }
-      };
-    }
-
-    // Process redirect result from mobile Google OAuth flow
-    void getRedirectResult(auth)
-      .then((cred) => {
-        if (cred && cred.user) {
-          syncAuthSuccess(cred.user);
-        }
-      })
-      .catch(() => undefined);
-
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        if (applyLocal()) {
-          return;
-        }
-        seenUid.current = null;
-        setIdentity({ uid: null, isAdmin: false });
-        setMembership("free", null);
-        setEntries([]);
-        setState("anonymous");
-        setAuthResolved(true);
-        return;
-      }
-
-      // Sync Firebase user to local storage and store
-      syncAuthSuccess(user);
-
-      // Returning user: react to re-auth without re-running the full profile load.
-      if (seenUid.current === user.uid) return;
-      seenUid.current = user.uid;
-
-      setIdentity({
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        isAdmin: false,
-      });
-      setState("member");
-      setAuthResolved(true);
-
-      if (!db) return;
-
+      if (!user) return;
       try {
-        const [isAdmin, profileSnap] = await Promise.all([
-          checkAdminClaim(user),
-          getDoc(doc(db, paths.user(user.uid))),
-        ]);
-
-        if (isAdmin) setIdentity({ uid: user.uid, isAdmin: true });
-
-        const profile = profileSnap.data();
-        const tier = (profile?.subscriptionTier as Tier | undefined) ?? "free";
-        setMembership(tier, (profile?.trialEnd as string | undefined) ?? null);
-      } catch {
-        // Offline or rules-denied: fall back to free tier, keep the session.
-      }
-    });
-
+        const token = await user.getIdToken();
+        const response = await fetch("/api/auth/entitlements", {
+          headers: { Authorization: `Bearer ${token}` }, cache: "no-store",
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (disposed || revision !== generation || auth?.currentUser?.uid !== user.uid) return;
+        const tier: Tier = data.tier === "oracle" || data.tier === "sanctum" ? data.tier : "free";
+        setMembership(tier, null);
+        setIdentity({ uid: user.uid, email: user.email, displayName: user.displayName,
+          isAdmin: data.source === "admin" });
+      } catch { /* Unavailable entitlements never preserve privileged UI. */ }
+    };
+    const refresh = () => { void apply(auth?.currentUser ?? null); };
+    const visible = () => { if (document.visibilityState === "visible") refresh(); };
+    const unsub = auth ? onAuthStateChanged(auth, (user) => { void apply(user); }) : undefined;
+    if (!auth) refresh();
+    window.addEventListener("miab-auth-change", refresh);
+    window.addEventListener("storage", refresh);
+    document.addEventListener("visibilitychange", visible);
     return () => {
-      unsub();
-      if (typeof window !== "undefined") {
-        window.removeEventListener("miab-auth-change", handleAuthChange);
-        window.removeEventListener("storage", handleAuthChange);
-      }
+      disposed = true;
+      generation++;
+      unsub?.();
+      window.removeEventListener("miab-auth-change", refresh);
+      window.removeEventListener("storage", refresh);
+      document.removeEventListener("visibilitychange", visible);
     };
   }, [setIdentity, setAuthResolved, setMembership, setEntries]);
 
@@ -276,30 +176,28 @@ export function useSessionTelemetry(enabled: boolean) {
 
       const startedAt = Date.now();
       const ref = doc(collection(db, paths.analyticsSessions));
-      const persist = (ended: boolean) =>
+      const persist = () =>
         setDoc(
           ref,
           {
             uid: user.uid,
-            startedAt: new Date(startedAt).toISOString(),
+            createdAt: new Date(startedAt),
             durationSeconds: Math.max(0, Math.floor((Date.now() - startedAt) / 1000)),
-            updatedAt: serverTimestamp(),
-            ...(ended ? { endedAt: serverTimestamp() } : {}),
           },
           { merge: true }
         ).catch(() => undefined);
 
-      void persist(false);
-      const beat = window.setInterval(() => void persist(false), 60_000);
+      void persist();
+      const beat = window.setInterval(() => void persist(), 60_000);
       const onHide = () => {
-        if (document.visibilityState === "hidden") void persist(false);
+        if (document.visibilityState === "hidden") void persist();
       };
       document.addEventListener("visibilitychange", onHide);
 
       stop = () => {
         window.clearInterval(beat);
         document.removeEventListener("visibilitychange", onHide);
-        void persist(true);
+        void persist();
       };
     });
 

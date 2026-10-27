@@ -36,7 +36,10 @@ function key(name: string): () => string | null {
 function baseUrl(envName: string): () => string | undefined {
   return () => {
     const v = process.env[envName];
-    return v && /^https?:\/\//i.test(v.trim()) ? v.trim() : undefined;
+    if (!v?.trim()) return undefined;
+    const url = new URL(v.trim());
+    if (url.protocol !== "https:" || url.username || url.password) throw new Error("invalid_provider_url");
+    return url.href.replace(/\/$/, "");
   };
 }
 
@@ -89,7 +92,7 @@ export function getAdapters(): Map<string, ProviderAdapter> {
       label: "Bytez",
       defaultBaseUrl: "https://api.gpt.ge/v1",
       apiKey: key("BYTEZ_API_KEY"),
-      baseUrl: () => process.env.BYTEZ_BASE_URL?.trim() || undefined,
+      baseUrl: baseUrl("BYTEZ_BASE_URL"),
     })
   );
 

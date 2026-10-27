@@ -2,8 +2,9 @@ export const runtime = 'edge';
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireUser, authenticatedUser } from "@/lib/auth/guards";
+import { requireUser, requireRecentAuthentication, authenticatedUser } from "@/lib/auth/guards";
 import { getAccessToken, serviceProjectId } from "@/lib/google/token";
+import { getDocument } from "@/lib/google/firestore-rest";
 import { log } from "@/lib/log";
 import { readJsonBody, BODY_REJECTED_MESSAGE, bodyErrorStatus } from "@/lib/security/body";
 import { verifySameOrigin } from "@/lib/security/origin";
@@ -38,6 +39,8 @@ export async function POST(request: Request) {
   }
   const denied = await requireUser(request);
   if (denied) return denied;
+  const stale = requireRecentAuthentication(request);
+  if (stale) return stale;
 
   const { uid } = authenticatedUser(request);
 
@@ -79,6 +82,9 @@ export async function POST(request: Request) {
 
   let res: Response;
   try {
+    if (await getDocument(`admins/${uid}`)) {
+      return NextResponse.json({ error: "admin_protected" }, { status: 403, headers: { "Cache-Control": "no-store" } });
+    }
     res = await fetch(DELETE_URL.replace("{project}", project), {
       method: "POST",
       headers: {
@@ -86,6 +92,7 @@ export async function POST(request: Request) {
         "content-type": "application/json",
       },
       body: JSON.stringify({ localId: uid, idToken }),
+      signal: AbortSignal.timeout(10_000),
     });
   } catch {
     log.error("auth_delete_unreachable");

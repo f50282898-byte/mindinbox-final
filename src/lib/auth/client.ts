@@ -27,6 +27,7 @@ import {
   linkWithPopup,
   linkWithRedirect,
   reauthenticateWithCredential,
+  reauthenticateWithPopup,
   sendEmailVerification,
   sendPasswordResetEmail,
   setPersistence,
@@ -36,11 +37,11 @@ import {
   signInWithRedirect,
   signOut,
   updatePassword,
+  updateProfile,
   verifyBeforeUpdateEmail,
   type Auth,
 } from "firebase/auth";
 import { auth as firebaseAuth } from "@/lib/firebase";
-import "@/lib/firebase/profile";
 import { friendlyAuthError, validateEmail, validatePassword, type FriendlyAuthError } from "@/lib/auth/errors";
 import { useAppStore } from "@/lib/store";
 
@@ -80,7 +81,10 @@ export function readLocalUser(): LocalUserRecord | null {
   try {
     const raw = window.localStorage.getItem(LOCAL_USER_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as LocalUserRecord;
+    const record = JSON.parse(raw) as LocalUserRecord;
+    // Local storage is only an offline guest workspace, never proof of login.
+    return record?.isAnonymous === true && typeof record.uid === "string" &&
+      record.uid.startsWith("local-") ? record : null;
   } catch {
     return null;
   }
@@ -255,6 +259,7 @@ export async function signInWithEmail(email: string, password: string): Promise<
   if (emailError) throw new AuthActionError({ code: "invalid-email", message: emailError });
   if (!password) throw new AuthActionError({ code: "missing-password", message: "اكتب كلمة المرور." });
 
+  requireAuth();
   if (firebaseAuth) {
     try {
       await ensurePersistence();
@@ -262,26 +267,11 @@ export async function signInWithEmail(email: string, password: string): Promise<
       syncAuthSuccess(cred.user);
       return cred.user;
     } catch (err) {
-      if (!shouldFallbackToLocal(err)) {
-        wrap(err);
-      }
-      // Firebase operation-not-allowed or network unavailable — fall back to local session.
+      wrap(err);
     }
   }
 
-  const record: LocalUserRecord = {
-    uid: `local-${crypto.randomUUID()}`,
-    email: cleanEmail,
-    displayName: cleanEmail.split("@")[0] || null,
-    photoURL: null,
-    isAnonymous: false,
-    emailVerified: false,
-  };
-  persistLocalUser(record);
-  const store = useAppStore.getState();
-  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
-  dispatchLocalAuthChange(record);
-  return localUserToFirebaseUser(record);
+  throw new AuthActionError({ code: "unavailable", message: "تعذّر تسجيل الدخول. أعد المحاولة." });
 }
 
 export interface SignUpInput {
@@ -308,6 +298,7 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
     throw new AuthActionError({ code: "password-too-short", message: passwordError });
   }
 
+  requireAuth();
   if (firebaseAuth) {
     try {
       await ensurePersistence();
@@ -318,7 +309,7 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
         const user = cred.user;
         if (displayName?.trim()) {
           // Best effort; a failure here must not lose the account.
-          await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
+          await updateProfile(user, { displayName: displayName.trim() }).catch(() => undefined);
         }
         await sendEmailVerification(user).catch(() => undefined);
         syncAuthSuccess(user);
@@ -328,37 +319,23 @@ export async function signUp({ email, password, displayName }: SignUpInput): Pro
       const cred = await createUserWithEmailAndPassword(firebaseAuth, cleanEmail, password);
       const user = cred.user;
       if (displayName?.trim()) {
-        await user.updateProfile({ displayName: displayName.trim() }).catch(() => undefined);
+        await updateProfile(user, { displayName: displayName.trim() }).catch(() => undefined);
       }
       await sendEmailVerification(user).catch(() => undefined);
       syncAuthSuccess(user);
       return user;
     } catch (err) {
-      if (!shouldFallbackToLocal(err)) {
-        wrap(err);
-      }
-      // Firebase operation-not-allowed or network unavailable — fall back to local session.
+      wrap(err);
     }
   }
 
-  const record: LocalUserRecord = {
-    uid: `local-${crypto.randomUUID()}`,
-    email: cleanEmail,
-    displayName: displayName?.trim() || cleanEmail.split("@")[0] || null,
-    photoURL: null,
-    isAnonymous: false,
-    emailVerified: false,
-  };
-  persistLocalUser(record);
-  const store = useAppStore.getState();
-  store.setIdentity({ uid: record.uid, email: record.email, displayName: record.displayName, isAdmin: false });
-  dispatchLocalAuthChange(record);
-  return localUserToFirebaseUser(record);
+  throw new AuthActionError({ code: "unavailable", message: "تعذّر تسجيل الدخول. أعد المحاولة." });
 }
 
 /* ── Google ─────────────────────────────────────────────────────────────── */
 
 export async function signInWithGoogle(): Promise<User> {
+  requireAuth();
   if (firebaseAuth) {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
@@ -406,7 +383,8 @@ export async function signInWithGoogle(): Promise<User> {
 
       if (code === "popup-blocked") {
         try {
-          await signInWithRedirect(firebaseAuth, provider);
+          if (current?.isAnonymous) await linkWithRedirect(current, provider);
+          else await signInWithRedirect(firebaseAuth, provider);
           return undefined as unknown as User;
         } catch (redirErr) {
           wrap(redirErr);
@@ -422,31 +400,14 @@ export async function signInWithGoogle(): Promise<User> {
         code === "unauthorized-domain" ||
         code === "internal-error"
       ) {
-        // المتابعة للجلسة المحلية الاحتياطية بالأسفل
+        wrap(err);
       } else {
         wrap(err);
       }
     }
   }
 
-  const record: LocalUserRecord = {
-    uid: `local-${crypto.randomUUID()}`,
-    email: "user@google.com",
-    displayName: "مستخدم Google",
-    photoURL: null,
-    isAnonymous: false,
-    emailVerified: true,
-  };
-  persistLocalUser(record);
-  const store = useAppStore.getState();
-  store.setIdentity({
-    uid: record.uid,
-    email: record.email,
-    displayName: record.displayName,
-    isAdmin: false,
-  });
-  dispatchLocalAuthChange(record);
-  return localUserToFirebaseUser(record);
+  throw new AuthActionError({ code: "unavailable", message: "تعذّر تسجيل الدخول. أعد المحاولة." });
 }
 
 /* ── email verification ─────────────────────────────────────────────────── */
@@ -576,7 +537,7 @@ export async function applyVerificationCode(code: string): Promise<void> {
 export async function signOutUser(): Promise<void> {
   const a = firebaseAuth;
   if (a) {
-    await signOut(a).catch(() => undefined);
+    await signOut(a);
   }
   clearLocalUser();
   const store = useAppStore.getState();
@@ -607,4 +568,22 @@ export async function deleteAuthAccount(currentPassword?: string): Promise<void>
   } catch (err) {
     wrap(err);
   }
+}
+
+/** Fresh authentication must precede deletion of data as well as identity. */
+export async function reauthenticateForDeletion(password: string): Promise<string> {
+  const user = requireAuth().currentUser;
+  if (!user) throw new AuthActionError({ code: "unavailable", message: "سجّل الدخول أولاً." });
+  try {
+    if (!user.isAnonymous) {
+      if (user.providerData.some((p) => p.providerId === "password")) {
+        await reauthenticateWithCredential(user, emailCredential(user.email ?? "", password));
+      } else if (user.providerData.some((p) => p.providerId === "google.com")) {
+        await reauthenticateWithPopup(user, new GoogleAuthProvider());
+      } else {
+        throw new AuthActionError({ code: "unavailable", message: "أعد تسجيل الدخول قبل الحذف." });
+      }
+    }
+    return await user.getIdToken(true);
+  } catch (error) { wrap(error); }
 }

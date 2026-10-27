@@ -164,17 +164,19 @@ export function JournalApp() {
   }, [togglePinNote]);
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-5rem)] overflow-hidden">
+    <div className="journal-workspace relative flex flex-col overflow-hidden">
       <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3 border-b border-white/10 bg-white/[0.04] backdrop-blur-md z-20">
         <div className="flex flex-1 items-center gap-3 min-w-0">
           <div className="relative flex-1 min-w-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" aria-hidden="true" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-ink-3" aria-hidden="true" />
             <input
               type="search"
+              aria-label="البحث في الملاحظات"
+              name="notes-search"
               placeholder="ابحث في ملاحظاتك…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="field w-full pl-9 pr-4 py-2.5 text-xs text-zinc-200 placeholder-zinc-500/60"
+              className="field w-full pl-9 pr-4 py-2.5 text-xs text-ink-1 placeholder-zinc-500/60"
             />
           </div>
 
@@ -186,7 +188,7 @@ export function JournalApp() {
               setSelectedNoteId(null);
               setIsDrawerOpen(true);
             }}
-            className="flex shrink-0 items-center justify-center size-9 rounded-full border border-white/10 bg-white/[0.04] text-zinc-300 transition-colors hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/5"
+            className="flex shrink-0 items-center justify-center size-11 rounded-full border border-white/10 bg-white/[0.04] text-ink-2 transition-colors hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-500/5"
             aria-label="ملاحظة جديدة"
           >
             <Plus className="size-4" />
@@ -195,9 +197,9 @@ export function JournalApp() {
 
         <div className="flex items-center gap-1.5">
           {syncError ? (
-            <span className="text-[0.65rem] text-zinc-400/70">محفوظ على جهازك</span>
+            <span className="text-[0.65rem] text-ink-3">محفوظ على جهازك</span>
           ) : syncing ? (
-            <span className="text-[0.65rem] text-zinc-400/70">يحفظ…</span>
+            <span className="text-[0.65rem] text-ink-3">يحفظ…</span>
           ) : null}
           {offline && (
             <span className="text-[0.65rem] text-amber-400/80">لا يوجد اتصال</span>
@@ -213,13 +215,12 @@ export function JournalApp() {
             <button
               key={id}
               type="button"
-              role="tab"
               aria-pressed={active}
               onClick={() => setActiveCategory(id as NoteCategory)}
               className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition-colors ${
                 active
                   ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
-                  : "border-white/10 text-zinc-400/60 hover:border-white/20 hover:text-zinc-200"
+                  : "border-white/10 text-ink-3 hover:border-white/20 hover:text-ink-1"
               }`}
             >
               <Icon className="size-3.5" aria-hidden="true" />
@@ -235,23 +236,23 @@ export function JournalApp() {
             <h2 className="display-arabic text-sm font-semibold text-gold-light">
               مفكرتي الخاصة
             </h2>
-            <span className="text-xs text-gold-muted/60">
+            <span className="text-xs text-ink-2">
               {notes.length} ملاحظة{pinnedCount > 0 ? ` · ${pinnedCount} مثبت` : ""}
             </span>
           </div>
 
           {filteredNotes.length === 0 && searchQuery && (
-            <p className="ml-auto text-xs text-gold-muted/60">لا توجد نتائج</p>
+            <p className="ml-auto text-xs text-ink-2">لا توجد نتائج</p>
           )}
         </div>
 
         {filteredNotes.length === 0 && !searchQuery && (
           <div className="flex flex-col items-center justify-center h-full min-h-[40vh] px-6 text-center">
-            <BookOpen className="size-16 mb-4 text-zinc-600/40" aria-hidden="true" />
-            <h3 className="display-arabic text-lg font-bold text-zinc-200 mb-2">
+            <BookOpen className="size-16 mb-4 text-ink-3" aria-hidden="true" />
+            <h3 className="display-arabic text-lg font-bold text-ink-1 mb-2">
               لا توجد ملاحظات بعد
             </h3>
-            <p className="display-arabic text-sm text-zinc-400/70 max-w-xs mx-auto">
+            <p className="display-arabic text-sm text-ink-3 max-w-xs mx-auto">
               ابدأ بكتابة أول فكرة، تأمل، أو مقتطف. كل ملاحظة تُحفظ فوراً على جهازك
               وتتم مزامنتها عند العودة للاتصال.
             </p>
@@ -369,7 +370,7 @@ function NoteCard({
         <div className="flex size-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-amber-400/90">
           <Icon className="size-4" aria-hidden="true" />
         </div>
-        <span className="display-latin text-[10px] tracking-[0.18em] text-zinc-500/70 uppercase font-medium">
+        <span className="display-latin text-[10px] tracking-[0.18em] text-ink-3 uppercase font-medium">
           {CATEGORY_LABELS[note.category]}
         </span>
       </div>
@@ -385,17 +386,17 @@ function NoteCard({
         </div>
       )}
 
-      <h3 className={`display-arabic mb-1.5 text-sm font-bold ${isPinned ? "text-amber-400" : "text-zinc-100"} leading-tight line-clamp-2`}>
+      <h3 className={`display-arabic mb-1.5 text-sm font-bold ${isPinned ? "text-amber-400" : "text-ink-1"} leading-tight line-clamp-2`}>
         {note.title}
       </h3>
 
-      <p className="display-arabic mb-3 text-xs leading-relaxed text-zinc-400/70 line-clamp-3">
+      <p className="display-arabic mb-3 text-xs leading-relaxed text-ink-3 line-clamp-3">
         {note.content || "لا يوجد محتوى بعد."}
       </p>
 
       <div className="flex items-center justify-between pt-3 border-t border-white/5">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-zinc-500/60">
+          <span className="text-[10px] text-ink-3">
             {new Date(note.updatedAt).toLocaleDateString("ar-SA", {
               day: "numeric",
               month: "short",
@@ -410,7 +411,7 @@ function NoteCard({
               onPin(note.id);
             }}
             aria-label={isPinned ? "إزالة التثبيت" : "تثبيت"}
-            className="size-7 rounded-full border border-white/10 p-1 text-zinc-400/60 transition-colors hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/5"
+            className="size-11 rounded-full border border-white/10 p-1 text-ink-3 transition-colors hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/5"
           >
             <Pin className="size-3" fill={isPinned ? "currentColor" : "none"} />
           </button>
@@ -421,7 +422,7 @@ function NoteCard({
               onEdit();
             }}
             aria-label="تعديل"
-            className="size-7 rounded-full border border-white/10 p-1 text-zinc-400/60 transition-colors hover:border-amber-500/40 hover:text-amber-400"
+            className="size-7 rounded-full border border-white/10 p-1 text-ink-3 transition-colors hover:border-amber-500/40 hover:text-amber-400"
           >
             <Edit3 className="size-3" />
           </button>
@@ -432,7 +433,7 @@ function NoteCard({
               onDelete(note.id);
             }}
             aria-label="حذف"
-            className="size-7 rounded-full border border-white/10 p-1 text-zinc-400/60 transition-colors hover:border-rose-500/40 hover:text-rose-400"
+            className="size-7 rounded-full border border-white/10 p-1 text-ink-3 transition-colors hover:border-rose-500/40 hover:text-rose-400"
           >
             <Trash2 className="size-3" />
           </button>

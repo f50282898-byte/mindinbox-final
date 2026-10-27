@@ -14,6 +14,6 @@
  * does not apply to it — the per-uid allowance is unaffected either way.
  */
 export function clientIp(headers: Headers): string | null {
-  const ip = headers.get("cf-connecting-ip") ?? headers.get("x-real-ip");
+  const ip = headers.get("cf-connecting-ip");
   return ip && /^[\d.:a-f]{3,45}$/i.test(ip) ? ip : null;
 }

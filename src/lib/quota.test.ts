@@ -14,58 +14,35 @@
  * untouched.
  */
 
-/** Minimal in-memory Firestore REST double, including updateTransforms. */
+/** Strict REST contract double: rejects invalid paths and applies preconditions atomically. */
 function fakeFirestore() {
-  const docs = new Map<string, Record<string, unknown>>();
-
-  const install = () => {
-    const origFetch = globalThis.fetch;
-
-    vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
-      const method = init?.method ?? "GET";
-      const body = init?.body ? JSON.parse(String(init.body)) : null;
-      // Drop the query string: PATCH carries `?updateMask.fieldPaths=…`, and
-      // leaving it on would key writes differently from reads.
-      const path = (url.split("/documents/")[1] ?? "").split("?")[0];
-
-      // PATCH with updateTransforms: an atomic server-side increment.
-      if (method === "PATCH" && body?.updateTransforms) {
-        const doc = docs.get(path) ?? {};
-        for (const t of body.updateTransforms as Array<{ fieldPath: string; increment: { integerValue: string } }>) {
-          const key = t.fieldPath;
-          const current = Number(doc[key] ?? 0);
-          doc[key] = current + Number(t.increment.integerValue);
-        }
-        docs.set(path, doc);
-        return jsonResponse({
-          fields: Object.fromEntries(
-            Object.entries(doc).map(([k, v]) => [k, { integerValue: String(v) }])
-          ),
-        });
-      }
-
-      if (method === "GET") {
-        const doc = docs.get(path);
-        if (!doc) return new Response("", { status: 404 });
-        return jsonResponse({
-          fields: Object.fromEntries(
-            Object.entries(doc).map(([k, v]) => [k, { integerValue: String(v) }])
-          ),
-        });
-      }
-
-      return origFetch(input as RequestInfo, init);
-    });
-  };
-
-  const jsonResponse = (body: unknown) =>
-    new Response(JSON.stringify(body), {
-      status: 200,
-      headers: { "content-type": "application/json" },
-    });
-
-  return { docs, install, jsonResponse };
+ const docs = new Map<string, { count: number; updateTime: string }>();
+ let revision = 0;
+ const jsonResponse = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+ const install = () => vi.stubGlobal("fetch", async (input: string, init?: RequestInit) => {
+   const url = String(input);
+   if (url.endsWith(":commit") && init?.method === "POST") {
+     const body = JSON.parse(String(init.body));
+     for (const w of body.writes) {
+       const path = w.update.name.split("/documents/")[1];
+       expect(path.split("/").length % 2).toBe(0);
+       const old = docs.get(path);
+       if (w.currentDocument.exists === false ? !!old : old?.updateTime !== w.currentDocument.updateTime) {
+         return jsonResponse({ error: { status: "FAILED_PRECONDITION" } }, 400);
+       }
+     }
+     for (const w of body.writes) docs.set(w.update.name.split("/documents/")[1], {
+       count: Number(w.update.fields.count.integerValue), updateTime: String(++revision),
+     });
+     return jsonResponse({ writeResults: [] });
+   }
+   expect(init?.method ?? "GET").toBe("GET");
+   const path = url.split("/documents/")[1];
+   expect(path.split("/").length % 2).toBe(0);
+   const doc = docs.get(path);
+   return doc ? jsonResponse({ fields: { count: { integerValue: String(doc.count) } }, updateTime: doc.updateTime }) : new Response(null, { status: 404 });
+ });
+ return { docs, install, jsonResponse };
 }
 
 /**
@@ -206,7 +183,7 @@ describe("quota", () => {
     const keys = [...firestore.docs.keys()];
     expect(keys.some((k) => k.includes("203.0.113.9"))).toBe(false);
     // The record is keyed by hash under a dated collection.
-    expect(keys.some((k) => /^usage\/ip-\d{4}-\d{2}-\d{2}\//.test(k))).toBe(true);
+    expect(keys.some((k) => /^usage-ip\/\d{4}-\d{2}-\d{2}-/.test(k))).toBe(true);
   });
 
   it("hashes the IP differently on different days", async () => {
@@ -218,10 +195,34 @@ describe("quota", () => {
     await spendInteraction("uid-2", "203.0.113.9", Date.parse("2026-10-04T00:00:00Z"));
 
     const keys = [...firestore.docs.keys()];
-    const dayKeys = keys.filter((k) => k.startsWith("usage/ip-"));
+    const dayKeys = keys.filter((k) => k.startsWith("usage-ip/"));
     expect(dayKeys).toHaveLength(2);
     // The hashes differ even though the address did not.
     const names = dayKeys.map((k) => k.split("/").pop());
     expect(new Set(names).size).toBe(2);
   });
+});
+
+describe("quota failure and race boundaries", () => {
+ it("only admits one of two contenders for the final allowance", async () => {
+   const server = fakeFirestore(); server.install();
+   const { spendInteraction, QuotaExceeded } = await import("./quota");
+   for (let i = 0; i < 4; i++) await spendInteraction("last", null);
+   const results = await Promise.allSettled([spendInteraction("last", null), spendInteraction("last", null)]);
+   expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(1);
+   const failed = results.find((r) => r.status === "rejected") as PromiseRejectedResult;
+   expect(failed.reason).toBeInstanceOf(QuotaExceeded);
+   expect(server.docs.get("usage/last")?.count).toBe(5);
+ });
+ it("fails closed on server errors", async () => {
+   vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 503 })));
+   const { checkQuota, spendInteraction } = await import("./quota");
+   await expect(checkQuota("user", null)).rejects.toThrow("quota_unavailable");
+   await expect(spendInteraction("user", null)).rejects.toThrow("quota_unavailable");
+ });
+ it("limits an IP across changing guest identities", async () => {
+   const { checkBurst, resetDevQuotaCounters } = await import("./quota"); resetDevQuotaCounters();
+   for (let i = 0; i < 8; i++) expect(checkBurst("guest-" + i, "203.0.113.1")).toBe(true);
+   expect(checkBurst("new-guest", "203.0.113.1")).toBe(false);
+ });
 });

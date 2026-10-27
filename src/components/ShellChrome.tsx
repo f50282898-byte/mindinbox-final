@@ -43,7 +43,7 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     <>
       <DesktopHeader />
       <MobileHeader />
-      <main id="main" className="shell-content min-h-screen pt-16 pb-28 md:pb-0 overflow-x-hidden">
+      <main id="main" className="shell-content min-h-screen pt-20 pb-28 md:pb-0 overflow-x-hidden">
         {children}
         <MobileBottomBar />
       </main>

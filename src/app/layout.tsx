@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { Amiri, Cinzel, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import "./studio.css";
 import { ShellChrome } from "@/components/ShellChrome";
 import { AppShell } from "@/components/AppShell";
 import { Shortcuts } from "@/components/Shortcuts";

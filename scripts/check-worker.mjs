@@ -1,18 +1,13 @@
 #!/usr/bin/env node
-/**
- * Validate the generated OpenNext Worker bundle before deployment.
- *
- * OpenNext's Cloudflare adapter runs Next.js on the Workers Node.js runtime;
- * Next.js Edge Runtime route exports are not supported by this adapter.
- */
+/** Validate the Cloudflare Pages worker produced by the installed Next.js adapter. */
 
-import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve, extname, relative } from "node:path";
 
 const ROOT = resolve(process.cwd());
 const SRC = resolve(ROOT, "src");
-const OUTPUT = resolve(ROOT, ".open-next");
-const CONFIG = resolve(ROOT, "wrangler.jsonc");
+const OUTPUT = resolve(ROOT, ".vercel/output/static");
+const CONFIG = resolve(ROOT, "wrangler.json");
 const NODE_EDGE_RUNTIME = /export\s+const\s+runtime\s*=\s*["']edge["']/;
 /**
  * Provider key formats and PEM private keys.
@@ -53,33 +48,19 @@ function walk(dir, extensions) {
   return files;
 }
 
-console.log("Checking OpenNext Cloudflare Worker output...");
+console.log("Checking Cloudflare Pages Worker output...");
 
 if (!existsSync(CONFIG)) {
-  errors.push("wrangler.jsonc is missing");
+  errors.push("wrangler.json is missing");
 } else {
-  const config = readFileSync(CONFIG, "utf8");
-  if (!/"main"\s*:\s*"\.open-next\/worker\.js"/.test(config)) {
-    errors.push('wrangler.jsonc must set "main" to ".open-next/worker.js"');
-  }
-  if (!/"directory"\s*:\s*"\.open-next\/assets"/.test(config)) {
-    errors.push('wrangler.jsonc must serve assets from ".open-next/assets"');
-  }
+  const config = JSON.parse(readFileSync(CONFIG, "utf8"));
+  if (config.pages_build_output_dir !== ".vercel/output/static") errors.push("Pages output directory does not match the adapter");
+  if (!config.compatibility_flags?.includes("nodejs_compat")) errors.push("nodejs_compat is required");
 }
 
-const sourceFiles = walk(SRC, [".ts", ".tsx", ".js", ".mjs"]);
-for (const file of sourceFiles) {
-  const source = readFileSync(file, "utf8");
-  if (NODE_EDGE_RUNTIME.test(source)) {
-    errors.push(
-      `${relative(ROOT, file)}: the Next.js Edge Runtime is unsupported by OpenNext; remove its runtime export`
-    );
-  }
-}
-
-const workerEntry = resolve(OUTPUT, "worker.js");
+const workerEntry = resolve(OUTPUT, "_worker.js/index.js");
 if (!existsSync(workerEntry)) {
-  errors.push(".open-next/worker.js is missing; run `npm run build:worker` first");
+  errors.push(".vercel/output/static/_worker.js/index.js is missing; run `npm run build:pages` first");
 } else {
   for (const file of walk(OUTPUT, [".js", ".mjs", ".json"])) {
     const content = readFileSync(file, "utf8");
@@ -98,4 +79,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`✓ OpenNext Worker and ${sourceFiles.length} source files passed.`);
+console.log("✓ Cloudflare Pages Worker passed.");

@@ -274,7 +274,9 @@ export async function POST(request: Request) {
   }
 
   /* ── 2. Identity ───────────────────────────────────────────────────────── */
-  const verified = await verifyIdToken(bearerFromHeaders(request.headers)).catch(() => null);
+  const bearer = bearerFromHeaders(request.headers);
+  const verified = bearer ? await verifyIdToken(bearer).catch(() => null) : null;
+  if (request.headers.has("authorization") && !verified?.ok) return jsonError({ error: "invalid_token" }, 401);
   const uid = verified?.ok ? verified.user.uid : null;
 
   /* ── 3. Entitlement and the quota check (read-only) ───────────────────── */
@@ -307,7 +309,8 @@ export async function POST(request: Request) {
   }
 
   if (!entitled) {
-    const decision = await checkQuota(key, ip);
+    const decision = await checkQuota(key, ip).catch(() => null);
+    if (!decision) return jsonError({ error: "quota_unavailable" }, 503, cookieHeader);
     if (!decision.allowed) {
       return jsonError(
         {
@@ -345,6 +348,8 @@ export async function POST(request: Request) {
     if (cookieHeader["Set-Cookie"]) {
       emit({ type: "quota", remaining: FREE_INTERACTIONS });
     }
+    const quotaAbort = new AbortController();
+    const upstreamSignal = AbortSignal.any([signal, quotaAbort.signal]);
     const result = await runChain({
       role,
       messages,
@@ -359,7 +364,7 @@ export async function POST(request: Request) {
       },
       maxOutputChars: settings.maxOutputChars,
       temperature: 0.85,
-      signal,
+      signal: upstreamSignal,
     });
 
     if (!result.ok) {
@@ -406,6 +411,12 @@ export async function POST(request: Request) {
         log.error("quota_spend_failed");
         return null;
       });
+      if (remainingAfter === null) {
+        quotaAbort.abort();
+        await result.rest[Symbol.asyncIterator]().return?.();
+        emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
+        return;
+      }
       if (remainingAfter !== null) {
         emit({ type: "quota", remaining: remainingAfter });
       }

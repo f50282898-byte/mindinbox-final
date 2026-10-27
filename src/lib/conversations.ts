@@ -262,11 +262,14 @@ export const useConversations = create<ConversationsState>()((set, get) => ({
         await setDoc(
           ref,
           {
+            id: conversation.id,
             title: conversation.title,
             personaId: conversation.personaId,
             createdAt: conversation.createdAt,
             updatedAt: conversation.updatedAt,
-            messages: conversation.messages.slice(-60),
+            messages: conversation.messages.slice(-60).map((message) =>
+              Object.fromEntries(Object.entries(message).filter(([, value]) => value !== undefined))
+            ),
           },
           { merge: true }
         );

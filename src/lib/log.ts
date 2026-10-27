@@ -105,7 +105,7 @@ export function time<T>(label: string, fn: () => Promise<T>): Promise<T> {
       return result;
     },
     (error) => {
-      log.error(`${label} failed`, { durationMs: performance.now() - start, error: String(error) });
+      log.error(`${label} failed`, { durationMs: performance.now() - start, error: "operation_failed" });
       throw error;
     }
   );

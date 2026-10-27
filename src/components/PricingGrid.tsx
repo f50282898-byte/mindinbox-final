@@ -28,12 +28,12 @@ export function PricingGrid() {
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           العضويات
         </h1>
-        <p className="display-latin mt-1 text-lg text-gold-muted/70">Membership</p>
+        <p className="display-latin mt-1 text-lg text-ink-2">Membership</p>
         <p className="display-arabic mt-5 leading-loose text-gold-muted">
           ثلاثة مستويات، وما يشمله كل واحد منها مكتوب بوضوح. لا خصومات موسمية ولا عدّادات
           تنازلية: الأرقام التي تراها هنا هي الأرقام التي ستدفعها.
         </p>
-        <p className="mt-3 leading-relaxed text-gold-muted/70">
+        <p className="mt-3 leading-relaxed text-ink-2">
           Three tiers, each with exactly what it includes written out. No seasonal discounts and
           no countdown timers — the numbers here are the numbers you pay.
         </p>
@@ -73,10 +73,10 @@ function TierCard({ tier }: { tier: PricingTier }) {
 
       <p className="mt-5 flex items-baseline gap-1.5">
         <span className="display-arabic text-3xl font-bold text-gold-light">{t(tier.price)}</span>
-        <span className="text-sm text-gold-muted/60">{t(tier.period)}</span>
+        <span className="text-sm text-ink-2">{t(tier.period)}</span>
       </p>
 
-      <p className="display-arabic mt-4 leading-relaxed text-gold-muted/85">{t(tier.tagline)}</p>
+      <p className="display-arabic mt-4 leading-relaxed text-ink-2">{t(tier.tagline)}</p>
 
       {tier.highlighted && (
         <p className="display-arabic mt-4 inline-flex w-fit rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs text-gold-light">
@@ -100,7 +100,7 @@ function TierCard({ tier }: { tier: PricingTier }) {
           {tier.includes.map((item, i) => (
             <li key={i} className="flex items-start gap-2">
               <Check className="mt-1 size-3.5 shrink-0 text-gold/70" aria-hidden="true" />
-              <span className="display-arabic text-sm leading-relaxed text-gold-muted/85">
+              <span className="display-arabic text-sm leading-relaxed text-ink-2">
                 {t(item)}
               </span>
             </li>
@@ -111,12 +111,12 @@ function TierCard({ tier }: { tier: PricingTier }) {
       {/* Excluded: stated plainly. A tier list that only says what is included
           reads as though everything else is included. */}
       <section className="mt-6 border-t border-gold/12 pt-5">
-        <h3 className="display-arabic mb-3 text-sm font-semibold text-gold-muted/70">لا يشمل</h3>
+        <h3 className="display-arabic mb-3 text-sm font-semibold text-ink-2">لا يشمل</h3>
         <ul className="flex flex-col gap-2">
           {tier.limits.map((item, i) => (
             <li key={i} className="flex items-start gap-2">
               <Minus className="mt-1 size-3.5 shrink-0 text-ink-3" aria-hidden="true" />
-              <span className="text-sm leading-relaxed text-gold-muted/60">{t(item)}</span>
+              <span className="text-sm leading-relaxed text-ink-2">{t(item)}</span>
             </li>
           ))}
         </ul>

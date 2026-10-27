@@ -5,10 +5,10 @@
   type RulesTestEnvironment,
   type RulesTestContext,
 } from "@firebase/rules-unit-testing";
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, serverTimestamp } from "firebase/firestore";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, it, expect } from "vitest";
 
 /**
  * Firestore security rules, exercised against the emulator.
@@ -35,7 +35,9 @@ let env: RulesTestEnvironment;
 
 /** A signed-in user context. */
 function asUser(uid: string): RulesTestContext {
-  return env.authenticatedContext(uid, { email: `${uid}@example.test`, email_verified: true });
+  const context = env.authenticatedContext(uid, { email: `${uid}@example.test`, email_verified: true });
+  const firestore = context.firestore();
+  return Object.assign(context, { firestore: () => firestore });
 }
 
 /** A signed-in user who also appears in `admins/{uid}`. */
@@ -43,7 +45,7 @@ async function asAdmin(uid: string): Promise<RulesTestContext> {
   await env.withSecurityRulesDisabled(async (ctx) => {
     await setDoc(doc(ctx.firestore(), `admins/${uid}`), { role: "admin", createdAt: 1 });
   });
-  return env.authenticatedContext(uid, { email: `${uid}@example.test` });
+  return asUser(uid);
 }
 
 const db = () => env.authenticatedContext("probe").firestore();
@@ -51,8 +53,7 @@ const db = () => env.authenticatedContext("probe").firestore();
 /** Server timestamp sentinel. Rules compare against `request.time`, so any
  *  timestamp field is written with the sentinel and asserted structurally. */
 function serverStamp() {
-  // The emulator maps `request.time` to the sentinel timestamp below.
-  return new Date("2020-01-01T00:00:00.000Z");
+  return serverTimestamp();
 }
 
 beforeAll(async () => {
@@ -330,9 +331,15 @@ describe("account deletion cascade", () => {
       }
     });
 
-    // Verify through rules so this is a real assertion, not a tautology.
+    // An absent document is not permission-denied when the caller may read its path.
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const cleared = ctx.firestore();
+      for (const path of ["users/alice", "users/alice/entries/e1", "users/alice/days/2026-10-03", "subscriptions/alice", "usage/alice"]) {
+        expect((await getDoc(doc(cleared, path))).exists()).toBe(false);
+      }
+    });
     await assertSucceeds(getDoc(doc(f, "siteConfig/pricing")));
-    await assertFails(getDoc(doc(f, "users/alice")));
+    expect((await assertSucceeds(getDoc(doc(f, "users/alice")))).exists()).toBe(false);
     await assertFails(getDoc(doc(f, "users/alice/days/2026-10-03")));
     await assertFails(getDoc(doc(f, "subscriptions/alice")));
     await assertFails(getDoc(doc(f, "usage/alice")));

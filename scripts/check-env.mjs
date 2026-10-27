@@ -74,9 +74,9 @@ const PROFILES = {
       "TURNSTILE_SECRET_KEY",
       "FIREBASE_SERVICE_ACCOUNT_JSON",
       "ADMIN_PAGE_SECRET",
+      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
     ],
     recommended: [
-      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
       "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID",
     ],
     description: "Production. Every listed variable must be present.",

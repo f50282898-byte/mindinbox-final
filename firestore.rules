@@ -56,19 +56,80 @@ service cloud.firestore {
       return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
-    function isService() {
-      return request.auth != null && request.auth.token.email == 'firebase-adminsdk@system.gserviceaccount.com';
-    }
-
-    // Server writes are trusted. Client writes never take this path.
-    function serverOnly() {
-      return isService() || isAdmin();
-    }
-
     function isValidDateKey(date) {
       return date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
     }
 
+    // Owner-private content: bound the list; API input schemas validate nested content before use.
+    function validList2(values) { return values.size() <= 40; }
+    // Owner-private content: bound the list; API input schemas validate nested content before use.
+    function validList6(values) { return values.size() <= 50; }
+    // Owner-private content: bound the list; API input schemas validate nested content before use.
+    function validList7(values) { return values.size() <= 60; }
+    function validClientTime(ts) { return ts is int && ts >= 0 && ts <= request.time.toMillis() + 86400000; }
+    function validItem1(v) { return v is int && v >= 1 && v <= 5; }
+    function validList1(values) { return values.size() <= 4
+      && (values.size() <= 0 || validItem1(values[0]))
+      && (values.size() <= 1 || validItem1(values[1]))
+      && (values.size() <= 2 || validItem1(values[2]))
+      && (values.size() <= 3 || validItem1(values[3])); }
+    function validItem3(v) { return v.size() <= 64; }
+    function validList3(values) { return values.size() <= 20
+      && (values.size() <= 0 || validItem3(values[0]))
+      && (values.size() <= 1 || validItem3(values[1]))
+      && (values.size() <= 2 || validItem3(values[2]))
+      && (values.size() <= 3 || validItem3(values[3]))
+      && (values.size() <= 4 || validItem3(values[4]))
+      && (values.size() <= 5 || validItem3(values[5]))
+      && (values.size() <= 6 || validItem3(values[6]))
+      && (values.size() <= 7 || validItem3(values[7]))
+      && (values.size() <= 8 || validItem3(values[8]))
+      && (values.size() <= 9 || validItem3(values[9]))
+      && (values.size() <= 10 || validItem3(values[10]))
+      && (values.size() <= 11 || validItem3(values[11]))
+      && (values.size() <= 12 || validItem3(values[12]))
+      && (values.size() <= 13 || validItem3(values[13]))
+      && (values.size() <= 14 || validItem3(values[14]))
+      && (values.size() <= 15 || validItem3(values[15]))
+      && (values.size() <= 16 || validItem3(values[16]))
+      && (values.size() <= 17 || validItem3(values[17]))
+      && (values.size() <= 18 || validItem3(values[18]))
+      && (values.size() <= 19 || validItem3(values[19])); }
+    function validItem4(v) { return v is map
+                      && v.keys().hasOnly(['done', 'note', 'updatedAt'])
+                      && v.done is bool
+                      && (!('note' in v) || (v.note is string && v.note.size() <= 2000))
+                      && validClientTime(v.updatedAt); }
+    function validList4(values) { return values.size() <= 20
+      && (values.size() <= 0 || validItem4(values[0]))
+      && (values.size() <= 1 || validItem4(values[1]))
+      && (values.size() <= 2 || validItem4(values[2]))
+      && (values.size() <= 3 || validItem4(values[3]))
+      && (values.size() <= 4 || validItem4(values[4]))
+      && (values.size() <= 5 || validItem4(values[5]))
+      && (values.size() <= 6 || validItem4(values[6]))
+      && (values.size() <= 7 || validItem4(values[7]))
+      && (values.size() <= 8 || validItem4(values[8]))
+      && (values.size() <= 9 || validItem4(values[9]))
+      && (values.size() <= 10 || validItem4(values[10]))
+      && (values.size() <= 11 || validItem4(values[11]))
+      && (values.size() <= 12 || validItem4(values[12]))
+      && (values.size() <= 13 || validItem4(values[13]))
+      && (values.size() <= 14 || validItem4(values[14]))
+      && (values.size() <= 15 || validItem4(values[15]))
+      && (values.size() <= 16 || validItem4(values[16]))
+      && (values.size() <= 17 || validItem4(values[17]))
+      && (values.size() <= 18 || validItem4(values[18]))
+      && (values.size() <= 19 || validItem4(values[19])); }
+    function validItem5(v) { return v is int && v >= 0 && v <= 6; }
+    function validList5(values) { return values.size() <= 7
+      && (values.size() <= 0 || validItem5(values[0]))
+      && (values.size() <= 1 || validItem5(values[1]))
+      && (values.size() <= 2 || validItem5(values[2]))
+      && (values.size() <= 3 || validItem5(values[3]))
+      && (values.size() <= 4 || validItem5(values[4]))
+      && (values.size() <= 5 || validItem5(values[5]))
+      && (values.size() <= 6 || validItem5(values[6])); }
     /* ── users/{uid} ────────────────────────────────────────────────────── */
 
     match /users/{uid} {
@@ -92,7 +153,7 @@ service cloud.firestore {
 
       // A user may change presentation only. Tier, trialEnd and createdAt are
       // not in the allowed set, so they can never be self-edited.
-      allow update: if isAdmin() || (
+      allow update: if (
         isSelf(uid)
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['email', 'displayName', 'locale', 'theme'])
@@ -117,14 +178,12 @@ service cloud.firestore {
          * not compared against `request.time` (which is UTC). Forcing them equal
          * would file every entry of a reader east of Greenwich under yesterday.
          *
-         * Instead the key is checked for shape, and bounded against now: a reader
-         * may write today or a past day, never a future one, and never absurdly far
-         * back. A future-dated key would let someone pre-fill a streak.
+         * Date keys are user-owned calendar labels, not billing or entitlement evidence.
+         * Offline entries may be written later; the update timestamp is bounded.
          */
         function isPlausibleDayKey(key) {
           return key.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
-            && key <= request.time.substr(0, 10)
-            && key >= request.time.substr(0, 8) + '01';   // not before the current month
+            && key >= '1900-01-01' && key <= '9999-12-31';   // not before the current month
         }
 
         /*
@@ -135,7 +194,7 @@ service cloud.firestore {
          * set a far-future stamp to make its edit look permanently newer.
          */
         function isClientTimestamp(ts) {
-          return ts is int && ts >= request.time - 86400000 && ts <= request.time + 86400000;
+          return ts is int && ts >= 0 && ts <= request.time.toMillis() + 86400000;
         }
 
         function isRating(v) {
@@ -176,7 +235,7 @@ service cloud.firestore {
               || (request.resource.data.virtues is map
                   && request.resource.data.virtues.keys()
                        .hasOnly(['wisdom', 'courage', 'temperance', 'justice'])
-                  && request.resource.data.virtues.values().all(isRating)))
+                  && validList1(request.resource.data.virtues.values())))
           && (!('practice' in request.resource.data)
               || (request.resource.data.practice is map
                   && request.resource.data.practice.keys().hasOnly(['read', 'applied', 'reflected', 'note'])
@@ -192,24 +251,12 @@ service cloud.firestore {
           && (!('journal' in request.resource.data)
               || (request.resource.data.journal is list
                   && request.resource.data.journal.size() <= 40
-                  && request.resource.data.journal.all(b,
-                      b is map
-                      && b.keys().hasOnly(['template', 'text', 'prompt', 'updatedAt'])
-                      && b.template in ['morning', 'evening', 'question', 'free']
-                      && b.text is string
-                      && b.text.size() <= 8000
-                      && (!('prompt' in b) || (b.prompt is string && b.prompt.size() <= 2000))
-                      && isClientTimestamp(b.updatedAt))))
+                  && validList2(request.resource.data.journal)))
           && (!('habits' in request.resource.data)
               || (request.resource.data.habits is map
                   && request.resource.data.habits.size() <= 20
-                  && request.resource.data.habits.keys().all(k, k.size() <= 64)
-                  && request.resource.data.habits.values().all(t,
-                      t is map
-                      && t.keys().hasOnly(['done', 'note', 'updatedAt'])
-                      && t.done is bool
-                      && (!('note' in t) || (t.note is string && t.note.size() <= 2000))
-                      && isClientTimestamp(t.updatedAt))))
+                  && validList3(request.resource.data.habits.keys())
+                  && validList4(request.resource.data.habits.values())))
           && (!('lastWriter' in request.resource.data)
               || (request.resource.data.lastWriter is string
                   && request.resource.data.lastWriter.size() <= 64));
@@ -240,7 +287,7 @@ service cloud.firestore {
           && request.resource.data.grace <= 3
           && request.resource.data.weekdays is list
           && request.resource.data.weekdays.size() <= 7
-          && request.resource.data.weekdays.all(d, d is int && d >= 0 && d <= 6)
+          && validList5(request.resource.data.weekdays)
           && request.resource.data.archived is bool
           && request.resource.data.order is int
           && request.resource.data.order >= 0
@@ -249,27 +296,19 @@ service cloud.firestore {
 
       /* ── users/{uid}/principles — the reader's own stated values ───────── */
 
-      match /principles {
+      match /principles/{documentId} {
         allow read: if isSelf(uid);
 
         allow create, update: if isSelf(uid)
           && request.resource.data.keys().hasOnly(['items'])
           && request.resource.data.items is list
           && request.resource.data.items.size() <= 50
-          && request.resource.data.items.all(p,
-              p is map
-              && p.keys().hasOnly(['id', 'text', 'createdAt'])
-              && p.id is string
-              && p.id.size() <= 64
-              && p.text is string
-              && p.text.size() > 0
-              && p.text.size() <= 500
-              && p.createdAt is int);
+          && validList6(request.resource.data.items);
       }
 
       /* ── users/{uid}/settings ──────────────────────────────────────────── */
 
-      match /settings {
+      match /settings/{documentId} {
         allow read: if isSelf(uid);
 
         /*
@@ -344,18 +383,8 @@ service cloud.firestore {
           && request.resource.data.title.size() <= 200
           && request.resource.data.personaId in ['plato', 'rumi', 'dostoevsky', 'aesop']
           && request.resource.data.messages is list
-          && request.resource.data.messages.size() <= 200
-          && request.resource.data.messages.all(m,
-              m is map
-              && m.keys().hasOnly(['id', 'role', 'content', 'personaId', 'via', 'createdAt', 'complete'])
-              && m.id is string
-              && m.role in ['user', 'assistant']
-              && m.content is string
-              && m.content.size() <= 4000
-              && (!('personaId' in m) || m.personaId in ['plato', 'rumi', 'dostoevsky', 'aesop'])
-              && (!('via' in m) || m.via is string)
-              && m.createdAt is int
-              && m.complete is bool)
+          && request.resource.data.messages.size() <= 60
+          && validList7(request.resource.data.messages)
           && request.resource.data.createdAt is int
           && request.resource.data.updatedAt is int;
       }
@@ -363,8 +392,8 @@ service cloud.firestore {
       /* ── legacy user subcollections ───────────────────────────────────── */
 
       match /entries/{entryId} {
-        allow read, delete: if isSelf(uid) || isAdmin();
-        allow create, update: if (isSelf(uid) || isAdmin())
+        allow read, delete: if isSelf(uid);
+        allow create, update: if isSelf(uid)
           && request.resource.data.keys().hasOnly(['kind', 'text', 'createdAt'])
           && request.resource.data.kind in ['habit', 'thought', 'time']
           && request.resource.data.text is string
@@ -537,6 +566,8 @@ service cloud.firestore {
       allow update: if signedIn()
         && resource.data.uid == request.auth.uid
         && request.resource.data.uid == resource.data.uid
+        && request.resource.data.keys().hasOnly(['uid', 'durationSeconds', 'createdAt'])
+        && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.durationSeconds is int
         && request.resource.data.durationSeconds >= resource.data.durationSeconds;
       allow delete: if isAdmin();

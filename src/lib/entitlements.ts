@@ -44,13 +44,6 @@ function maxTier(a: Tier, b: Tier): Tier {
   return TIER_ORDER[a] >= TIER_ORDER[b] ? a : b;
 }
 
-function atExpiry(tier: Tier, expiresAt: unknown): number | null {
-  if (typeof expiresAt !== "number" || !Number.isFinite(expiresAt) || expiresAt <= 0) {
-    return null;
-  }
-  return expiresAt;
-}
-
 /**
  * Normalises anything Firestore or an untrusted document might contain into a
  * `Tier`. Unknown values fall back to `"free"` — never to something higher.
@@ -78,7 +71,15 @@ function timestampToMs(value: unknown): number | null {
  * Reads the server's billing record. Returns `null` when absent, so the caller
  * falls through to grants and the trial.
  */
-async function readSubscription(uid: string): Promise<{ tier: Tier; expiresAt: number | null } | null> {
+// Match Storage rules: only absent, null, integer milliseconds or a Firestore timestamp.
+function entitlementExpiry(value: unknown): number | null {
+  if (value == null) return null;
+  if (typeof value === "number") return Number.isSafeInteger(value) ? value : NaN;
+  if (value instanceof Date || (typeof value === "object" && "toMillis" in value)) return timestampToMs(value) ?? NaN;
+  return NaN;
+}
+
+async function readSubscription(uid: string, now: number): Promise<{ tier: Tier; expiresAt: number | null } | null> {
   const doc = await getDocument<Record<string, unknown>>(`subscriptions/${uid}`);
   if (!doc) return null;
 
@@ -89,7 +90,9 @@ async function readSubscription(uid: string): Promise<{ tier: Tier; expiresAt: n
   const tier = asTier(doc.tier);
   if (!tier) return null;
 
-  return { tier, expiresAt: atExpiry(tier, timestampToMs(doc.currentPeriodEnd)) };
+  const expiresAt = entitlementExpiry(doc.currentPeriodEnd);
+  if (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt <= now)) return null;
+  return { tier, expiresAt };
 }
 
 /**
@@ -125,8 +128,8 @@ async function readGrants(uid: string, now: number): Promise<Grant[]> {
   const tier = asTier(doc.tier);
   if (!tier) return [];
 
-  const expiresAt = timestampToMs(doc.expiresAt);
-  if (expiresAt !== null && expiresAt <= now) return [];
+  const expiresAt = entitlementExpiry(doc.expiresAt);
+  if (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt <= now)) return [];
 
   return [{ tier, expiresAt }];
 }
@@ -148,7 +151,7 @@ export async function getEntitlements(uid: string, now: number = Date.now()): Pr
       (d) => d !== null,
       () => false
     ),
-    readSubscription(uid).catch(() => null),
+    readSubscription(uid, now).catch(() => null),
     readGrants(uid, now),
     getDocument<Record<string, unknown>>(`users/${uid}`).catch(() => null),
   ]);

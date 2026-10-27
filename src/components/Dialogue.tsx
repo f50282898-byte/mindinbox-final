@@ -418,7 +418,7 @@ export function Dialogue() {
           >
             لتتدخّل بين الجولات
           </label>
-          <p className="display-arabic mb-3 text-xs leading-relaxed text-gold-muted/60">
+          <p className="display-arabic mb-3 text-xs leading-relaxed text-ink-2">
             جملة واحدة. ستدخل في الحوار قبل الجولتين التاليتين.
           </p>
           <div className="flex items-end gap-2">

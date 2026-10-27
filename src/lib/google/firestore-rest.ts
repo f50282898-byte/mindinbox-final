@@ -49,6 +49,7 @@ async function adminFetch(
       "content-type": "application/json",
     },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(10_000),
   });
 
   if (res.status === 404) return null;
@@ -111,7 +112,7 @@ function unwrap(v: Record<string, unknown>): unknown {
   if ("integerValue" in v) return Number(v.integerValue);
   if ("doubleValue" in v) return v.doubleValue;
   if ("nullValue" in v) return null;
-  if ("timestampValue" in v) return v.timestampValue;
+  if ("timestampValue" in v) return new Date(String(v.timestampValue));
   if ("arrayValue" in v) {
     const arr = (v.arrayValue as { values?: Record<string, unknown>[] } | undefined)?.values ?? [];
     return arr.map(unwrap);
@@ -155,6 +156,7 @@ export async function listDocuments(
 
     const res = await fetch(url.toString(), {
       headers: { authorization: `Bearer ${token.token}` },
+      signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) {
       log.error("firestore_list_failed", { collectionPath, status: res.status });
@@ -178,6 +180,7 @@ export async function listDocuments(
     if (!pageToken) break;
   }
 
+  if (pageToken) throw new FirestoreAdminError("listing incomplete", 503);
   return out;
 }
 

@@ -102,7 +102,7 @@ export function NoteDrawer({
             <div className="flex size-8 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-amber-400/90">
               <DrawerIcon className="size-4" />
             </div>
-            <h3 className={`display-arabic text-sm font-bold ${note?.pinned ? "text-amber-400" : "text-zinc-100"}`}>
+            <h3 className={`display-arabic text-sm font-bold ${note?.pinned ? "text-amber-400" : "text-ink-1"}`}>
               {note?.title ?? "ملاحظة جديدة"}
             </h3>
           </div>
@@ -113,12 +113,12 @@ export function NoteDrawer({
                 type="button"
                 onClick={() => onPin(note.id)}
                 aria-label={note.pinned ? "إزالة التثبيت" : "تثبيت"}
-                className="size-7 rounded-full border border-white/10 p-1 text-zinc-400/60 transition-colors hover:border-amber-500/40 hover:text-amber-400"
+                className="size-7 rounded-full border border-white/10 p-1 text-ink-3 transition-colors hover:border-amber-500/40 hover:text-amber-400"
               >
                 <Pin className="size-3" fill={note.pinned ? "currentColor" : "none"} />
               </button>
             )}
-            <button type="button" onClick={onClose} aria-label="إغلاق" className="size-7 rounded-full border border-white/10 p-1 text-zinc-400/60 transition-colors hover:border-amber-500/40 hover:text-amber-400">
+            <button type="button" onClick={onClose} aria-label="إغلاق" className="size-7 rounded-full border border-white/10 p-1 text-ink-3 transition-colors hover:border-amber-500/40 hover:text-amber-400">
               <ArrowLeft className="size-3" />
             </button>
           </div>
@@ -134,11 +134,11 @@ export function NoteDrawer({
               value={draft.title}
               onChange={(e) => setDraft({ ...draft, title: e.target.value })}
               placeholder="عنوان الملاحظة…"
-              className="w-full border-b border-white/10 bg-transparent pb-1 text-lg font-bold text-zinc-100 outline-none placeholder-zinc-500/40"
+              className="w-full border-b border-white/10 bg-transparent pb-1 text-lg font-bold text-ink-1 outline-none placeholder-zinc-500/40"
             />
 
             <div className="flex flex-wrap gap-2 mb-1">
-              <label className="text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium">التصنيف</label>
+              <label className="text-[10px] tracking-[0.15em] text-ink-3 uppercase font-medium">التصنيف</label>
               {Object.entries(CATEGORY_LABELS).map(([id, label]) => {
                 const isActive = draft.category === id;
                 return (
@@ -146,7 +146,7 @@ export function NoteDrawer({
                     key={id}
                     type="button"
                     onClick={() => setDraft({ ...draft, category: id as NoteCategory })}
-                    className={`rounded-full border px-2.5 py-0.5 text-[10px] transition-colors ${isActive ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-white/10 text-zinc-400/60"}`}
+                    className={`rounded-full border px-2.5 py-0.5 text-[10px] transition-colors ${isActive ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-white/10 text-ink-3"}`}
                   >
                     {label}
                   </button>
@@ -162,11 +162,11 @@ export function NoteDrawer({
               onChange={(e) => setDraft({ ...draft, content: e.target.value })}
               rows={12}
               placeholder="اكتب فكرتك هنا… لا حدود للمساحة، تتسع لما تشاء."
-              className="field w-full resize-none min-h-[240px] text-[0.95rem] leading-relaxed text-zinc-200 placeholder-zinc-500/40"
+              className="field w-full resize-none min-h-[240px] text-[0.95rem] leading-relaxed text-ink-1 placeholder-zinc-500/40"
             />
 
             <div className="flex items-center gap-2 pt-2 border-t border-white/5">
-              <span className="text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium">اللون</span>
+              <span className="text-[10px] tracking-[0.15em] text-ink-3 uppercase font-medium">اللون</span>
               <div className="flex gap-2">
                 {Object.entries(COLOR_CLASSES).map(([color, _cls]) => {
                   const isActive = draft.color === color;
@@ -184,7 +184,7 @@ export function NoteDrawer({
             </div>
 
             <div className="pt-2 border-t border-white/5">
-              <label className="block text-[10px] tracking-[0.15em] text-zinc-500/60 uppercase font-medium mb-2">صورة مرفقة (اختياري)</label>
+              <label className="block text-[10px] tracking-[0.15em] text-ink-3 uppercase font-medium mb-2">صورة مرفقة (اختياري)</label>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -205,7 +205,7 @@ export function NoteDrawer({
                     setDraft({ ...draft, imageUrl: dataUrl })
                   );
                 }}
-                className="block w-full text-xs text-zinc-400/60 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold/10 file:text-gold-light" aria-hidden={true}
+                className="block w-full text-xs text-ink-3 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold/10 file:text-gold-light" aria-hidden={true}
               />
               {uploadError && (
                 <p className="mt-1 text-xs text-rose-400">{uploadError}</p>
@@ -230,7 +230,7 @@ export function NoteDrawer({
             </div>
 
             <div className="flex items-center justify-end gap-2 mt-5 pt-4 border-t border-white/10">
-              <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors">إلغاء</button>
+              <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs text-ink-3 hover:text-ink-1 transition-colors">إلغاء</button>
               {note && onDelete && (
                 <button type="button" onClick={(e) => { e.preventDefault(); if (window.confirm("هل تريد حذف هذه الملاحظة نهائياً؟")) { onDelete(); onClose(); } }} className="px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 transition-colors">حذف</button>
               )}

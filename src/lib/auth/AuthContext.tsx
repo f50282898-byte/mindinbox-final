@@ -99,28 +99,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return false;
     };
 
-    const handleAuthChange = (e?: Event) => {
-      const custom = e as CustomEvent<AuthUser | null> | undefined;
-      const record = custom?.detail !== undefined ? custom.detail : readLocalUser();
-      if (record) {
-        setUser({
-          uid: record.uid,
-          email: record.email,
-          displayName: record.displayName,
-          photoURL: record.photoURL ?? null,
-          isAnonymous: record.isAnonymous,
-          emailVerified: record.emailVerified,
-        });
-        setIdentity({
-          uid: record.uid,
-          email: record.email,
-          displayName: record.displayName,
-          isAdmin: false,
-        });
-      } else {
-        setUser(null);
-        setIdentity({ uid: null, isAdmin: false });
-      }
+    const handleAuthChange = () => {
+      // Events request a refresh; event payloads are never identity evidence.
+      const verified = firebaseAuth?.currentUser;
+      if (verified) setUser(toAuthUser(verified));
+      else if (!syncLocal()) { setUser(null); setIdentity({ uid: null, isAdmin: false }); }
       setIsLoading(false);
     };
 

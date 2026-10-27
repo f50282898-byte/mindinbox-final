@@ -357,11 +357,11 @@ export function WisdomChat() {
     return (
       <div className="mx-auto w-full max-w-2xl px-5 py-10">
         <header className="mb-8">
-          <h1 className="display-arabic text-2xl font-bold text-zinc-100">اسأل الحكيم</h1>
-          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-zinc-400">
+          <h1 className="display-arabic text-2xl font-bold text-ink-1">اسأل الحكيم</h1>
+          <p className="display-latin mt-1 text-xs tracking-[0.25em] text-ink-3">
             ASK THE WISE
           </p>
-          <p className="display-arabic mt-4 leading-loose text-zinc-400/80">
+          <p className="display-arabic mt-4 leading-loose text-ink-3">
             اختر من يمينك، ثم اسأل. لن أُجيبك بما تريد سماعه، بل بما يحتمل أن تحتاجه.
           </p>
         </header>
@@ -389,7 +389,7 @@ export function WisdomChat() {
                   setActive(c.id);
                   void send(q);
                 }}
-                className="glass w-full px-4 py-3 text-start text-[0.9rem] leading-relaxed text-zinc-200/80 transition-colors hover:border-gold/40 hover:text-zinc-100"
+                className="glass w-full px-4 py-3 text-start text-[0.9rem] leading-relaxed text-ink-1 transition-colors hover:border-gold/40 hover:text-ink-1"
               >
                 {q}
               </button>
@@ -428,7 +428,7 @@ export function WisdomChat() {
 
   /* ═══ Transcript ═══════════════════════════════════════════════════════════════════════════════════════════ */
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
       <Header
         persona={persona}
         conversation={active}
@@ -469,7 +469,7 @@ export function WisdomChat() {
                 {isUser && (
                   <div
                     dir="auto"
-                    className="max-w-[86%] rounded-2xl px-4 py-3 text-[0.95rem] leading-relaxed bg-gold/5 border border-gold/20 text-zinc-100 sm:max-w-[80%]"
+                    className="max-w-[86%] rounded-2xl px-4 py-3 text-[0.95rem] leading-relaxed bg-gold/5 border border-gold/20 text-ink-1 sm:max-w-[80%]"
                   >
                     <Markdown text={message.content} />
                   </div>
@@ -490,10 +490,10 @@ export function WisdomChat() {
                         <span className="display-arabic font-bold text-gold-light">
                           {persona.nameAr}
                         </span>
-                        <span className="display-latin mt-0.5 text-[10px] tracking-[0.18em] text-gold-muted/80">
+                        <span className="display-latin mt-0.5 text-[10px] tracking-[0.18em] text-ink-2">
                           {persona.nameEn ?? "Philosopher"}
                         </span>
-                        <span className="display-arabic mt-0.5 text-[11px] text-gold-muted/60">
+                        <span className="display-arabic mt-0.5 text-[11px] text-ink-2">
                           {persona.epithetAr}
                         </span>
                       </div>
@@ -502,14 +502,14 @@ export function WisdomChat() {
                     {/* Card body — a page from a modern royal manuscript. */}
                     <div
                       dir="auto"
-                      className={`bg-[#0E121B]/90 border border-gold/20 shadow-2xl rounded-3xl p-5 sm:p-6 text-zinc-100`}
+                      className={`bg-surface-solid border border-gold/20 shadow-2xl rounded-3xl p-5 sm:p-6 text-ink-1`}
                     >
                       {message.content.trim().length > 0 ? (
                         <div className="text-[1rem] leading-[2]">
                           <Markdown text={message.content} />
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 text-zinc-400/70">
+                        <div className="flex items-center gap-2 text-ink-3">
                           <Sparkles className="size-4 animate-pulse text-gold-light" />
                           <span className="display-arabic text-sm leading-relaxed">
                             الحكيم يصوغ الفكرة…
@@ -551,7 +551,7 @@ export function WisdomChat() {
 
       {/* Composer — sticky bottom */}
       <div
-        className="sticky bottom-0 z-20 border-t border-white/10 bg-white/[0.04] px-4 py-3 backdrop-blur-xl"
+        className="wisdom-composer sticky z-20 border-t border-gold/20 bg-surface-solid px-4 py-3 backdrop-blur-xl"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
         <div className="mx-auto w-full max-w-2xl">
@@ -567,7 +567,7 @@ export function WisdomChat() {
             </p>
           )}
           {notice && (
-            <p role="status" className="display-arabic mt-2 text-center text-xs text-zinc-400/70">
+            <p role="status" className="display-arabic mt-2 text-center text-xs text-ink-3">
               {notice}
             </p>
           )}
@@ -580,7 +580,7 @@ export function WisdomChat() {
           {/* Quick prompts when composer is empty */}
           {!draft && status === "idle" && (
             <div className="mt-3 flex flex-wrap gap-2">
-              <p className="mr-2 text-[10px] tracking-[0.2em] text-zinc-500/60 uppercase font-medium">
+              <p className="mr-2 text-[10px] tracking-[0.2em] text-ink-3 uppercase font-medium">
                 اقتراحات سريعة
               </p>
               {QUICK_PROMPTS.map((prompt) => (
@@ -590,7 +590,7 @@ export function WisdomChat() {
                   onClick={() => {
                     void send(prompt);
                   }}
-                  className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] text-zinc-300 transition-colors hover:border-gold/40 hover:text-gold-light"
+                  className="px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] text-ink-2 transition-colors hover:border-gold/40 hover:text-gold-light"
                 >
                   {prompt}
                 </button>
@@ -660,10 +660,10 @@ export function WisdomChat() {
       >
         <div className="flex flex-col gap-4">
           <div className="bg-white/[0.03] rounded-xl p-4 border border-white/5">
-            <h4 className="display-arabic font-bold text-zinc-100 text-sm mb-1">
+            <h4 className="display-arabic font-bold text-ink-1 text-sm mb-1">
               {bottomSheetContent?.title}
             </h4>
-            <p className="display-arabic text-zinc-300/80 text-xs leading-relaxed">
+            <p className="display-arabic text-ink-2 text-xs leading-relaxed">
               {bottomSheetContent?.content}
             </p>
           </div>
@@ -735,7 +735,7 @@ function ResponseToolbar({
       </ActionButton>
 
       {open && (
-        <span className="display-arabic flex items-center gap-1.5 text-[0.7rem] text-zinc-400/60">
+        <span className="display-arabic flex items-center gap-1.5 text-[0.7rem] text-ink-3">
           <span className="max-w-[16rem] truncate">{content.slice(0, 40)}…</span>
           <Link
             href="/quotes"
@@ -744,7 +744,7 @@ function ResponseToolbar({
           >
             إلى الأرشيف
           </Link>
-          <span className="text-zinc-500">(قريباً)</span>
+          <span className="text-ink-3">(قريباً)</span>
         </span>
       )}
     </div>
@@ -774,7 +774,7 @@ function ActionButton({
       className={`flex size-7 items-center justify-center rounded-full border transition-colors disabled:opacity-30 ${
         active
           ? "border-gold/50 text-gold-light"
-          : "border-white/10 text-zinc-400/60 hover:border-gold/40 hover:text-zinc-100"
+          : "border-white/10 text-ink-3 hover:border-gold/40 hover:text-ink-1"
       }`}
     >
       {children}
@@ -816,7 +816,7 @@ function Header({
           onClick={onNew}
           aria-label="محادثة جديدة"
           title="محادثة جديدة"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-zinc-400 transition-colors hover:border-gold/40 hover:text-zinc-100"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-ink-3 transition-colors hover:border-gold/40 hover:text-ink-1"
         >
           <MessageSquarePlus className="size-4" />
         </button>
@@ -833,14 +833,14 @@ function Header({
               }}
               autoFocus
               aria-label="اسم المحادثة"
-              className="w-full border-b border-gold/40 bg-transparent pb-0.5 text-sm text-zinc-100 outline-none"
+              className="w-full border-b border-gold/40 bg-transparent pb-0.5 text-sm text-ink-1 outline-none"
             />
           ) : (
             <button
               type="button"
               onClick={onStartRename}
               aria-label={`إعادة تسمية المحادثة: ${conversation.title}`}
-              className="block max-w-full truncate text-start text-sm text-zinc-100"
+              className="block max-w-full truncate text-start text-sm text-ink-1"
             >
               {conversation.title}
             </button>
@@ -850,7 +850,7 @@ function Header({
             onClick={() => setPickerOpen((v) => !v)}
             aria-expanded={pickerOpen}
             aria-haspopup="dialog"
-            className="display-arabic mt-0.5 flex items-center gap-1.5 text-xs text-zinc-400/60 transition-colors hover:text-zinc-100"
+            className="display-arabic mt-0.5 flex items-center gap-1.5 text-xs text-ink-3 transition-colors hover:text-ink-1"
           >
             <span aria-hidden="true">{persona.symbol}</span>
             {persona.nameAr}
@@ -859,7 +859,7 @@ function Header({
 
         {uid && conversations.length > 1 && (
           <details className="relative shrink-0">
-            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-full border border-white/20 text-xs text-zinc-400 transition-colors hover:border-gold/40 hover:text-zinc-100">
+            <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-full border border-white/20 text-xs text-ink-3 transition-colors hover:border-gold/40 hover:text-ink-1">
               السجل
             </summary>
             <div className="glass-strong absolute end-0 z-40 mt-2 w-72 rounded-2xl p-2">
@@ -869,7 +869,7 @@ function Header({
                     <button
                       type="button"
                       onClick={() => setActive(c.id)}
-                      className={`min-w-0 flex-1 truncate rounded-lg px-2 py-2 text-start text-xs transition-colors hover:bg-gold/5 ${c.id === conversation.id ? "text-zinc-100" : "text-zinc-400/70"}`}
+                      className={`min-w-0 flex-1 truncate rounded-lg px-2 py-2 text-start text-xs transition-colors hover:bg-gold/5 ${c.id === conversation.id ? "text-ink-1" : "text-ink-3"}`}
                     >
                       {c.title}
                     </button>
@@ -877,7 +877,7 @@ function Header({
                       type="button"
                       onClick={() => remove(c.id)}
                       aria-label={`احذف المحادثة ${c.title}`}
-                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-zinc-400/60 transition-colors hover:text-gold-light"
+                      className="flex size-7 shrink-0 items-center justify-center rounded-lg text-ink-3 transition-colors hover:text-gold-light"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -891,14 +891,14 @@ function Header({
 
       {pickerOpen && (
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">
-          <p className="display-arabic mb-2 text-xs text-zinc-400/60">
+          <p className="display-arabic mb-2 text-xs text-ink-3">
             تغيير الفيلسوف يبدأ محادثة جديدة، حتى لا تتغيّر معنى الأسطر السابقة.
           </p>
           <PersonaCards selectedId={conversation.personaId} onSelect={onChangePersona} />
           <button
             type="button"
             onClick={() => setPickerOpen(false)}
-            className="mt-3 w-full text-center text-xs text-zinc-400/60"
+            className="mt-3 w-full text-center text-xs text-ink-3"
           >
             إغلاق
           </button>
@@ -949,13 +949,13 @@ function ConversationList({
                 }}
                 autoFocus
                 aria-label="اسم المحادثة"
-                className="min-w-0 flex-1 border-b border-gold/40 bg-transparent text-sm text-zinc-100 outline-none"
+                className="min-w-0 flex-1 border-b border-gold/40 bg-transparent text-sm text-ink-1 outline-none"
               />
             ) : (
               <button
                 type="button"
                 onClick={() => onOpen(c)}
-                className="display-arabic min-w-0 flex-1 truncate text-start text-sm text-zinc-300"
+                className="display-arabic min-w-0 flex-1 truncate text-start text-sm text-ink-2"
               >
                 {c.title}
               </button>
@@ -964,7 +964,7 @@ function ConversationList({
               type="button"
               onClick={() => onStartRename(c.id, c.title)}
               aria-label={`إعادة تسمية ${c.title}`}
-              className="text-xs text-zinc-400/60 hover:text-gold-light"
+              className="text-xs text-ink-3 hover:text-gold-light"
             >
               تسمية
             </button>
@@ -972,7 +972,7 @@ function ConversationList({
               type="button"
               onClick={() => onDelete(c)}
               aria-label={`حذف ${c.title}`}
-              className="flex size-7 items-center justify-center rounded-full text-zinc-400/60 hover:text-gold-light"
+              className="flex size-7 items-center justify-center rounded-full text-ink-3 hover:text-gold-light"
             >
               <Trash2 className="size-3" />
             </button>
@@ -980,7 +980,7 @@ function ConversationList({
         ))}
       </ul>
       {!uid && (
-        <p className="display-arabic mt-3 text-xs leading-relaxed text-zinc-400/60">
+        <p className="display-arabic mt-3 text-xs leading-relaxed text-ink-3">
           محادثاتك محفوظة على هذا الجهاز. أنشئ حساباً لتحملها معك إلى أي جهاز آخر.
         </p>
       )}

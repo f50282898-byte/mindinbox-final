@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AuthActionError,
+  reauthenticateForDeletion,
   changeEmail,
   changePassword,
   isEmailVerified,
@@ -55,7 +56,7 @@ export function AccountPanel() {
   const conversations = useConversations((s) => s.conversations);
   const notes = useJournal((s) => s.notes);
 
-  const [email, setEmail] = useState<string | null>(null);
+  const [passwordProvider, setPasswordProvider] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [verified, setVerified] = useState(false);
   const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
@@ -86,7 +87,7 @@ export function AccountPanel() {
   useEffect(() => {
     // Mirror local identity into state for display.
     const storeUser = user;
-    setEmail(storeUser?.email ?? null);
+
     setIsAnonymous(Boolean(storeUser?.isAnonymous));
 
     if (!auth) return;
@@ -98,6 +99,7 @@ export function AccountPanel() {
       if (!firebaseUser || cancelled) return;
 
       setVerified(firebaseUser.emailVerified);
+      setPasswordProvider(firebaseUser.providerData.some((provider) => provider.providerId === "password"));
 
       // Entitlements are asked of the server, which derives them from
       // subscriptions / grants / trial. Never computed on the client.
@@ -506,25 +508,25 @@ export function AccountPanel() {
               value={deleteConfirm}
               onChange={setDeleteConfirm}
             />
-            <Field
+            {passwordProvider && <Field
               id="del-pw"
               label="كلمة المرور الحالية"
               type="password"
               value={deletePassword}
               onChange={setDeletePassword}
               autoComplete="current-password"
-            />
+            />}
             <div className="flex gap-2">
               <Button
                 onClick={() => {
                   void (async () => {
-                    const token = await idToken();
                     const { auth: a } = await import("@/lib/firebase");
                     const uid = a?.currentUser?.uid;
                     setBusy("delete");
                     setError(null);
                     setNotice(null);
                     try {
+                      const token = await reauthenticateForDeletion(deletePassword);
                       if (!token || !uid) {
                         throw new AuthActionError({
                           code: "unavailable",
@@ -591,7 +593,7 @@ export function AccountPanel() {
                 disabled={
                   busy !== null ||
                   deleteConfirm.trim() !== "احذف" ||
-                  (isAnonymous ? false : !deletePassword)
+                  (passwordProvider && !deletePassword)
                 }
                 variant="ghost"
               >
