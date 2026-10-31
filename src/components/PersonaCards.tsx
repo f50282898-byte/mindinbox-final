@@ -58,17 +58,27 @@ function PersonaCard({
           : "glass border-gold/15 bg-white/[0.03] hover:border-gold/35 hover:bg-white/[0.05]"
       }`}
     >
-      {/* Fixed square so the mark cannot reflow the row as cards differ. */}
-      <span
-        aria-hidden="true"
-        className={`flex size-12 shrink-0 items-center justify-center rounded-full border text-2xl transition-colors ${
-          selected
-            ? "border-gold/50 text-gold-light bg-gold/[0.10]"
-            : "border-gold/25 text-ink-2"
-        }`}
-      >
-        {persona.symbol}
-      </span>
+      {/* Philosopher portrait in classical engraving with web format optimization */}
+      <div className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gold/30 bg-black/40 shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+        <picture>
+          <source srcSet={`/images/philosophers/${persona.id}-160.avif`} type="image/avif" />
+          <source srcSet={`/images/philosophers/${persona.id}-160.webp`} type="image/webp" />
+          <img
+            src={`/images/philosophers/${persona.id}.webp`}
+            alt={persona.nameAr}
+            width={56}
+            height={56}
+            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        </picture>
+        <span
+          aria-hidden="true"
+          className="absolute bottom-1 end-1 flex size-5 items-center justify-center rounded-full bg-black/80 border border-gold/40 text-[9px] text-gold-light backdrop-blur-sm shadow-sm"
+        >
+          {persona.symbol}
+        </span>
+      </div>
 
       <span className="min-w-0 flex-1">
         <span className="display-arabic font-bold text-gold-light text-lg leading-tight">

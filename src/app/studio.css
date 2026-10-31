@@ -35,6 +35,10 @@
 .home-orbit { position:absolute; width:78%; aspect-ratio:1; border:1px solid var(--edge-2); border-radius:50%; top:15%; left:11%; transform:rotateX(55deg) rotateY(-20deg); }
 .home-orbit::after { content:""; position:absolute; inset:16px; border:1px solid var(--edge-1); border-radius:50%; }
 .home-sphere { position:absolute; width:160px; height:160px; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-58%); background:radial-gradient(circle at 28% 25%,#f3e3b1 0%,#bea477 20%,#796746 45%,#29271f 73%,#111310 100%); box-shadow:inset -16px -22px 34px #0009,0 32px 70px -18px #0009; }
+.home-portal-artwork { position:absolute; width:180px; height:180px; border-radius:50%; top:50%; left:50%; transform:translate(-50%,-58%); overflow:hidden; border:2px solid var(--accent); box-shadow:0 0 36px var(--accent-quiet), inset 0 0 20px #000c, 0 32px 70px -18px #0009; transition:all 350ms cubic-bezier(0.16, 1, 0.3, 1); z-index:2; background:#0e1111; }
+.home-portal-artwork img { width:100%; height:100%; object-fit:cover; transition:transform 500ms cubic-bezier(0.16, 1, 0.3, 1); }
+.home-portal:hover .home-portal-artwork img { transform:scale(1.06); }
+.home-lens-avatar { width:22px; height:22px; border-radius:50%; object-fit:cover; border:1px solid var(--edge-2); flex-shrink:0; }
 .home-plinth { position:absolute; width:170px; height:40px; top:80%; left:50%; transform:translateX(-50%); border:1px solid var(--edge-2); border-radius:50%; background:var(--surface-2); box-shadow:0 18px 0 -1px var(--bg-1),0 19px 0 var(--edge-1); }
 .home-star { position:absolute; top:16%; left:24%; font-size:30px; color:var(--accent); }
 .home-art-caption { text-align:center; position:relative; }

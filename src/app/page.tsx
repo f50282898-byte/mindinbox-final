@@ -3,6 +3,7 @@ export const runtime = 'edge';
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { UtopiaHero } from "@/components/UtopiaHero";
+import { ArtLayer } from "@/components/art/ArtLayer";
 import { SITE_URL } from "@/lib/seo";
 
 
@@ -86,6 +87,7 @@ export default function HomePage() {
         thinnest possible one and sits directly around the component that needs it.
       */}
       <div className="relative">
+        <ArtLayer id="colonnade" />
         <Suspense fallback={null}>
           <UtopiaHero />
         </Suspense>

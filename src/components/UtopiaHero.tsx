@@ -66,12 +66,59 @@ export function UtopiaHero() {
           </div>
           <fieldset className="home-lenses">
             <legend>{ar ? "اختر زاوية النظر" : "Choose your perspective"}</legend>
-            {LENSES.map((item) => <button type="button" key={item.id} aria-pressed={selectedId === item.id} onClick={() => setSelectedId(selectedId === item.id ? null : item.id)}><span aria-hidden="true">{item.symbol}</span>{ar ? item.nameAr : item.nameEn}</button>)}
+            {LENSES.map((item) => (
+              <button
+                type="button"
+                key={item.id}
+                aria-pressed={selectedId === item.id}
+                onClick={() => setSelectedId(selectedId === item.id ? null : item.id)}
+              >
+                <img
+                  src={`/images/philosophers/${item.id}-160.webp`}
+                  alt=""
+                  width={22}
+                  height={22}
+                  className="home-lens-avatar"
+                  loading="lazy"
+                />
+                <span aria-hidden="true">{item.symbol}</span>
+                {ar ? item.nameAr : item.nameEn}
+              </button>
+            ))}
           </fieldset>
         </div>
         <aside className="home-art" aria-label={ar ? "مساحة للتأمل" : "A space for reflection"}>
           <div className="home-art-index" aria-hidden="true"><span>MI / 01</span><span>THE INNER WORLD</span></div>
-          <div className="home-portal" aria-hidden="true"><div className="home-orbit" /><div className="home-sphere" /><div className="home-plinth" /><span className="home-star">✦</span></div>
+          <div className="home-portal" aria-hidden="true">
+            <div className="home-orbit" />
+            <div className="home-portal-artwork">
+              {lens ? (
+                <picture>
+                  <source srcSet={`/images/philosophers/${lens.id}-320.avif`} type="image/avif" />
+                  <source srcSet={`/images/philosophers/${lens.id}-320.webp`} type="image/webp" />
+                  <img
+                    src={`/images/philosophers/${lens.id}.webp`}
+                    alt={lens.nameAr}
+                    width={180}
+                    height={180}
+                  />
+                </picture>
+              ) : (
+                <picture>
+                  <source srcSet="/images/hero/hero-sanctuary-640.avif" type="image/avif" />
+                  <source srcSet="/images/hero/hero-sanctuary-640.webp" type="image/webp" />
+                  <img
+                    src="/images/hero/hero-sanctuary-640.webp"
+                    alt="عقل في صندوق"
+                    width={180}
+                    height={180}
+                  />
+                </picture>
+              )}
+            </div>
+            <div className="home-plinth" />
+            <span className="home-star">✦</span>
+          </div>
           <div className="home-art-caption" aria-live="polite">
             <span className="home-eyebrow">{lens ? (ar ? lens.nameAr : lens.nameEn) : (ar ? "لحظة خارج الضجيج" : "A moment beyond the noise")}</span>
             <p>{ar ? (lens?.lineAr ?? "امنح أفكارك مساحة لتتّسع.") : "Give your thoughts room to unfold."}</p>
