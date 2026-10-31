@@ -29,7 +29,7 @@ function resolveBase(override: string | undefined): string {
 
 interface GeminiChunk {
   candidates?: Array<{
-    content?: { parts?: Array<{ text?: string }> };
+    content?: { parts?: Array<{ text?: string; thought?: boolean }> };
     finishReason?: string;
   }>;
   usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
@@ -81,6 +81,9 @@ export function createGeminiAdapter(
           generationConfig: {
             temperature: call.temperature,
             maxOutputTokens: call.maxOutputTokens,
+            ...(/(?:gemini-)?2\.5/i.test(modelId)
+              ? { thinkingConfig: { thinkingBudget: 0 } }
+              : {}),
           },
         }),
         signal: call.signal,
@@ -107,6 +110,7 @@ export function createGeminiAdapter(
 
           const parts = data.candidates?.[0]?.content?.parts ?? [];
           for (const part of parts) {
+            if (part.thought) continue;
             const text = part.text ?? "";
             if (text) yield text;
           }
