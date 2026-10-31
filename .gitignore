@@ -8,6 +8,8 @@ node_modules/
 .dev.vars
 .dev.vars.*
 *.tsbuildinfo
+.agents/
+.kilo/
 
 # Playwright artifacts
 test-results/
