@@ -45,7 +45,7 @@ describe("env validation", () => {
   it("uses default models when not provided", () => {
     setRequired();
     const e = getEnv();
-    expect(e.GEMINI_MODEL).toBe("gemini-3.8-flash");
+    expect(e.GEMINI_MODEL).toBe("gemini-2.5-flash");
     expect(e.GROQ_MODEL).toBe("openai/gpt-oss-120b");
     expect(e.NVIDIA_MODEL).toBe("nvidia/nemotron-3.5-lightning-30b-a3b");
     expect(e.BYTEZ_MODEL).toBe("llama3.1-70b");
@@ -66,7 +66,10 @@ describe("env validation", () => {
   it("envLike helper exposes provider config", () => {
     setRequired();
     expect(envLike.GEMINI_API_KEY).toBeUndefined();
-    expect(envLike.GEMINI_MODEL).toBe("gemini-3.8-flash");
+    expect(envLike.GOOGLE_API_KEY).toBeUndefined();
+    expect(envLike.GOOGLE_AI_API_KEY).toBeUndefined();
+    expect(envLike.ANTHROPIC_API_KEY).toBeUndefined();
+    expect(envLike.GEMINI_MODEL).toBe("gemini-2.5-flash");
   });
 
   it("env() returns cached value on second call", () => {

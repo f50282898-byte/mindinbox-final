@@ -23,6 +23,8 @@ import { PremiumShield } from "@/components/PremiumShield";
 import { GreekColumns } from "@/components/GreekColumns";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { Logo } from "@/components/Logo";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { readErrorBody } from "@/lib/stream-client";
 
 interface LibraryItem {
   title: string;
@@ -368,6 +370,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
 
 /** Aggregates the member's own week and asks the wise for a reading. */
 function DailyAnalysis() {
+  const { user } = useAuth();
   const entries = useAppStore((s) => s.entries);
   const philosopherId = useAppStore((s) => s.philosopherId);
   const [reading, setReading] = useState<string | null>(null);
@@ -378,6 +381,7 @@ function DailyAnalysis() {
     if (!entries.length || loading) return;
     setLoading(true);
     setError(null);
+    setReading(null);
     const recent = entries.slice(0, 25);
     const transcript = recent
       .map((e) => `[${e.kind}] ${e.text}`)
@@ -385,11 +389,21 @@ function DailyAnalysis() {
       .slice(0, 3000);
 
     try {
+      let token: string | null = null;
+      if (user && "getIdToken" in (user as unknown as Record<string, unknown>)) {
+        token = await (user as unknown as { getIdToken: () => Promise<string> }).getIdToken().catch(() => null);
+      } else if (auth?.currentUser) {
+        token = await auth.currentUser.getIdToken().catch(() => null);
+      }
+
       const res = await fetch("/api/ai", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
-          philosopherId,
+          personaId: philosopherId,
           messages: [
             {
               role: "user",
@@ -398,9 +412,66 @@ function DailyAnalysis() {
           ],
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; text?: string; error?: string };
-      if (data.ok && data.text) setReading(data.text);
-      else setError(data.error ?? "تعذّر توليد القراءة.");
+
+      if (!res.ok) {
+        const data = await readErrorBody(res);
+        setError(data?.error ?? "تعذّر توليد القراءة.");
+        return;
+      }
+
+      if (!res.body) {
+        setError("انقطع الاتصال.");
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let readingText = "";
+
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          let index = buffer.indexOf("\n");
+          while (index !== -1) {
+            const line = buffer.slice(0, index).replace(/\r$/, "");
+            buffer = buffer.slice(index + 1);
+            index = buffer.indexOf("\n");
+
+            if (!line.startsWith("data:")) continue;
+            const payload = line.slice(5).trim();
+            if (!payload || payload === "[DONE]") continue;
+
+            try {
+              const parsed = JSON.parse(payload) as {
+                type?: string;
+                delta?: string;
+                text?: string;
+                message?: string;
+                error?: string;
+              };
+              if (parsed.type === "delta") {
+                const chunk = parsed.text ?? parsed.delta ?? "";
+                readingText += chunk;
+                setReading(readingText);
+              } else if (parsed.type === "error") {
+                setError(parsed.message ?? parsed.error ?? "تعذّر توليد القراءة.");
+              }
+            } catch {
+              // Ignore non-JSON line
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      if (!readingText) {
+        setError("تعذّر توليد القراءة.");
+      }
     } catch {
       setError("انقطع الاتصال.");
     } finally {

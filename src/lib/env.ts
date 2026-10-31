@@ -17,10 +17,13 @@ const envSchema = z.object({
 
   // AI providers (SECRETS — server/Worker only)
   GEMINI_API_KEY: z.string().optional(),
+  GOOGLE_API_KEY: z.string().optional(),
+  GOOGLE_AI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
   NVIDIA_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().optional(),
   BYTEZ_API_KEY: z.string().optional(),
-  GEMINI_MODEL: z.string().default("gemini-3.8-flash"),
+  GEMINI_MODEL: z.string().default("gemini-2.5-flash"),
   GROQ_MODEL: z.string().default("openai/gpt-oss-120b"),
   NVIDIA_MODEL: z.string().default("nvidia/nemotron-3.5-lightning-30b-a3b"),
   BYTEZ_MODEL: z.string().default("llama3.1-70b"),
@@ -77,8 +80,11 @@ export function env(): Env {
 /** Helper for server routes that need the raw env object. */
 export const envLike = {
   get GEMINI_API_KEY() { return env().GEMINI_API_KEY; },
+  get GOOGLE_API_KEY() { return env().GOOGLE_API_KEY; },
+  get GOOGLE_AI_API_KEY() { return env().GOOGLE_AI_API_KEY; },
   get GROQ_API_KEY() { return env().GROQ_API_KEY; },
   get NVIDIA_API_KEY() { return env().NVIDIA_API_KEY; },
+  get ANTHROPIC_API_KEY() { return env().ANTHROPIC_API_KEY; },
   get BYTEZ_API_KEY() { return env().BYTEZ_API_KEY; },
   get GEMINI_MODEL() { return env().GEMINI_MODEL; },
   get GROQ_MODEL() { return env().GROQ_MODEL; },

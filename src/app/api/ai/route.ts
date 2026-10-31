@@ -83,12 +83,30 @@ function jsonError(body: unknown, status: number, headers: Record<string, string
 /** Builds an SSE response whose body is produced by `produce`. */
 function sse(
   produce: (signal: AbortSignal, emit: (event: StreamEvent) => void) => Promise<void>,
-  extraHeaders: Record<string, string> = {}
+  extraHeaders: Record<string, string> = {},
+  requestSignal?: AbortSignal
 ): Response {
   const controller = new AbortController();
 
+  if (requestSignal) {
+    if (requestSignal.aborted) {
+      controller.abort(requestSignal.reason);
+    } else {
+      requestSignal.addEventListener("abort", () => controller.abort(requestSignal.reason), { once: true });
+    }
+  }
+
   const body = new ReadableStream<Uint8Array>({
     async start(ctrl) {
+      if (controller.signal.aborted) {
+        try {
+          ctrl.close();
+        } catch {
+          /* already closed */
+        }
+        return;
+      }
+
       const emit = (event: StreamEvent) => {
         try {
           ctrl.enqueue(frameEvent(event));
@@ -100,30 +118,36 @@ function sse(
       // When the socket dies, abort the signal. The chain passes it to every
       // upstream fetch, so a user closing the tab stops us paying for tokens
       // nobody will read.
-      controller.signal.addEventListener(
-        "abort",
-        () => {
-          try {
-            ctrl.close();
-          } catch {
-            /* already closed */
-          }
-        },
-        { once: true }
-      );
+      const onAbort = () => {
+        try {
+          ctrl.close();
+        } catch {
+          /* already closed */
+        }
+      };
+      controller.signal.addEventListener("abort", onAbort, { once: true });
 
       try {
         await produce(controller.signal, emit);
       } catch {
         /* produce() reports its own failures */
       } finally {
+        if (!controller.signal.aborted) {
+          try {
+            ctrl.enqueue(frameDone());
+          } catch {
+            /* already closed */
+          }
+        }
         try {
-          ctrl.enqueue(frameDone());
           ctrl.close();
         } catch {
           /* already closed */
         }
       }
+    },
+    cancel(reason) {
+      controller.abort(reason);
     },
   });
 
@@ -214,12 +238,18 @@ export async function POST(request: Request) {
   const settings: AiSettings = applyRemoteAiSettings(resolveAiSettings(), null);
   const role: AiRole = parsed.role ?? "chat";
 
-  // A client-supplied `system` turn is dropped in `buildMessages`; normalise the
+  // A client-supplied `system` turn is dropped here and in `buildMessages`; normalise the
   // rest here so the crisis detector sees clean roles.
-  const turns: ChatMessage[] = parsed.messages.map((m) => ({
-    role: m.role === "user" ? ("user" as const) : ("assistant" as const),
-    content: m.content,
-  }));
+  const turns: ChatMessage[] = parsed.messages
+    .filter((m) => m.role !== "system")
+    .map((m) => ({
+      role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+      content: m.content,
+    }));
+
+  if (turns.length === 0) {
+    return jsonError({ error: BODY_REJECTED_MESSAGE }, 400);
+  }
 
   /* ── 1. Wellbeing guard, before identity, quota and providers ────────────
      Someone reaching out at their worst moment should get a warm reply with
@@ -269,7 +299,8 @@ export async function POST(request: Request) {
         "x-wellbeing": severity,
         // Explicitly not metered.
         "x-quota": "not-charged",
-      }
+      },
+      request.signal
     );
   }
 
@@ -407,6 +438,7 @@ export async function POST(request: Request) {
        client does not need a second request just to learn the new count. */
     let remainingAfter: number | null = null;
     if (!entitled) {
+      if (signal.aborted) return;
       remainingAfter = await spendInteraction(key, ip).catch(() => {
         log.error("quota_spend_failed");
         return null;
@@ -425,12 +457,16 @@ export async function POST(request: Request) {
     let emitted = 0;
     let truncated = false;
 
+    if (signal.aborted) return;
     emit({ type: "delta", delta: result.first });
     emitted += result.first.length;
+    if (signal.aborted) return;
 
     try {
       for await (const chunk of result.rest) {
-        if (signal.aborted) break;
+        if (signal.aborted) {
+          return;
+        }
 
         if (emitted >= settings.maxOutputChars) {
           truncated = true;
@@ -443,8 +479,16 @@ export async function POST(request: Request) {
           emit({ type: "delta", delta: piece });
           emitted += piece.length;
         }
+
+        if (signal.aborted) {
+          return;
+        }
       }
-    } catch {
+    } catch (err) {
+      if (signal.aborted || (err as any)?.name === "AbortError") {
+        return;
+      }
+
       /* The upstream died after the user already had text on screen. End with a
          terminal error event rather than a silent truncation, so the client can
          tell the answer is incomplete instead of treating it as finished. */
@@ -469,6 +513,10 @@ export async function POST(request: Request) {
       return;
     }
 
+    if (signal.aborted) {
+      return;
+    }
+
     let usage: { promptTokens: number | null; completionTokens: number | null } | null = null;
 
     if (truncated) {
@@ -479,11 +527,14 @@ export async function POST(request: Request) {
       });
     } else {
       usage = await result.usage();
+      if (signal.aborted) return;
       emit({
         type: "done",
         usage: usage ?? { promptTokens: null, completionTokens: null },
       });
     }
+
+    if (signal.aborted) return;
 
     void recordUsage({
       provider: result.provider,
@@ -497,7 +548,7 @@ export async function POST(request: Request) {
       failure: truncated ? "output_truncated" : undefined,
       injectionFiltered: sanitised,
     });
-  }, cookieHeader);
+  }, cookieHeader, request.signal);
 }
 
 /* ── GET: configuration probe ────────────────────────────────────────────── */

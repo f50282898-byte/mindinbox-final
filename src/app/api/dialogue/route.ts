@@ -32,6 +32,8 @@ import {
 
 
 
+const EMPTY_USAGE = { promptTokens: null, completionTokens: null };
+
 const PERSONA_IDS = PERSONAS.map((p) => p.id) as string[];
 
 const personaId = z.string().refine((id) => PERSONA_IDS.includes(id), "شخصية غير معروفة");
@@ -123,15 +125,18 @@ export async function POST(request: Request): Promise<Response> {
 
     return sseResponse(
       async (signal, emit) => {
+        if (signal.aborted) return;
         emit({ type: "summary_start" });
         for (const piece of crisisReply(crisis.severity).split(/(\s+)/)) {
+          if (signal.aborted) return;
           if (piece) emit({ type: "summary_delta", delta: piece });
         }
+        if (signal.aborted) return;
         emit({ type: "summary_end" });
-        emit({ type: "done" });
-        void signal;
+        emit({ type: "done", usage: EMPTY_USAGE });
       },
-      { "x-wellbeing": crisis.severity, "x-quota": "not-charged" }
+      { "x-wellbeing": crisis.severity, "x-quota": "not-charged" },
+      request.signal
     );
   }
 
@@ -174,10 +179,11 @@ export async function POST(request: Request): Promise<Response> {
       return sseResponse(
         async (signal, emit) => {
           emit({ type: "preview_end" });
-          emit({ type: "done" });
+          emit({ type: "done", usage: EMPTY_USAGE });
           void signal;
         },
-        cookieHeader
+        cookieHeader,
+        request.signal
       );
     }
 
@@ -203,24 +209,30 @@ export async function POST(request: Request): Promise<Response> {
 
     return sseResponse(
       async (signal, emit) => {
+        if (signal.aborted) return;
         const generated = await generateThroughChain({ settings, chain, messages, signal });
+        if (signal.aborted) return;
         if (!generated.ok) {
+          if (generated.code === "cancelled") return;
           emit({ type: "error", code: generated.code, message: generated.message });
-          emit({ type: "done" });
+          emit({ type: "done", usage: EMPTY_USAGE });
           return;
         }
 
         const remaining = entitled ? null : await spend(key, ip);
+        if (signal.aborted) return;
         if (!entitled && remaining === null) {
-            emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
-            return;
-          }
-          if (remaining !== null) emit({ type: "quota", remaining });
+          emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
+          return;
+        }
+        if (remaining !== null) emit({ type: "quota", remaining });
 
+        if (signal.aborted) return;
         emit({ type: "summary_start" });
         emit({ type: "summary_delta", delta: generated.text });
+        if (signal.aborted) return;
         emit({ type: "summary_end" });
-        emit({ type: "done" });
+        emit({ type: "done", usage: EMPTY_USAGE });
 
         void recordUsage({
           provider: generated.provider,
@@ -233,7 +245,8 @@ export async function POST(request: Request): Promise<Response> {
           ok: true,
         });
       },
-      cookieHeader
+      cookieHeader,
+      request.signal
     );
   }
 
@@ -253,11 +266,13 @@ export async function POST(request: Request): Promise<Response> {
     // the only party that knows the entitlement.
     return sseResponse(
       async (signal, emit) => {
+        if (signal.aborted) return;
         if (terminalFor(entitled) === "preview_end") emit({ type: "preview_end" });
-        emit({ type: "done" });
-        void signal;
+        if (signal.aborted) return;
+        emit({ type: "done", usage: EMPTY_USAGE });
       },
-      cookieHeader
+      cookieHeader,
+      request.signal
     );
   }
 
@@ -304,6 +319,8 @@ export async function POST(request: Request): Promise<Response> {
           turns: [{ role: "user", content: parsed.question }],
         });
 
+        if (signal.aborted) return;
+
         emit({
           type: "turn_start",
           round: parsed.round,
@@ -315,25 +332,32 @@ export async function POST(request: Request): Promise<Response> {
         const generated = await generateThroughChain({ settings, chain, messages, signal });
         for (const a of generated.attempted ?? []) attempted.push(a);
 
+        if (signal.aborted) return;
+
         if (!generated.ok) {
+          if (generated.code === "cancelled") return;
           // Mid-round death. Stop cleanly instead of presenting a half-turn as a
           // whole one, which would misattribute words to a philosopher.
           emit({ type: "error", code: generated.code, message: generated.message });
-          emit({ type: "done" });
+          emit({ type: "done", usage: EMPTY_USAGE });
           return;
         }
 
         // Charge once per round, on the first real token — not on arrival, so a
         // failed chain costs the reader nothing.
         if (!charged) {
+          if (signal.aborted) return;
           charged = true;
           const remaining = entitled ? null : await spend(key, ip);
+          if (signal.aborted) return;
           if (!entitled && remaining === null) {
             emit({ type: "error", code: "provider_unavailable", message: "تعذّر تأكيد الحصة. أعد المحاولة." });
             return;
           }
           if (remaining !== null) emit({ type: "quota", remaining });
         }
+
+        if (signal.aborted) return;
 
         emit({
           type: "turn_delta",
@@ -347,11 +371,14 @@ export async function POST(request: Request): Promise<Response> {
         transcriptSoFar = `${transcriptSoFar}\n\n${speaker.persona?.nameAr ?? speaker.id}: ${generated.text}`.trim();
       }
 
+      if (signal.aborted) return;
+
       // The preview stops here — with an invitation, not a wall.
       if (parsed.round >= roundCap(entitled) && !summaryAllowed(entitled)) {
         emit({ type: "preview_end" });
       }
-      emit({ type: "done" });
+      if (signal.aborted) return;
+      emit({ type: "done", usage: EMPTY_USAGE });
 
       if (charged) {
         void recordUsage({
@@ -366,7 +393,8 @@ export async function POST(request: Request): Promise<Response> {
         });
       }
     },
-    cookieHeader
+    cookieHeader,
+    request.signal
   );
 }
 
@@ -390,6 +418,10 @@ async function generateThroughChain(args: {
   messages: Array<{ role: string; content: string }>;
   signal: AbortSignal;
 }): Promise<Generation> {
+  if (args.signal.aborted) {
+    return { ok: false, code: "cancelled", message: "تم إلغاء الطلب.", attempted: [] };
+  }
+
   const result = await runChain({
     role: "chat",
     messages: args.messages as never,
@@ -409,6 +441,10 @@ async function generateThroughChain(args: {
 
   const attempted = result.attempts.map((a) => a.provider);
 
+  if (args.signal.aborted) {
+    return { ok: false, code: "cancelled", message: "تم إلغاء الطلب.", attempted };
+  }
+
   if (!result.ok) {
     log.warn("dialogue_chain_failed", { reason: result.reason, attempted });
     return {
@@ -423,9 +459,22 @@ async function generateThroughChain(args: {
   }
 
   let text = result.first;
-  for await (const chunk of result.rest) {
-    if (args.signal.aborted) break;
-    text += chunk;
+  try {
+    for await (const chunk of result.rest) {
+      if (args.signal.aborted) {
+        return { ok: false, code: "cancelled", message: "تم إلغاء الطلب.", attempted };
+      }
+      text += chunk;
+    }
+  } catch (err) {
+    if (args.signal.aborted || (err as any)?.name === "AbortError") {
+      return { ok: false, code: "cancelled", message: "تم إلغاء الطلب.", attempted };
+    }
+    return { ok: false, code: "unavailable", message: "انقطع الاتصال بالمزود.", attempted };
+  }
+
+  if (args.signal.aborted) {
+    return { ok: false, code: "cancelled", message: "تم إلغاء الطلب.", attempted };
   }
 
   return { ok: true, text, provider: result.provider, model: result.model, attempted };
@@ -440,7 +489,14 @@ async function spend(key: string, ip: string | null): Promise<number | null> {
 
 function gate(reason: string, headers: Record<string, string>): Response {
   return jsonError(
-    { ok: false, code: "GATE", limit: FREE_INTERACTIONS, remaining: 0, reason },
+    {
+      ok: false,
+      code: "GATE",
+      error: "استنفدت المحاولات المجانية.",
+      limit: FREE_INTERACTIONS,
+      remaining: 0,
+      reason,
+    },
     402,
     headers
   );

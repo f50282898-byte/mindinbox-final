@@ -17,12 +17,12 @@ import type { AiRole } from "@/lib/ai/types";
  *  anthropic  claude-sonnet-5-5            chat         platform.claude.com/docs
  *  anthropic  claude-opus-5-5              analysis     platform.claude.com/docs
  *  anthropic  claude-haiku-4-5              admin        platform.claude.com/docs
- *  gemini     gemini-3.8-flash              chat/anal.   ai.google.dev/gemini-api/docs
- *  gemini     gemini-3.5-flash-lite         admin        ai.google.dev/gemini-api/docs
+ *  gemini     gemini-2.5-flash              chat/anal.   ai.google.dev/gemini-api/docs
+ *  gemini     gemini-2.5-flash-lite         admin        ai.google.dev/gemini-api/docs
  *  groq       openai/gpt-oss-120b           chat/anal.   console.groq.com/docs/models
  *  groq       openai/gpt-oss-20b            admin        console.groq.com/docs/models
- *  nvidia     nvidia/nemotron-3.5-lightning-30b-a3b  analysis  build.nvidia.com/models
- *  nvidia     nvidia/nemotron-3-super-120b-a12b      chat      build.nvidia.com/models
+ *  nvidia     nvidia/nemotron-3.5-lightning-30b-a3b  chat/anal.   build.nvidia.com/models
+ *  nvidia     nvidia/nemotron-3.5-lightning-30b-a3b  admin        build.nvidia.com/models
  *  bytez      (unset — provider unreachable)  —         see ORPHANS
  *
  * Groq's `llama-3.3-70b-versatile` and `llama-3.1-8b-instant` were rejected:
@@ -79,7 +79,7 @@ export const DEFAULT_AI_SETTINGS: AiSettings = {
     },
     nvidia: {
       models: {
-        chat: "nvidia/nemotron-3-super-120b-a12b",
+        chat: "nvidia/nemotron-3.5-lightning-30b-a3b",
         analysis: "nvidia/nemotron-3.5-lightning-30b-a3b",
         admin: "nvidia/nemotron-3.5-lightning-30b-a3b",
       },
@@ -90,11 +90,11 @@ export const DEFAULT_AI_SETTINGS: AiSettings = {
 
   chains: {
     // Chat is the hot path: fastest credible models first, cheapest last.
-    chat: ["gemini", "groq", "anthropic", "nvidia"],
+    chat: ["gemini", "nvidia", "groq", "anthropic"],
     // Analysis reads longer, so the strongest models lead.
-    analysis: ["anthropic", "nvidia", "gemini", "groq"],
+    analysis: ["gemini", "nvidia", "anthropic", "groq"],
     // Admin work is rare and mechanical: cheap models lead.
-    admin: ["gemini", "groq", "anthropic"],
+    admin: ["gemini", "nvidia", "groq", "anthropic"],
   },
 
   maxOutputChars: 6000,

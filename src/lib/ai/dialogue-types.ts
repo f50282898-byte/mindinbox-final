@@ -12,6 +12,8 @@
  * instant a speaker opens and never has to guess.
  */
 
+import type { Usage } from "./types";
+
 export type DialogueEvent =
   /** A speaker begins. Carries the persona so the UI can label the bubble. */
   | { type: "turn_start"; round: number; personaId: string; nameAr: string; symbol: string }
@@ -36,4 +38,4 @@ export type DialogueEvent =
   /** Terminal failure. No further events follow. */
   | { type: "error"; code: string; message: string }
   /** The response closed normally. */
-  | { type: "done" };
+  | { type: "done"; usage?: Usage | any };

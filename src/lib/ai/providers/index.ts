@@ -15,10 +15,13 @@ import type { AiSettings } from "@/lib/ai/settings";
  * failover tests can substitute fakes without a network or an API key.
  */
 
-function key(name: string): () => string | null {
+function key(...names: string[]): () => string | null {
   return () => {
-    const v = process.env[name];
-    return v && v.trim() ? v.trim() : null;
+    for (const name of names) {
+      const v = process.env[name];
+      if (v && v.trim()) return v.trim();
+    }
+    return null;
   };
 }
 
@@ -57,7 +60,10 @@ export function getAdapters(): Map<string, ProviderAdapter> {
 
   map.set(
     "gemini",
-    createGeminiAdapter(key("GEMINI_API_KEY"), baseUrl("AI_BASE_URL_GEMINI"))
+    createGeminiAdapter(
+      key("GEMINI_API_KEY", "GOOGLE_API_KEY", "GOOGLE_AI_API_KEY"),
+      baseUrl("AI_BASE_URL_GEMINI")
+    )
   );
 
   map.set(

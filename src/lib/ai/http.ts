@@ -59,44 +59,69 @@ export function jsonError(
  */
 export function sseResponse(
   produce: (signal: AbortSignal, emit: (event: AiEvent) => void) => Promise<void>,
-  extraHeaders: Record<string, string> = {}
+  extraHeaders: Record<string, string> = {},
+  requestSignal?: AbortSignal
 ): Response {
   const controller = new AbortController();
 
+  if (requestSignal) {
+    if (requestSignal.aborted) {
+      controller.abort(requestSignal.reason);
+    } else {
+      requestSignal.addEventListener("abort", () => controller.abort(requestSignal.reason), { once: true });
+    }
+  }
+
+  const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(ctrl) {
+      if (controller.signal.aborted) {
+        try {
+          ctrl.close();
+        } catch {
+          /* already closed */
+        }
+        return;
+      }
+
       const emit = (event: AiEvent) => {
         try {
-          ctrl.enqueue(new TextEncoder().encode(frameEvent(event)));
+          ctrl.enqueue(encoder.encode(frameEvent(event)));
         } catch {
           /* client already gone */
         }
       };
 
-      controller.signal.addEventListener(
-        "abort",
-        () => {
-          try {
-            ctrl.close();
-          } catch {
-            /* already closed */
-          }
-        },
-        { once: true }
-      );
+      const onAbort = () => {
+        try {
+          ctrl.close();
+        } catch {
+          /* already closed */
+        }
+      };
+      controller.signal.addEventListener("abort", onAbort, { once: true });
 
       try {
         await produce(controller.signal, emit);
       } catch {
         /* produce() reports its own failures */
       } finally {
+        if (!controller.signal.aborted) {
+          try {
+            ctrl.enqueue(encoder.encode(frameDone()));
+          } catch {
+            /* already closed */
+          }
+        }
         try {
-          ctrl.enqueue(new TextEncoder().encode(frameDone()));
           ctrl.close();
         } catch {
           /* already closed */
         }
       }
+    },
+    cancel(reason) {
+      controller.abort(reason);
     },
   });
 

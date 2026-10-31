@@ -61,8 +61,9 @@ export function createGeminiAdapter(
         }));
 
       // `alt=sse` is what makes Gemini emit SSE rather than a JSON array.
+      const modelId = call.model.trim().replace(/^models\//, "");
       const url = `${resolveBase(baseUrl?.())}/${encodeURIComponent(
-        call.model
+        modelId
       )}:streamGenerateContent?alt=sse`;
 
       const res = await fetch(url, {
@@ -86,7 +87,8 @@ export function createGeminiAdapter(
       });
 
       if (!res.ok || !res.body) {
-        throw new Error(`gemini responded ${res.status}`);
+        const errText = (await res.text().catch(() => "")).trim();
+        throw new Error(`gemini responded ${res.status}${errText ? `: ${errText.slice(0, 200)}` : ""}`);
       }
 
       let captured: Usage | null = null;

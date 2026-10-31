@@ -86,7 +86,8 @@ export function createAnthropicAdapter(
       });
 
       if (!res.ok || !res.body) {
-        throw new Error(`anthropic responded ${res.status}`);
+        const errText = (await res.text().catch(() => "")).trim();
+        throw new Error(`anthropic responded ${res.status}${errText ? `: ${errText.slice(0, 200)}` : ""}`);
       }
 
       let captured: Usage | null = null;
