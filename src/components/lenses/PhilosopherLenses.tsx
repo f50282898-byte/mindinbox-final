@@ -111,24 +111,24 @@ export function PhilosopherLenses({ selected, onSelect, compact = false }: Philo
                   className="display-arabic flex flex-wrap items-baseline gap-x-2 font-bold text-gold-light"
                 >
                   {lens.nameAr}
-                  <span className="display-latin text-[10px] tracking-widest text-gold-muted/80">
+                  <span className="display-latin text-[10px] tracking-widest text-gold-muted">
                     {lens.nameEn}
                   </span>
                 </span>
                 {/* The school of thought — the reason to pick this lens over another. */}
-                <span className="display-arabic mt-0.5 block text-[11px] tracking-[0.22em] uppercase text-gold-muted/80">
+                <span className="display-arabic mt-0.5 block text-[11px] tracking-[0.22em] uppercase text-gold-muted">
                   {lens.epithetAr}
                 </span>
               </span>
 
               {/* The documented line — a verified quote where one exists. */}
               <span
-                className="display-arabic mt-2 block text-[0.92rem] leading-relaxed text-gold-muted/80 italic"
+                className="display-arabic mt-2 block text-[0.92rem] leading-relaxed text-gold-muted italic"
               >
                 {lens.lineIsQuote ? `«${lens.lineAr}»` : lens.lineAr}
               </span>
               {lens.lineIsQuote && lens.attributionAr && (
-                <span className="display-latin mt-1 text-[10px] tracking-widest text-gold-muted/80">
+                <span className="display-latin mt-1 text-[10px] tracking-widest text-gold-muted">
                   {lens.attributionAr}
                 </span>
               )}

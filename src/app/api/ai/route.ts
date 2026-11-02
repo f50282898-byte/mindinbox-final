@@ -8,6 +8,7 @@ import { DEFAULT_PERSONA_ID, getPersona, PERSONAS } from "@/lib/ai/personas";
 import { usableChain } from "@/lib/ai/providers";
 import { AI_DISCLOSURE_AR, buildSystemPrompt } from "@/lib/ai/prompts";
 import { applyRemoteAiSettings, resolveAiSettings, type AiSettings } from "@/lib/ai/settings";
+import { verifyArabicCitation } from "@/lib/ai/verify-citation";
 import { frameDone, frameEvent } from "@/lib/ai/sse";
 import { buildMessages } from "@/lib/ai/safety/injection";
 import { BODY_REJECTED_MESSAGE, bodyErrorStatus, readJsonBody } from "@/lib/security/body";
@@ -130,7 +131,9 @@ function sse(
       try {
         await produce(controller.signal, emit);
       } catch {
-        /* produce() reports its own failures */
+        if (!controller.signal.aborted) {
+          emit({ type: "error", code: "upstream_error", message: "تعذّر إكمال الرد. أعد المحاولة." });
+        }
       } finally {
         if (!controller.signal.aborted) {
           try {
@@ -188,7 +191,7 @@ const ANON_COOKIE_MAX_AGE = 30 * 24 * 3600;
  */
 function resolveAnonIdentity(request: Request): { key: string; setCookie: string | null } {
   const cookieHeader = request.headers.get("cookie") ?? "";
-  const existing = new RegExp(`${ANON_COOKIE}=([a-f0-9]{32})`).exec(cookieHeader);
+  const existing = new RegExp(`(?:^|;\\s*)${ANON_COOKIE}=([a-f0-9]{32})(?:;|$)`).exec(cookieHeader);
 
   // Verify strict format: `anon-` followed by exactly 32 hex characters.
   // Any other value (longer, shorter, non-hex, or a different prefix) is
@@ -247,7 +250,7 @@ export async function POST(request: Request) {
       content: m.content,
     }));
 
-  if (turns.length === 0) {
+  if (turns.at(-1)?.role !== "user" || !turns.at(-1)?.content.trim()) {
     return jsonError({ error: BODY_REJECTED_MESSAGE }, 400);
   }
 
@@ -333,11 +336,14 @@ export async function POST(request: Request) {
   /* ── Burst rate limit: 8 requests per minute per key/IP ───────────────── */
   if (!checkBurst(key, ip)) {
     return jsonError(
-      { ok: false, code: "RATE_LIMITED", error: "عديد الطلبات. انتظر قليلاً ثم أعد المحاولة." },
+      { ok: false, code: "RATE_LIMITED", error: "وصلت طلبات كثيرة خلال دقيقة. انتظر قليلاً ثم أعد المحاولة." },
       429,
       cookieHeader
     );
   }
+
+  const citation = verifyArabicCitation(turns[turns.length - 1].content);
+  if (citation) return sse(async (_signal, emit) => emitStatic(citation, emit), cookieHeader, request.signal);
 
   if (!entitled) {
     const decision = await checkQuota(key, ip).catch(() => null);
@@ -369,7 +375,7 @@ export async function POST(request: Request) {
 
   const persona = getPersona(parsed.personaId ?? DEFAULT_PERSONA_ID);
   const { messages, sanitised } = buildMessages({
-    system: buildSystemPrompt({ persona }),
+    system: buildSystemPrompt({ persona, extraRules: ["اتبع طول الإجابة الذي طلبه السائل. عند غياب تحديد، اكتفِ بفكرة واحدة ومثال قصير وسؤال للتأمل في نحو 120 كلمة."] }),
     turns,
   });
 
@@ -380,7 +386,8 @@ export async function POST(request: Request) {
       emit({ type: "quota", remaining: FREE_INTERACTIONS });
     }
     const quotaAbort = new AbortController();
-    const upstreamSignal = AbortSignal.any([signal, quotaAbort.signal]);
+    if (signal.aborted) return;
+    signal.addEventListener("abort", () => quotaAbort.abort(), { once: true });
     const result = await runChain({
       role,
       messages,
@@ -395,7 +402,7 @@ export async function POST(request: Request) {
       },
       maxOutputChars: settings.maxOutputChars,
       temperature: 0.85,
-      signal: upstreamSignal,
+      signal: quotaAbort.signal,
     });
 
     if (!result.ok) {
@@ -458,8 +465,10 @@ export async function POST(request: Request) {
     let truncated = false;
 
     if (signal.aborted) return;
-    emit({ type: "delta", delta: result.first });
-    emitted += result.first.length;
+    const firstPiece = result.first.slice(0, settings.maxOutputChars);
+    emit({ type: "delta", delta: firstPiece });
+    emitted += firstPiece.length;
+    truncated = firstPiece.length < result.first.length;
     if (signal.aborted) return;
 
     try {
@@ -478,6 +487,10 @@ export async function POST(request: Request) {
         if (piece) {
           emit({ type: "delta", delta: piece });
           emitted += piece.length;
+          if (piece.length < chunk.length) {
+            truncated = true;
+            break;
+          }
         }
 
         if (signal.aborted) {

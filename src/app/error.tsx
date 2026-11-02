@@ -33,7 +33,7 @@ export default function Error({
       <h1 className="display-arabic mt-4 text-3xl font-bold text-gold-light">
         حدث خطأ في هذه الصفحة
       </h1>
-      <p className="mt-3 leading-relaxed text-gold-muted/70">
+      <p className="mt-3 leading-relaxed text-gold-muted">
         Something went wrong on this page. Your writing has not been lost.
       </p>
       {error.digest && (

@@ -1,16 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { DesktopHeader, MobileHeader, MobileBottomBar } from "@/components/Header";
+import { DesktopHeader, MobileHeader } from "@/components/Header";
+import { MobileBottomBar } from "@/components/MobileBottomBar";
 import { Footer } from "@/components/Footer";
 import { CHROMELESS_ROUTES } from "@/lib/nav";
 
 /**
- * Renders the navigation chrome only on routes that want it.
+ * ShellChrome
  *
- * The landing page is deliberately chromeless: no header, no footer, one
- * button forward. Kept as a client component because deciding on the pathname
- * is the only way to vary chrome per route without duplicating the layout.
+ * Controls layout chrome per route.
+ * Invariants:
+ * 1. Single <main id="main"> landmark across all routes (T1.1.1).
+ * 2. Client hydration handshake data-hydrated="1" (T1.1.2).
+ * 3. Skip-link destination resolves to #main with proper tabIndex={-1} (T1.1.3).
+ * 4. Silk spring view transitions on navigation.
  */
 export function ShellChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,21 +23,46 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     (r) => pathname === r || pathname.startsWith(`${r}/`)
   );
 
-  /*
-    Exactly one `<main>` per document, in both branches.
+  // Redundant client hydration handshake guarantee (T1.1.2)
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.dataset.hydrated = "1";
+    }
+  }, []);
 
-    This component is the single owner of the main landmark. The root layout used
-    to render a second `<main id="main">` of its own, which produced two elements
-    sharing the id on every non-chromeless route — and left the chromeless branch
-    with none, because it returned `children` bare. Pages must therefore render a
-    plain `<div>` and never their own `<main>`.
+  // Apple-grade silk spring view transition animation on route changes
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      return;
+    }
 
-    `id="main"` is also the target of the skip-link in `layout.tsx`; a duplicate
-    made that link resolve to whichever copy came first in the DOM.
-  */
+    const main = document.getElementById("main");
+    if (!main || typeof main.animate !== "function") return;
+
+    const animation = main.animate(
+      [
+        { opacity: 0.72, transform: "translateY(6px) scale(0.998)" },
+        { opacity: 1, transform: "translateY(0) scale(1)" },
+      ],
+      {
+        duration: 220,
+        easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+      }
+    );
+
+    return () => animation.cancel();
+  }, [pathname]);
+
   if (chromeless) {
     return (
-      <main id="main" className="shell-content min-h-screen pb-24 md:pb-0 overflow-x-hidden">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="shell-content min-h-screen pb-24 md:pb-0 overflow-x-hidden outline-none"
+      >
         {children}
         <MobileBottomBar />
       </main>
@@ -43,7 +73,11 @@ export function ShellChrome({ children }: { children: React.ReactNode }) {
     <>
       <DesktopHeader />
       <MobileHeader />
-      <main id="main" className="shell-content min-h-screen pt-20 pb-28 md:pb-0 overflow-x-hidden">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="shell-content min-h-screen pt-20 pb-28 md:pb-0 overflow-x-hidden outline-none"
+      >
         {children}
         <MobileBottomBar />
       </main>

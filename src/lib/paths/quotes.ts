@@ -84,27 +84,27 @@ export type Quote = z.infer<typeof quoteSchema>;
 export const QUOTES: Quote[] = [
   {
     id: "socrates-unknownness",
-    textAr: "لم أعرف بعد أني لا أعرف.",
+    textAr: "لا أعلم، ولا أظنّ أني أعلم.",
     authorAr: "سقراط",
-    workAr: "دفاع أفلاطون",
-    locator: "117a",
+    workAr: "دفاع سقراط",
+    locator: "21d",
     language: "ar",
     verified: true,
-    translatorNoteAr: "ترجمة عربية عن اليونانية، على لسان سقراط في محاكاة أفلاطون.",
+    translatorNoteAr: "صياغة عربية عن ترجمة بنجامين جويت، على لسان سقراط في رواية أفلاطون.",
     sourceNote:
-      "Plato, Apology 117a. The fuller form is 'I did not know that I did not know'; the short form above is the compressed Arabic rendering.",
+      "Plato, Apology 21d: https://classics.mit.edu/Plato/apology.html",
   },
   {
     id: "rumi-water",
-    textAr: "الماء لا يخرج من الماء، والماء يدخل من الماء.",
+    textAr: "أصغِ إلى هذا الناي كيف يشكو، وكيف يحكي عن الفراق.",
     authorAr: "الرومي",
-    workAr: "ديوان شمس",
-    locator: "دون رقم سطر موحّد",
+    workAr: "المثنوي",
+    locator: "الدفتر الأول، البيت الأول",
     language: "ar",
     verified: true,
-    translatorNoteAr: "صياغة عربية شائعة للتعبير المائي عند الرومي.",
+    translatorNoteAr: "ترجمة عربية لمطلع قصيدة الناي عن الفارسية.",
     sourceNote:
-      "Attributed to Rumi in the Divan-e Shams. The line circulates in many near-identical forms and no consensus line number exists, so the locator says so honestly rather than inventing a precise-looking number.",
+      "Masnavi I.1: https://ganjoor.net/moulavi/masnavi/daftar1/sh1",
   },
   {
     id: "aurelius-obstacle",

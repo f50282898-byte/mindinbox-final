@@ -1,62 +1,112 @@
-# Project: mindinbox-final
+# Project: mindinbox-final — The Living Sanctuary
 
 ## Architecture
 - **Framework & Runtime**: Next.js 14.2.35 on Cloudflare Pages using `@cloudflare/next-on-pages` (v1.13.16) and Edge Runtime (`export const runtime = 'edge'`).
-- **AI Core (`src/lib/ai/`)**:
-  - `settings.ts`: Default provider settings, active model IDs, and failover chains (`chat`, `analysis`, `admin`).
-  - `providers/`: Adapter layer for Google Gemini (`gemini.ts`), Anthropic (`anthropic.ts`), and OpenAI-compatible providers (`openai-compatible.ts` for NVIDIA, Groq, Bytez).
-  - `chain.ts` & `breaker.ts`: Fallback failover engine and circuit breaker for multi-provider resilience.
-  - `http.ts` & `sse.ts`: Server-Sent Events (SSE) streaming helpers over standard Web `ReadableStream`.
-- **API Entrypoints (`src/app/api/`)**:
-  - `/api/ai`: Primary AI chat and single-persona generation endpoint with streaming SSE responses, quota enforcement, and identity resolution.
-  - `/api/dialogue`: Multi-persona philosophical dialogue endpoint orchestrating multi-round interactions.
-- **Client Integration**:
-  - `src/components/MemberLibrary.tsx`: Consumes AI services for member daily analyses and readings.
+- **Design Philosophy**: "The Living Sanctuary" — Apple-grade luxury digital craftsmanship balancing contemplative stillness with advanced interactive engineering. Dual aesthetic: **Luminous Obsidian** (Dark mode `#06070B`) and **Modern Parchment** (Light mode `#f4efe4`).
+- **Typography Engine**:
+  - `IBM Plex Sans Arabic`: Clean, readable primary UI typography.
+  - `Amiri`: Classical Arabic display typography for titles, philosophical aphorisms, and sacred quotes.
+  - `Cinzel`: Classical Latin display typography.
+  - Relaxed line-heights (`--leading-relaxed: 1.85`) and fluid clamp scales (`--text-xs` through `--text-4xl`).
+- **Material & Lighting System**:
+  - Multi-tier frosted glassmorphism: `surface-glass-subtle` and `surface-glass-elevated`.
+  - Specular hairline highlights (`box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08)`).
+  - Light-source responsive hairline borders (`border-hairline`, `border-specular`).
+- **Authentic Cinematic Asset Pipeline**:
+  - Pure WebP and AVIF formats with responsive srcset variants (640w, 768w, 1280w, 1920w).
+  - Strict prohibition of dummy geometric cubes (`SpatialBox.tsx`), procedural CSS colonnades (`GreekColumns.tsx`), and flat SVG vector shapes (`stoa-night/day.svg`).
+  - Next.js Edge-compatible `<picture>` responsive delivery with graceful focal alignment and scrim lighting gradients.
+- **Client & State Architecture**:
+  - App Shell: `ShellChrome`, `Header` (Desktop & Mobile), `MobileBottomBar` (5-slot grid, safe areas), `Footer`.
+  - State stores: Zustand (`mindinbox-store` v2 with localStorage sync), React Contexts (`ThemeContext`, `LocaleContext`, `AuthContext`).
+- **Functional Integrity & Edge Security**:
+  - 100% preservation of all 14 API routes in `src/app/api/`.
+  - Firebase Auth via Edge-compatible `jose` RS256 JWT verification (`requireUser`, `requireAdmin`, `requireRecentAuthentication`).
+  - Subscription entitlement engine (`getEntitlements`, Firestore billing state, trial period).
+  - Streaming AI Engine: Server-Sent Events (SSE) with robust `AbortSignal` cancellation and zero unhandled rejections.
+
+---
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source |
 |---|---------|-------------|-----------|--------|
-| 1 | Google Gemini Model Harmonization | Set valid, officially supported models (`gemini-2.5-flash` / `gemini-2.0-flash` / `gemini-1.5-flash`), clean `models/` prefix in `gemini.ts` | M1 | survey_1, survey_2 |
-| 2 | Google API Key Multi-env Fallback | Support `GEMINI_API_KEY`, `GOOGLE_API_KEY`, and `GOOGLE_AI_API_KEY` in `src/lib/ai/providers/index.ts` | M1 | survey_1 |
-| 3 | NVIDIA Model & Failover Chain Repair | Set working `nvidia/nemotron-3.5-lightning-30b-a3b` in NVIDIA provider settings and place NVIDIA immediately after Gemini in failover chains | M1 | survey_1 |
-| 4 | Adapter Error Observability | Capture `await res.text()` on non-200 responses across all provider adapters for detailed error reporting | M1 | survey_1 |
-| 5 | Environment & Config Drift Harmonization | Reconcile model defaults across `settings.ts`, `src/lib/env.ts`, `.env.example`, and documentation | M1 | survey_1 |
-| 6 | AbortSignal Client Disconnect Handling | Implement `cancel(reason)` in `ReadableStream` inside `/api/ai` and `src/lib/ai/http.ts` to abort upstream fetches on disconnect | M2 | survey_2 |
-| 7 | MemberLibrary SSE Integration | Fix `MemberLibrary.tsx` to consume SSE streams correctly, send `personaId`, and include auth headers | M2 | survey_2 |
-| 8 | Client System Message Sanitization | Ensure client-provided `system` role turns are properly filtered or ignored rather than converted to assistant turns | M2 | survey_2 |
-| 9 | Dialogue Gate Response Parity | Add `error: "استنفدت المحاولات المجانية."` to gate response in `/api/dialogue/route.ts` | M2 | survey_2 |
-| 10 | TypeScript & Quality Gate Validation | Verify that `npx tsc --noEmit`, `next lint`, and project quality scripts pass without errors | M2 | survey_2, survey_3 |
-| 11 | Cloudflare Pages Build Configuration | Validate Next.js edge build (`next build`, `wrangler.json`, Pages build environment) | M3 | survey_3 |
-| 12 | Post-Deployment AI Effectiveness Verification | Verify `/api/ai` and `/api/dialogue` live response generation with 100% effectiveness | M3 | survey_3, ORIGINAL_REQUEST |
+| 1 | Luxury Design Token Engine | Calibrate frosted glassmorphism, specular hairline highlights, and solid contrast tokens (`text-ink-1`, `text-ink-2`, `text-ink-3`) across `globals.css`, `studio.css`, and `tailwind.config.ts` | M1 | survey_ui, survey_qa |
+| 2 | Typography & RTL Parity | Refine Amiri and IBM Plex Sans Arabic fluid clamp typography; fix `Footer.tsx` hardcoded Arabic labels in English mode | M1 | survey_ui |
+| 3 | Eliminate Procedural Wireframes | Replace `SpatialBox.tsx` (CSS wireframe cube), `GreekColumns.tsx` (CSS gradient colonnade), and `.stoa-art` (SVG wireframes) with authentic cinematic imagery | M1 | survey_assets |
+| 4 | Route Atmospheric Asset Production | Produce authentic responsive WebP/AVIF imagery for `/quotes`, `/pricing`, `/account`, and dedicated `/sanctum` vs `/oracle` | M1 | survey_assets |
+| 5 | Canonical Philosopher Portrait Gallery | Expand persona portraits from 4 to 17 canonical thinkers (Socrates, Nietzsche, Marcus Aurelius, Ibn Rushd, Al-Ghazali, Aristotle, Avicenna, Spinoza, etc.) in WebP/AVIF | M1 | survey_assets |
+| 6 | Asset Pipeline & Manifest Repair | Repair `art-manifest.json`, integrate responsive `<picture>` helpers, and fix missing build assets (`scripts/make-og.mjs`) | M1 | survey_assets |
+| 7 | Apple-Grade App Shell Redesign | Refine `Header.tsx`, `MobileBottomBar`, `ShellChrome.tsx`, and `Footer.tsx` with frosted glass, 44×44px touch targets, and silk spring transitions | M2 | survey_ui, survey_qa |
+| 8 | UtopiaHero & Editorial Narrative Overhaul | Overhaul Home page: Hero with philosopher lenses, 3 Practices, Reading Table, Argument Lab, and Film Screenings with luxury micro-interactions | M2 | survey_ui |
+| 9 | Wisdom Chat Sanctuary (`/wisdom`) | Redesign `/wisdom` with Apple Books/Mindfulness elegance, preserving streaming, bubbles, `#wisdom-input`, quota meter, and response actions | M3 | survey_ui, survey_qa |
+| 10 | Dialogue Amphitheater (`/dialogue`) | Redesign `/dialogue` 2-philosopher debate arena, preserving debate engine, 3 alternating rounds, reader interjection, and synthesis | M3 | survey_ui, survey_qa |
+| 11 | Reflective Journal Sanctuary (`/journal`) | Redesign `/journal` with luxury Moleskine aesthetic, preserving local-first + Firestore sync, categories, note drawer, and AI consent toggle | M3 | survey_ui, survey_qa |
+| 12 | Growth & Habit Tracker (`/tracker`) | Redesign `/tracker` interactive dials, Framer Motion 7-day gold chart, streaks, and habit logging | M3 | survey_ui, survey_qa |
+| 13 | Verified Quotes Sanctuary (`/quotes`) | Redesign `/quotes` with atmospheric backdrop, multi-template card generator (gold-black, parchment, minimal), and watermark gate | M3 | survey_ui, survey_qa |
+| 14 | Pathways & Journey Map (`/paths`) | Redesign `/paths` learning journey maps, interactive milestone nodes, and deep links to Oracle & Sanctum | M3 | survey_ui, survey_qa |
+| 15 | Transparent Pricing Sanctuary (`/pricing`) | Redesign `/pricing` transparent 3-column membership cards, distinct tier insignia, and honest pricing presentation | M4 | survey_ui, survey_qa |
+| 16 | The Oracle Manuscript Sanctuary (`/oracle`) | Redesign `/oracle` exclusive manuscript library, daily philosopher analysis, and PDF downloads | M4 | survey_ui, survey_qa |
+| 17 | The Sanctum Chamber (`/sanctum`) | Redesign `/sanctum` bespoke luxury chamber ($100/mo), vintage gold-framed video player, and private Sanctum Circle board | M4 | survey_ui, survey_qa |
+| 18 | Sanctuary Gates Authentication (`/enter`) | Redesign `/enter` luxury authentication panel, 4 auth modes, Turnstile bot protection, and guest account linking | M4 | survey_ui, survey_qa |
+| 19 | Account & Data Portability (`/account`) | Redesign `/account` user profile, subscription status, bilingual preferences, JSON export, and secure deletion | M4 | survey_ui, survey_qa |
+| 20 | Automated E2E & Quality Baseline Hardening | Execute full Playwright E2E test suite, Vitest suite (430+ tests), build/lint/typecheck, WCAG 2.2 AA contrast/touch target verification | M5 | survey_qa |
+
+---
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | AI Models, Adapters, Settings & Failover Chains | F1, F2, F3, F4, F5: `settings.ts`, `providers/gemini.ts`, `providers/index.ts`, `providers/openai-compatible.ts`, `src/lib/env.ts` | none | DONE |
-| M2 | API Routes, Streams, Client Integration & Types | F6, F7, F8, F9, F10: `/api/ai/route.ts`, `/api/dialogue/route.ts`, `src/lib/ai/http.ts`, `MemberLibrary.tsx`, TypeScript validation | M1 | IN_PROGRESS |
-| M3 | Cloudflare Pages Build, Deployment & Live Verification | F11, F12: Next edge build, Cloudflare Pages deployment verification, live AI API calls | M2 | PLANNED |
+| M1 | Design Tokens, Typography, Materials & Cinematic Assets | F1, F2, F3, F4, F5, F6: tokens, typography, asset generation, wireframe elimination, manifest | none | DONE |
+| M2 | App Shell & Editorial Home Experience | F7, F8: Header, MobileBottomBar, ShellChrome, Footer, UtopiaHero, micro-interactions | M1 | IN_PROGRESS |
+| M3 | Core Intelligence & Reflection Pages | F9, F10, F11, F12, F13, F14: `/wisdom`, `/dialogue`, `/journal`, `/tracker`, `/quotes`, `/paths` | M1, M2 | PLANNED |
+| M4 | Gateways, Commerce & Sanctuary Pages | F15, F16, F17, F18, F19: `/pricing`, `/oracle`, `/sanctum`, `/enter`, `/account` | M1, M2 | PLANNED |
+| M5 | Quality Hardening, E2E Verification & Build Compliance | F20: Playwright E2E suites, WCAG 2.2 AA audit, Next.js Edge build, 100% pass | M3, M4 | PLANNED |
+
+---
 
 ## Interface Contracts
-### `src/lib/ai/settings.ts` ↔ `src/lib/ai/providers/`
-- `DEFAULT_AI_SETTINGS.providers[id].models`:
-  - `gemini`: `{ chat: "gemini-2.5-flash", analysis: "gemini-2.5-flash", admin: "gemini-2.5-flash-lite" }` (or active supported variants)
-  - `nvidia`: `{ chat: "nvidia/nemotron-3.5-lightning-30b-a3b", analysis: "nvidia/nemotron-3.5-lightning-30b-a3b", admin: "nvidia/nemotron-3.5-lightning-30b-a3b" }`
-- `DEFAULT_AI_SETTINGS.chains`:
-  - `chat`: `["gemini", "nvidia", "groq", "anthropic"]`
-  - `analysis`: `["gemini", "nvidia", "anthropic", "groq"]`
-  - `admin`: `["gemini", "nvidia", "groq", "anthropic"]`
 
-### `src/lib/ai/` ↔ `src/app/api/ai/` & `src/app/api/dialogue/`
-- `runChain(...)` returns `AsyncGenerator<StreamEvent>` where events are `{ type: "delta", text }`, `{ type: "reasoning", text }`, `{ type: "done" }`.
-- Route sends `Content-Type: text/event-stream; charset=utf-8` with SSE formatted data.
-- Upstream fetch receives `signal: controller.signal` where `controller.abort()` is triggered when client stream cancels.
+### Design Tokens & Materials (`src/app/globals.css` & `src/app/studio.css`)
+- **Theme Variables**:
+  - Obsidian (Dark): `--bg-0: #06070B`, `--bg-1: #0D1017`, `--bg-2: #141824`, `--surface-1: rgba(255,255,255,0.04)`, `--surface-2: rgba(255,255,255,0.07)`, `--gold: 212 175 55`.
+  - Parchment (Light): `--bg-0: #f4efe4`, `--bg-1: #ece5d6`, `--bg-2: #e3dac7`, `--surface-1: rgba(255,253,247,0.62)`, `--surface-2: rgba(255,253,247,0.86)`, `--gold: 111 86 17`.
+  - Specular Hairline: `box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08)`.
+  - Hairline Border: `border-color: rgba(var(--gold), 0.15)` dark, `rgba(var(--gold), 0.22)` light.
+
+### Asset Manifest & Picture Delivery Contract (`src/components/art/ArtLayer.tsx`)
+- All visual artworks delivered via `<picture>` elements with:
+  - `<source type="image/avif" srcSet="...">`
+  - `<source type="image/webp" srcSet="...">`
+  - `<img loading="lazy" decoding="async" ... />` (or `loading="eager"` / `fetchPriority="high"` for hero/header backgrounds).
+  - Explicit aspect ratios and dimensions to guarantee **Zero CLS** (< 0.01).
+
+### DOM Selector Contracts for Playwright E2E Tests
+- `document.documentElement.dataset.hydrated === "1"` must be set upon client mount in `AppShell.tsx`.
+- Single `<main id="main">` landmark in `ShellChrome.tsx`.
+- `/wisdom`: `[data-streaming]`, `[data-bubbles]`, `#wisdom-input`, `button:has-text("أرسل")`, `[role="radiogroup"][aria-label="اختر فيلسوفك"]`.
+- `/dialogue`: `h1:has-text("الحوار")`, `textarea[aria-label="سؤالك"]`, `p:has-text("⇄")`, `article h2`.
+- `/quotes`: `li[data-quote-id]`, `button:has-text("ذهبي-أسود")`, `button:has-text("ورقي")`, `button:has-text("أضف للمفضّلة")`.
+- Mobile touch targets: All interactive elements must satisfy `min-h-[44px] min-w-[44px]`.
+
+---
 
 ## Code Layout
-- `src/lib/ai/settings.ts`: AI configuration and defaults
-- `src/lib/ai/providers/`: Provider adapters (`gemini.ts`, `openai-compatible.ts`, `anthropic.ts`, `index.ts`)
-- `src/lib/ai/chain.ts`: Failover chain logic
-- `src/lib/ai/http.ts`: SSE response helpers
-- `src/app/api/ai/route.ts`: Single chat / persona API
-- `src/app/api/dialogue/route.ts`: Multi-persona dialogue API
-- `src/components/MemberLibrary.tsx`: Member library UI calling `/api/ai`
-- `wrangler.json`: Cloudflare Pages configuration
+- `src/app/globals.css`: Master design tokens, CSS variables, typography clamp scales, glassmorphism utilities.
+- `src/app/studio.css`: Editorial layout styles, narrative sections, micro-interaction physics.
+- `tailwind.config.ts`: Tailwind configuration bound to dynamic theme RGB triplets.
+- `public/art/`: Optimized responsive WebP and AVIF background artworks and textures.
+- `public/images/philosophers/`: Canonical philosopher portrait gallery (17 thinkers in responsive WebP/AVIF).
+- `src/components/ShellChrome.tsx`, `Header.tsx`, `Footer.tsx`: App Shell navigation and frame.
+- `src/components/UtopiaHero.tsx`: Editorial narrative Home page experience.
+- `src/components/WisdomChat.tsx`: `/wisdom` AI single-persona dialogue.
+- `src/components/Dialogue.tsx`: `/dialogue` 2-philosopher debate arena.
+- `src/components/journal/`: `/journal` reflective notes and drawer.
+- `src/components/DailyTracker.tsx`: `/tracker` habit/mood tracking and gold chart.
+- `src/components/quotes/`: `/quotes` aphorism sanctuary and card generator.
+- `src/app/paths/`: `/paths` philosophical journey map.
+- `src/components/PricingGrid.tsx`: `/pricing` honest pricing tiers.
+- `src/components/MemberLibrary.tsx`: `/oracle` & `/sanctum` member sanctuary experiences.
+- `src/components/AuthPanel.tsx`: `/enter` sanctuary gates authentication.
+- `src/components/AccountPanel.tsx`: `/account` user profile, data portability & preferences.
+- `e2e/`: Playwright end-to-end verification suites.
+- `tests/`: Vitest unit and stress test suites.

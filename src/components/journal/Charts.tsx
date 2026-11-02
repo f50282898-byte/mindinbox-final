@@ -342,7 +342,7 @@ export function VirtueRadar({
         })}
       </svg>
 
-      <figcaption className="display-arabic mt-2 text-center text-xs leading-relaxed text-gold-muted/60">
+      <figcaption className="display-arabic mt-2 text-center text-xs leading-relaxed text-gold-muted">
         {rated.length === 0 ? (
           "لم تُقيَّم أي فضيلة بعد."
         ) : thin ? (
@@ -426,7 +426,7 @@ export function HabitEnergyScatter({
           );
         })}
       </svg>
-      <figcaption className="display-arabic mt-2 text-xs leading-relaxed text-gold-muted/60">
+      <figcaption className="display-arabic mt-2 text-xs leading-relaxed text-gold-muted">
         {caption[wording]}
       </figcaption>
       {/* The disclaimer is part of the chart, not a footnote. */}

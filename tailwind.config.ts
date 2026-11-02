@@ -46,6 +46,31 @@ const config: Config = {
           solid: "var(--surface-solid)",
         },
       },
+      borderColor: {
+        hairline: "var(--border-hairline)",
+        specular: "var(--border-specular)",
+      },
+      boxShadow: {
+        specular: "var(--specular-hairline)",
+        "glass-subtle": "var(--specular-hairline), var(--shadow-1)",
+        "glass-elevated": "var(--specular-hairline), var(--shadow-2)",
+      },
+      maxWidth: {
+        sanctuary: "1280px",
+        editorial: "840px",
+        compact: "540px",
+      },
+      fontSize: {
+        xs: ["var(--text-xs)", { lineHeight: "var(--leading-normal)" }],
+        sm: ["var(--text-sm)", { lineHeight: "var(--leading-normal)" }],
+        base: ["var(--text-base)", { lineHeight: "var(--leading-relaxed)" }],
+        md: ["var(--text-md)", { lineHeight: "var(--leading-snug)" }],
+        lg: ["var(--text-lg)", { lineHeight: "var(--leading-snug)" }],
+        xl: ["var(--text-xl)", { lineHeight: "var(--leading-tight)" }],
+        "2xl": ["var(--text-2xl)", { lineHeight: "var(--leading-tight)" }],
+        "3xl": ["var(--text-3xl)", { lineHeight: "var(--leading-tight)" }],
+        "4xl": ["var(--text-4xl)", { lineHeight: "var(--leading-tight)" }],
+      },
       /*
        * Driven by the same `next/font` variables `globals.css` consumes, so a
        * family is named in exactly one place. The concrete names stay in the chain
@@ -56,6 +81,9 @@ const config: Config = {
         sans: ["var(--font-plex-arabic)", "Cairo", "system-ui", "sans-serif"],
         serif: ["var(--font-cinzel)", "Playfair Display", "Georgia", "serif"],
         naskh: ["var(--font-amiri)", "Cairo", "serif"],
+        amiri: ["var(--font-amiri)", "Cairo", "serif"],
+        cinzel: ["var(--font-cinzel)", "Playfair Display", "Georgia", "serif"],
+        plex: ["var(--font-plex-arabic)", "Cairo", "system-ui", "sans-serif"],
       },
       transitionTimingFunction: {
         silk: "cubic-bezier(0.22, 1, 0.36, 1)",

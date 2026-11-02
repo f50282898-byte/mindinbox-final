@@ -99,7 +99,7 @@ export function AssistantPanel() {
         >
           {busy ? "جارٍ…" : "اسأل"}
         </button>
-        <p className="text-xs text-gold-muted/60">
+        <p className="text-xs text-gold-muted">
           يقرأ أرقاماً مجمّعة وإعدادات فقط. لا يقرأ محادثات أو يوميات.
         </p>
       </div>
@@ -111,7 +111,7 @@ export function AssistantPanel() {
       )}
 
       {available === false && (
-        <p className="rounded-lg border border-white/10 p-3 text-xs text-gold-muted/70">
+        <p className="rounded-lg border border-white/10 p-3 text-xs text-gold-muted">
           لم يُضبط مزوّد ذكاء في هذه البيئة، فيُرجَع ردّ فارغ بدل إجابة مُختلقة. هذا مقصود:
           تحليل قمع التحويل المُختلق أسوأ من «غير متاح».
         </p>
@@ -121,29 +121,29 @@ export function AssistantPanel() {
         <ul className="flex flex-col gap-3">
           {proposals.map((p) => (
             <li key={p.path} className="rounded-xl border border-white/10 p-3">
-              <p dir="ltr" className="text-xs text-gold-muted/60">
+              <p dir="ltr" className="text-xs text-gold-muted">
                 {p.path}
               </p>
               <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                 <div className="rounded-lg border border-white/10 p-2">
-                  <p className="text-xs text-gold-muted/60">قبل</p>
+                  <p className="text-xs text-gold-muted">قبل</p>
                   <p dir="auto" className="mt-1 text-gold-muted">
                     {p.before}
                   </p>
                 </div>
                 <div className="rounded-lg border border-accent-solid/30 p-2">
-                  <p className="text-xs text-gold-muted/60">بعد</p>
+                  <p className="text-xs text-gold-muted">بعد</p>
                   <p dir="auto" className="mt-1 text-gold-light">
                     {p.after}
                   </p>
                 </div>
               </div>
               {p.rationaleAr && (
-                <p dir="auto" className="mt-2 text-xs leading-relaxed text-gold-muted/80">
+                <p dir="auto" className="mt-2 text-xs leading-relaxed text-gold-muted">
                   {p.rationaleAr}
                 </p>
               )}
-              <p className="mt-2 text-xs text-gold-muted/60">
+              <p className="mt-2 text-xs text-gold-muted">
                 انسخ النصّ إلى المحرّر، ثم انشر بنفسك. لا يوجد تطبيق آلي.
               </p>
             </li>

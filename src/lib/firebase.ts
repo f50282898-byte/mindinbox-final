@@ -26,7 +26,6 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
-import { getAnalytics, isSupported } from "firebase/analytics";
 import {
   firebaseProjectIdOrEmpty,
   isFirebaseConfigured,
@@ -79,14 +78,6 @@ let app: FirebaseApp | null = null;
 if (firebaseConfigured) {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-  // Initialize Analytics safely — browser only, never on Edge/SSR.
-  if (typeof window !== "undefined") {
-    void isSupported()
-      .then((yes) => {
-        if (yes && app) getAnalytics(app);
-      })
-      .catch(() => undefined);
-  }
 }
 
 export const auth: Auth | null = app ? getAuth(app) : null;

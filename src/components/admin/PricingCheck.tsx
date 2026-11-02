@@ -88,7 +88,7 @@ export function PricingCheck() {
 
   if (!cards) {
     return (
-      <p role="status" className="text-sm text-gold-muted/70">
+      <p role="status" className="text-sm text-gold-muted">
         جارٍ التحميل…
       </p>
     );
@@ -99,7 +99,7 @@ export function PricingCheck() {
       <ul className="flex flex-col gap-2">
         {cards.map((card, index) => (
           <li key={card.tier} className="flex flex-wrap items-center gap-2 text-sm">
-            <span dir="ltr" className="w-20 text-xs text-gold-muted/60">
+            <span dir="ltr" className="w-20 text-xs text-gold-muted">
               {card.tier}
             </span>
             <label className="sr-only" htmlFor={`price-ar-${card.tier}`}>
@@ -174,7 +174,7 @@ export function PricingCheck() {
               {report.checked === "display+provider" ? "المعروض والمزوّد" : "المعروض فقط"}
             </strong>
             {report.checked === "display" && (
-              <span className="block text-gold-muted/70">
+              <span className="block text-gold-muted">
                 لا يوجد مسار دفع بعد، فلم يُقارَن المبلغ عند مزوّد الدفع. هذا الفحص يقارن
                 النصّ المعروض بالسعر الحقيقي في الكود فقط.
               </span>
@@ -187,7 +187,7 @@ export function PricingCheck() {
             <ul className="mt-2 flex flex-col gap-1">
               {report.findings.map((f) => (
                 <li key={`${f.tier}-${f.problem}`} className="text-gold-light">
-                  <span dir="ltr" className="text-gold-muted/60">
+                  <span dir="ltr" className="text-gold-muted">
                     {f.tier}
                   </span>{" "}
                   — {f.detailAr}

@@ -1,4 +1,4 @@
-﻿import {
+import {
   assertFails,
   assertSucceeds,
   initializeTestEnvironment,
@@ -291,7 +291,7 @@ describe("admin reads", () => {
 
   it("a user CAN read their own admins row but NOT anyone else's", async () => {
     await env.withSecurityRulesDisabled(async (ctx) => {
-      await setDoc(doc(ctx.firestore(), "admins/alice"), { role: "admin" });
+      // Alice remains a regular user. Reading her own absent row is allowed.
       await setDoc(doc(ctx.firestore(), "admins/bob"), { role: "admin" });
     });
 

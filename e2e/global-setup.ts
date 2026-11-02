@@ -17,7 +17,7 @@ async function globalSetup(config: FullConfig) {
 
     // Wait for the server to be ready
     await page.goto(process.env.AUDIT_BASE_URL || 'http://localhost:3000', {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: 60000,
     });
 

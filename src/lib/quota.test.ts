@@ -226,3 +226,18 @@ describe("quota failure and race boundaries", () => {
    expect(checkBurst("new-guest", "203.0.113.1")).toBe(false);
  });
 });
+
+it("refuses to grant a fresh in-memory allowance on a misconfigured production instance", async () => {
+  const { adminConfigured } = await import("@/lib/google/token");
+  vi.mocked(adminConfigured).mockReturnValue(false);
+  vi.stubEnv("NODE_ENV", "production");
+  vi.stubEnv("QUOTA_TEST_MEMORY", "");
+  try {
+    const { checkQuota, spendInteraction } = await import("@/lib/quota");
+    await expect(checkQuota("visitor", null)).rejects.toThrow("quota_unavailable");
+    await expect(spendInteraction("visitor", null)).rejects.toThrow("quota_unavailable");
+  } finally {
+    vi.unstubAllEnvs();
+    vi.mocked(adminConfigured).mockReturnValue(true);
+  }
+});

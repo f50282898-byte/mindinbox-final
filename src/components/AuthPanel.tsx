@@ -73,7 +73,10 @@ export function AuthPanel() {
     const sp = new URLSearchParams(window.location.search);
     setUrlPhilosopher(sp.get("philosopher") ?? null);
     setUrlQuestion(sp.get("q") ?? null);
-    if (sp.get("mode") === "signup") {
+    if (sp.get("mode") === "resetPassword" && sp.get("oobCode")) {
+      setResetCode(sp.get("oobCode")!);
+      setMode("reset");
+    } else if (sp.get("mode") === "signup") {
       setMode("signup");
     }
   }, []);
@@ -103,10 +106,13 @@ export function AuthPanel() {
         });
         if (!res.ok) {
           setError("تعذّر التحقق الأمني. أعد المحاولة.");
+          setTurnstileToken(null);
           setTurnstileNonce((n) => n + 1);
           return;
         }
       } catch {
+        setTurnstileToken(null);
+        setTurnstileNonce((n) => n + 1);
         setError("تعذّر الاتصال للتحقق الأمني. تحقّق من اتصالك.");
         return;
       } finally {
@@ -122,8 +128,10 @@ export function AuthPanel() {
         setError(err.message);
         // A used Turnstile token is single-use, so a failed signup needs a new
         // challenge even when the failure was something else.
-        if (mode === "signup" && turnstileEnabled)
+        if (mode === "signup" && turnstileEnabled) {
+          setTurnstileToken(null);
           setTurnstileNonce((n) => n + 1);
+        }
       } else {
         setError("تعذّر إتمام العملية. حاول مرة أخرى.");
       }
@@ -135,7 +143,7 @@ export function AuthPanel() {
 
 
   /* ── already logged in ──────────────────────────────────────────────── */
-  if (user) {
+  if (user && !user.isAnonymous && mode !== "reset") {
     const wisdomHref =
       urlPhilosopher || urlQuestion
         ? `/wisdom?philosopher=${encodeURIComponent(urlPhilosopher ?? "")}&q=${encodeURIComponent(urlQuestion ?? "")}`
@@ -144,7 +152,7 @@ export function AuthPanel() {
     return (
       <Card
         title="مرحباً بك مجدداً"
-        subtitle="أنت في ملاذك الفكري، وجلستك مفعلة."
+        subtitle="يمكنك متابعة حوارك أو فتح مفكرتك."
       >
         <div className="mb-6 rounded-2xl border border-gold/25 bg-gold/[0.04] p-5 text-center">
           <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-gold-light shadow-lg">
@@ -153,10 +161,10 @@ export function AuthPanel() {
             </span>
           </div>
           <h2 className="display-arabic text-lg font-bold text-gold-light">
-            {user.displayName || "صديق الوعي"}
+            {user.displayName || "حسابك"}
           </h2>
           {user.email && (
-            <p className="mt-1 text-xs text-gold-muted/80 direction-ltr font-mono">
+            <p className="mt-1 text-xs text-gold-muted direction-ltr font-mono">
               {user.email}
             </p>
           )}
@@ -184,7 +192,7 @@ export function AuthPanel() {
         <button
           type="button"
           onClick={() => void signOut()}
-          className="mt-2 w-full text-center text-xs text-gold-muted/65 underline-offset-4 hover:text-rose-400 hover:underline"
+          className="mt-2 w-full text-center text-xs text-gold-muted underline-offset-4 hover:text-rose-400 hover:underline"
         >
           تسجيل الخروج
         </button>
@@ -302,7 +310,7 @@ export function AuthPanel() {
             className={`flex-1 rounded-full px-4 py-2.5 text-sm transition-colors ${
               mode === tab.id
                 ? "border border-gold/50 bg-gold/12 text-gold-light"
-                : "border border-transparent text-gold-muted/70 hover:text-gold-light"
+                : "border border-transparent text-gold-muted hover:text-gold-light"
             }`}
           >
             {tab.label}
@@ -371,7 +379,7 @@ export function AuthPanel() {
         }
         disabled={busy || !email.trim() || password.length < (signingUp ? MIN_PASSWORD_LENGTH : 1)}
       >
-        {busy ? "لحظة…" : signingUp ? "أنشئ الحساب" : "دخول"}
+        {busy ? "جارٍ إتمام الطلب…" : signingUp ? "أنشئ الحساب" : "دخول"}
       </Button>
 
       <Divider />
@@ -420,20 +428,20 @@ export function AuthPanel() {
         <button
           type="button"
           onClick={() => setMode("forgot")}
-          className="text-gold-muted/70 underline-offset-4 hover:text-gold-light hover:underline"
+          className="text-gold-muted underline-offset-4 hover:text-gold-light hover:underline"
         >
           نسيت كلمة المرور؟
         </button>
         <button
           type="button"
           onClick={() => setMode("reset")}
-          className="text-gold-muted/70 underline-offset-4 hover:text-gold-light hover:underline"
+          className="text-gold-muted underline-offset-4 hover:text-gold-light hover:underline"
         >
           لديّ رمز استعادة
         </button>
         <Link
           href="/pricing"
-          className="text-gold-muted/70 underline-offset-4 hover:text-gold-light hover:underline"
+          className="text-gold-muted underline-offset-4 hover:text-gold-light hover:underline"
         >
           العضويات
         </Link>
@@ -461,7 +469,7 @@ function Card({
       <Logo size={52} className="mb-5" />
       <h1 className="display-arabic text-2xl font-bold text-gold-light">{title}</h1>
       {subtitle && (
-        <p className="display-arabic mt-2 text-sm leading-relaxed text-gold-muted/70">{subtitle}</p>
+        <p className="display-arabic mt-2 text-sm leading-relaxed text-gold-muted">{subtitle}</p>
       )}
       <div className="mt-6">{children}</div>
     </div>
@@ -559,7 +567,7 @@ function Back({ children, onClick }: { children: React.ReactNode; onClick: () =>
     <button
       type="button"
       onClick={onClick}
-      className="mt-2 w-full text-center text-sm text-gold-muted/65 underline-offset-4 hover:text-gold-light hover:underline"
+      className="mt-2 w-full text-center text-sm text-gold-muted underline-offset-4 hover:text-gold-light hover:underline"
     >
       {children}
     </button>

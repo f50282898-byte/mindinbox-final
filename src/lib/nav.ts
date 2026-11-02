@@ -1,3 +1,4 @@
+import { isInternalPath } from "@/lib/internal-path";
 /**
  * Navigation model — single source for the shell, sitemap and the design page.
  *
@@ -283,7 +284,7 @@ export function normaliseNav(raw: unknown): NavItem[] | null {
 
     if (!id || !href) continue;
     // Only same-origin absolute paths; never external or protocol-relative.
-    if (!href.startsWith("/") || href.startsWith("//")) continue;
+    if (!isInternalPath(href)) continue;
     if (HIDDEN_ROUTES.some((h) => href === h || href.startsWith(`${h}/`))) continue;
 
     const label = e.label as Record<string, unknown> | undefined;

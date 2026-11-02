@@ -223,7 +223,7 @@ export function AccountPanel() {
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           الحساب
         </h1>
-        <p className="display-latin mt-1 text-lg text-gold-muted/70">Account</p>
+        <p className="display-latin mt-1 text-lg text-gold-muted">Account</p>
       </header>
 
       {/* ═══ 1. identity ═══ */}
@@ -233,7 +233,7 @@ export function AccountPanel() {
             <h2 className="display-arabic text-xl font-bold text-gold-light mb-3">
               مرحباً بك في عقل في صندوق
             </h2>
-            <p className="display-arabic mt-2 leading-loose text-gold-muted/80 max-w-md mx-auto mb-5">
+            <p className="display-arabic mt-2 leading-loose text-gold-muted max-w-md mx-auto mb-5">
               يمكنك التصفح والقراءة دون حساب، لكن ما تكتبه يبقى على هذا الجهاز فقط.
               أنشئ حساباً لتحفظ محادثاتك وملاحظاتك ومدخلات المتتبع وترافقك إلى أي جهاز.
             </p>
@@ -243,7 +243,7 @@ export function AccountPanel() {
             >
                             أنشئ حساباً أو سجّل الدخول
             </Link>
-            <p className="mt-4 text-xs text-gold-muted/80">
+            <p className="mt-4 text-xs text-gold-muted">
               لا حساب بعد؟ يمكنك المتابعة كضيف والتراجع لاحقاً.
             </p>
           </div>
@@ -346,7 +346,7 @@ export function AccountPanel() {
                 className={`rounded-full px-4 py-1.5 text-xs transition-colors ${
                   locale === l
                     ? "border border-gold/50 bg-gold/12 text-gold-light"
-                    : "border border-gold/20 text-gold-muted/70 hover:text-gold-light"
+                    : "border border-gold/20 text-gold-muted hover:text-gold-light"
                 }`}
               >
                 {l === "ar" ? "العربية" : "English"}
@@ -366,7 +366,7 @@ export function AccountPanel() {
                 className={`rounded-full px-4 py-1.5 text-xs transition-colors ${
                   theme === th
                     ? "border border-gold/50 bg-gold/12 text-gold-light"
-                    : "border border-gold/20 text-gold-muted/70 hover:text-gold-light"
+                    : "border border-gold/20 text-gold-muted hover:text-gold-light"
                 }`}
               >
                 {th === "dark" ? "داكن" : "فاتح"}
@@ -477,7 +477,7 @@ export function AccountPanel() {
 
       {/* ═══ 4. data ═══ */}
       <Section title="بياناتك">
-        <p className="display-arabic text-sm leading-loose text-gold-muted/75">
+        <p className="display-arabic text-sm leading-loose text-gold-muted">
           نزّل نسخة كاملة من محادثاتك وملاحظاتك ومدخلات متتبعك كملف JSON.
           تُحضّر محلياً فوراً، حتى لو لم تكن متصلاً بالخادم.
         </p>
@@ -489,7 +489,7 @@ export function AccountPanel() {
       <Section title="حذف الحساب" danger>
         {!deleteOpen ? (
           <>
-            <p className="display-arabic text-sm leading-loose text-gold-muted/75">
+            <p className="display-arabic text-sm leading-loose text-gold-muted">
               الحذف نهائي. سيُحذف ملفك وكل ما كتبته في المفكرة والمتتبع، ولا يمكن
               استرجاعه.
             </p>
@@ -660,7 +660,7 @@ function Section({
 function Row({ label, value, children }: { label: string; value?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-gold/10 pb-2 last:border-0">
-      <span className="display-arabic text-sm text-gold-muted/70">{label}</span>
+      <span className="display-arabic text-sm text-gold-muted">{label}</span>
       <span className="text-sm text-gold-light">{children ?? value}</span>
     </div>
   );

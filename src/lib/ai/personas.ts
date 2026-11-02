@@ -66,24 +66,24 @@ export const VERIFIED_QUOTES: Record<
   { textAr: string; attributionAr: string; work: string }
 > = {
   "plato-unchanged": {
-    textAr: "لم أعرف بعد أني لا أعرف.",
+    textAr: "لا أعلم، ولا أظنّ أني أعلم.",
     attributionAr: "سقراط",
-    work: "Apology",
+    work: "دفاع سقراط، 21d، ترجمة عربية",
   },
   "plato-inscription": {
-    textAr: "لم تعرف شكله.",
-    attributionAr: "أفلاطون",
-    work: "Republic, Book VI",
+    textAr: "حياة لا تُمتحَن لا تستحق أن تُعاش.",
+    attributionAr: "سقراط في رواية أفلاطون",
+    work: "دفاع سقراط، 38a، ترجمة عربية",
   },
   "rumi-water": {
-    textAr: "الماء لا يخرج من الماء، والماء يدخل من الماء.",
+    textAr: "أصغِ إلى هذا الناي كيف يشكو، وكيف يحكي عن الفراق.",
     attributionAr: "الرومي",
-    work: "Divan-e Shams",
+    work: "المثنوي، الدفتر الأول، البيت الأول، ترجمة عربية",
   },
   "aurelius-obstacle": {
-    textAr: "العائق في الطريق يقدّم نفسه، وهو ليس ضدك.",
+    textAr: "العائق في الطريق يصير هو الطريق.",
     attributionAr: "ماركوس أوريليوس",
-    work: "Meditations, Book 5",
+    work: "التأمّلات، 5.20، ترجمة عربية",
   },
   // Aesop deliberately has no entry. The fables survive in paraphrase and
   // translation, and there is no single attested line from "Aesop" himself that

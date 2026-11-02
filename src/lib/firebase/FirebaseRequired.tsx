@@ -102,7 +102,7 @@ export function FirebaseRequired({
           {title}
         </h1>
         <div className="display-arabic mt-4 leading-loose text-gold-muted">{children}</div>
-        <p className="display-latin mt-5 text-sm leading-relaxed text-gold-muted/60">
+        <p className="display-latin mt-5 text-sm leading-relaxed text-gold-muted">
           This part is not available right now. The rest of the app is — nothing you have
           already saved is affected.
         </p>

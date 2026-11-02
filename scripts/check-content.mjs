@@ -39,6 +39,7 @@ const ALLOWED_LATIN = new Set([
   "firestore",
   "storage",
   "pdf",
+  "jpeg", "png", "webp",
   "next",
   "cloudflare",
   "pages",

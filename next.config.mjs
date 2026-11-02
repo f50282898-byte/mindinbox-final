@@ -1,6 +1,8 @@
+import { publicFirebaseAliases } from "./scripts/lib/firebase-aliases.mjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  env: publicFirebaseAliases(process.env),
 
   images: {
     unoptimized: true,

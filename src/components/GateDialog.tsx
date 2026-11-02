@@ -128,20 +128,12 @@ export function GateDialog({
         </div>
 
         <h2 id={titleId} className="display-arabic mt-6 text-center text-2xl font-bold text-gold-light">
-          الباب مفتوح
+          انتهت محاولاتك المجانية
         </h2>
 
         <div id={bodyId} className="display-arabic mt-4 space-y-3 text-center leading-loose">
           <p className="text-[0.95rem] text-gold-muted">
-            استخدمت محاولاتك المجانية. هذا كل ما نفرضه قبل أن تقرر.
-          </p>
-          <p className="text-[0.95rem] text-gold-muted">
-            إذا أنشأت حساباً، تفتح لك <strong className="text-gold-light">أربعة عشر يوماً</strong>{" "}
-            كاملة بلا حدود — لا بطاقة، ولا تجديد تلقائي، ولا رقم بطاقة.
-          </p>
-          <p className="text-[0.95rem] text-gold-muted">
-            وبعدها إن أحببت أن تبقى، فالأمر بين يديك. وإن لم تحب، فمحادثاتك التي كتبتها لك
-            وما زالت عندك.
+            يمكنك العودة إلى حوارك لقراءته، أو الاطّلاع على العضويات لمعرفة ما تتيحه كل خطة.
           </p>
         </div>
 
@@ -155,18 +147,18 @@ export function GateDialog({
             لاحقاً
           </button>
           <Link
-            href="/enter?mode=signup"
+            href="/pricing"
             onClick={onClose}
             className="btn-gold flex-1 px-6 py-3.5 text-center text-sm font-semibold"
           >
-            أنشئ حسابي — 14 يوماً مجاناً
+            استكشف العضويات
           </Link>
         </div>
 
         <p className="mt-4 text-center text-xs text-ink-3">
           {remaining !== null && remaining !== undefined
             ? `لديك ${remaining} من المحاولات المجانية.`
-            : "لا نطلب بطاقة، ولا نُعيد توجيهك إلى الدفع."}
+            : "يمكنك إغلاق هذه النافذة والعودة إلى القراءة."}
         </p>
       </div>
     </div>

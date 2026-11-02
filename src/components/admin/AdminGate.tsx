@@ -74,7 +74,7 @@ export function AdminGate({ uid }: { uid: string | null }) {
 
   if (!ready) {
     return (
-      <p role="status" className="text-sm text-gold-muted/70">
+      <p role="status" className="text-sm text-gold-muted">
        جارٍ التحقّق…
       </p>
     );
@@ -184,7 +184,7 @@ export function AdminGate({ uid }: { uid: string | null }) {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm text-gold-light">المستويات</h2>
-        <ul className="grid gap-1 text-xs text-gold-muted/70">
+        <ul className="grid gap-1 text-xs text-gold-muted">
           {Object.entries(TIER_DEFINITIONS).map(([tier, d]) => (
             <li key={tier}>
               {d.name} — {d.priceUsd} {d.period}
@@ -217,12 +217,12 @@ function TwoFactorNote() {
         هذه اللوحة تغيّر أسعاراً وصفحاتً تعمل لكل الزائرين، فكلمة مرور واحدة قد تكفي لتغيير
         الصفحة الرئيسية. فعّل المصادقة الثنائية (TOTP) من إعدادات Firebase.
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-gold-muted/70">
+      <p className="mt-2 text-xs leading-relaxed text-gold-muted">
         <strong className="text-gold-muted">تنبيه:</strong> المصادقة الثنائية عبر TOTP تتطلب
         ترقية المشروع إلى Identity Platform، وهي خطة مدفوعة تُحاسب على المستخدم النشط شهرياً.
         على خطة Spark غير متاحة.
       </p>
-      <p className="mt-2 text-xs leading-relaxed text-gold-muted/70">
+      <p className="mt-2 text-xs leading-relaxed text-gold-muted">
         كل كتابة من اللوحة تُسجَّل في <code className="text-gold-muted">auditLog</code> باسم من
         فعلها، مع القيمة قبل وبعد.
       </p>

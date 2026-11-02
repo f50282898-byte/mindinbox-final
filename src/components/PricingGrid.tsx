@@ -99,7 +99,7 @@ function TierCard({ tier }: { tier: PricingTier }) {
         <ul className="flex flex-col gap-2">
           {tier.includes.map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <Check className="mt-1 size-3.5 shrink-0 text-gold/70" aria-hidden="true" />
+              <Check className="mt-1 size-3.5 shrink-0 text-gold" aria-hidden="true" />
               <span className="display-arabic text-sm leading-relaxed text-ink-2">
                 {t(item)}
               </span>

@@ -47,6 +47,8 @@ import { join } from "node:path";
 
 const ROOT = process.cwd();
 
+import { publicFirebaseAliases } from "./lib/firebase-aliases.mjs";
+Object.assign(process.env, publicFirebaseAliases(process.env));
 /* ── profiles ──────────────────────────────────────────────────────────────── */
 
 /**

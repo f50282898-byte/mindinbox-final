@@ -52,7 +52,7 @@ export default function PathsPage() {
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           المسارات
         </h1>
-        <p className="display-latin mt-1 text-lg text-gold-muted/70">Paths</p>
+        <p className="display-latin mt-1 text-lg text-gold-muted">Paths</p>
         <p className="display-arabic mt-4 max-w-2xl leading-loose text-gold-muted">
           ثلاثة مسارات، كل واحد يفتح باباً ويغلق غيره. لا يوجد مسار أعلى من غيره — يوجد فقط
           ما يناسبك الآن.
@@ -75,7 +75,7 @@ export default function PathsPage() {
                   <span className="display-latin text-sm text-ink-3">{tier.latin}</span>
                 </div>
 
-                <p className="display-arabic mt-3 leading-loose text-gold-muted/85">
+                <p className="display-arabic mt-3 leading-loose text-gold-muted">
                   {tier.tagline.ar}
                 </p>
 
@@ -83,7 +83,7 @@ export default function PathsPage() {
                   {tier.includes.map((f, j) => (
                     <li
                       key={j}
-                      className="display-arabic text-sm leading-relaxed text-gold-muted/75"
+                      className="display-arabic text-sm leading-relaxed text-gold-muted"
                     >
                       · {f.ar}
                     </li>
@@ -98,7 +98,7 @@ export default function PathsPage() {
                     <Link
                       key={d.href}
                       href={d.href}
-                      className="text-sm text-gold-muted/70 underline-offset-4 hover:text-gold-light hover:underline"
+                      className="text-sm text-gold-muted underline-offset-4 hover:text-gold-light hover:underline"
                     >
                       {d.ar}
                       <span className="display-latin mx-2 text-xs text-ink-3">
@@ -113,7 +113,7 @@ export default function PathsPage() {
         })}
       </ol>
 
-      <p className="mt-10 text-sm leading-relaxed text-gold-muted/60">
+      <p className="mt-10 text-sm leading-relaxed text-gold-muted">
         <Link href="/pricing" className="text-gold-muted underline-offset-4 hover:underline">
           مقارنة تفصيلية بين المستويات
         </Link>

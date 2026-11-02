@@ -18,6 +18,7 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { Markdown, markdownToText } from "@/components/Markdown";
 import { PersonaCards } from "@/components/PersonaCards";
 import { QuotaMeter } from "@/components/QuotaMeter";
+import { recentWisdomTurns } from "@/lib/ai/recent-wisdom-turns";
 import { getPersona } from "@/lib/ai/personas";
 import {
   deleteRemote,
@@ -142,38 +143,22 @@ export function WisdomChat() {
   }, [active?.messages, status]);
 
   const send = useCallback(
-    async (textOverride?: string, opts?: { replaceMessageId?: string }) => {
+    async (textOverride?: string, opts?: { replaceMessageId?: string; conversation?: Conversation }) => {
       const text = (textOverride ?? draft).trim();
       if (!text || status === "streaming") return;
 
       const conversation =
-        active ?? createConversation(personaId, text);
+        opts?.conversation ?? active ?? createConversation(personaId, text);
+      const sendingPersona = conversation.personaId;
 
       setError(null);
       setNotice(null);
       setDraft("");
 
       const userMessageId = crypto.randomUUID();
-      const assistantMessageId = crypto.randomUUID();
+      const assistantMessageId = opts?.replaceMessageId ?? crypto.randomUUID();
 
-      if (opts?.replaceMessageId) {
-        const target = conversation.messages.find(
-          (m) => m.id === opts.replaceMessageId
-        );
-        appendMessage(conversation.id, {
-          ...(target ?? {
-            id: assistantMessageId,
-            role: "assistant" as const,
-            content: "",
-            createdAt: Date.now(),
-            complete: false,
-          }),
-          id: assistantMessageId,
-          content: "",
-          complete: false,
-          via: undefined,
-        });
-      } else {
+      if (!opts?.replaceMessageId) {
         appendMessage(conversation.id, {
           id: userMessageId,
           role: "user",
@@ -185,7 +170,7 @@ export function WisdomChat() {
           id: assistantMessageId,
           role: "assistant",
           content: "",
-          personaId,
+          personaId: sendingPersona,
           createdAt: Date.now(),
           complete: false,
         });
@@ -197,13 +182,15 @@ export function WisdomChat() {
 
       setStatus("streaming");
 
-      const history = conversation.messages
-        .filter((m) => m.id !== opts?.replaceMessageId && m.content.trim())
+      const priorMessages = opts?.replaceMessageId
+        ? conversation.messages.slice(0, conversation.messages.findIndex((m) => m.id === opts.replaceMessageId))
+        : conversation.messages;
+      const history = priorMessages
+        .filter((m) => m.content.trim())
         .map((m) => ({ role: m.role, content: m.content }));
 
-      const token = await firebaseAuth?.currentUser?.getIdToken();
-
       try {
+        const token = await firebaseAuth?.currentUser?.getIdToken();
         const res = await fetch("/api/ai", {
           method: "POST",
           headers: {
@@ -211,8 +198,8 @@ export function WisdomChat() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: JSON.stringify({
-            messages: [...history, { role: "user", content: text }],
-            personaId,
+            messages: recentWisdomTurns(opts?.replaceMessageId ? history : [...history, { role: "user", content: text }]),
+            personaId: sendingPersona,
           }),
           signal: controller.signal,
         });
@@ -297,7 +284,7 @@ export function WisdomChat() {
       const conv = createConversation(persona.id, questionText);
       setActive(conv.id);
       window.history.replaceState({}, "", "/wisdom");
-      void send(questionText);
+      void send(questionText, { conversation: conv });
     } else if (p) {
       const conv = createConversation(persona.id, persona.nameAr);
       setActive(conv.id);
@@ -608,7 +595,7 @@ export function WisdomChat() {
             <label htmlFor="wisdom-input" className="sr-only">
               اسأل الحكيم
             </label>
-            <textarea
+            <textarea maxLength={4000}
               id="wisdom-input"
               ref={inputRef}
               rows={1}

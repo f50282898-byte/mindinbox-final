@@ -1,0 +1,1 @@
+export const THEME_BOOTSTRAP_SCRIPT = `(function(){var s;try{s=localStorage.getItem("miab-theme")}catch(e){}document.documentElement.dataset.theme=(s==="dark"||s==="light")?s:(window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark")})();`;

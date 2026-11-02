@@ -180,7 +180,7 @@ export function AdminConsole() {
 
   /* ── Gates ── */
   if (state === "loading") {
-    return <ConsoleShell><p className="display-arabic py-20 text-center text-sm text-gold-muted/60">…جارٍ التحقق</p></ConsoleShell>;
+    return <ConsoleShell><p className="display-arabic py-20 text-center text-sm text-gold-muted">…جارٍ التحقق</p></ConsoleShell>;
   }
   if (state !== "member" || !isAdmin) {
     return (
@@ -190,7 +190,7 @@ export function AdminConsole() {
           <h1 className="gold-text-glow display-arabic mt-6 text-2xl font-bold text-gold-light">
             منطقة ممنوعة
           </h1>
-          <p className="display-arabic mt-4 text-sm leading-relaxed text-gold-muted/60">
+          <p className="display-arabic mt-4 text-sm leading-relaxed text-gold-muted">
             هذه المنطقة لا تُفتح إلا لحساب يحمل علامة إدارية موثّقة على الخادم. طلبك غير يحملها.
           </p>
         </div>
@@ -222,7 +222,7 @@ export function AdminConsole() {
         {(status || error) && (
           <p
             role="status"
-            className={`mb-6 flex items-center gap-2 text-xs ${error ? "text-red-300/90" : "text-gold/80"}`}
+            className={`mb-6 flex items-center gap-2 text-xs ${error ? "text-red-300/90" : "text-gold"}`}
           >
             {error ? <TriangleAlert className="size-4" /> : <ShieldCheck className="size-4" />}
             {error ?? status}
@@ -357,7 +357,7 @@ function UserAdmin({ onGrant }: { onGrant: (uid: string, tier: "oracle" | "sanct
 
   return (
     <Panel title="المستخدمون" hint="آخر ٢٥ حساباً. التغيير هنا يتطلّب قاعدة البيانات منشورة.">
-      {message && <p className="mb-3 text-xs text-gold/70">{message}</p>}
+      {message && <p className="mb-3 text-xs text-gold">{message}</p>}
       <ul className="divide-y divide-gold/10">
         {rows.map((row) => (
           <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
@@ -463,7 +463,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs text-gold-muted/60">{label}</span>
+      <span className="mb-1.5 block text-xs text-gold-muted">{label}</span>
       <input
         type="number"
         min={0}

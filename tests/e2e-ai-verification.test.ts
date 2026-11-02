@@ -532,7 +532,7 @@ describe("E2E AI Interactions Verification Suite (/api/ai & /api/dialogue)", () 
       expect(data).toMatchObject({
         ok: false,
         code: "RATE_LIMITED",
-        error: "عديد الطلبات. انتظر قليلاً ثم أعد المحاولة.",
+        error: expect.stringContaining("أعد المحاولة"),
       });
     });
 

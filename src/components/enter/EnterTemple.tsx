@@ -55,15 +55,15 @@ export function EnterTemple() {
         <header className="animate-fade-rise relative z-10 mb-10 flex flex-col items-center text-center">
           <span
             aria-hidden="true"
-            className="display-latin mb-3 text-4xl leading-none text-gold-light/80"
+            className="display-latin mb-3 text-4xl leading-none text-gold-light"
           >
             {lens.symbol}
           </span>
-          <p className="display-arabic text-sm tracking-wide text-gold-muted/80">
+          <p className="display-arabic text-sm tracking-wide text-gold-muted">
             {lens.nameAr} ينتظرك
           </p>
           <p
-            className="display-arabic mt-4 max-w-lg text-base leading-loose text-gold-muted/70"
+            className="display-arabic mt-4 max-w-lg text-base leading-loose text-gold-muted"
             style={{ animationDelay: "0.12s" }}
           >
             {lens.lineIsQuote ? `«${lens.lineAr}»` : lens.epithetAr}
@@ -81,7 +81,7 @@ export function EnterTemple() {
           style={{ animationDelay: "0.2s" }}
         >
           <p className="mb-2 text-[11px] tracking-[0.3em] text-ink-3">تساؤلك الأول</p>
-          <p className="display-arabic text-lg leading-loose text-gold-light/90">{question}</p>
+          <p className="display-arabic text-lg leading-loose text-gold-light">{question}</p>
         </aside>
       )}
 

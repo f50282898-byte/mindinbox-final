@@ -1,3 +1,4 @@
+import { isInternalPath } from "@/lib/internal-path";
 /**
  * Site configuration — the editable surface for admin-authored content.
  *
@@ -169,7 +170,7 @@ export function normalisePricing(raw: unknown): PricingTier[] | null {
     const cta = pick(e.cta);
     if (!name || !price || !period || !tagline || !cta) continue;
 
-    const href = typeof e.href === "string" && e.href.startsWith("/") && !e.href.startsWith("//")
+    const href = isInternalPath(e.href)
       ? e.href
       : "/account";
 
@@ -194,5 +195,5 @@ export function normalisePricing(raw: unknown): PricingTier[] | null {
   }
 
   // All three tiers must survive, or the column layout is a lie.
-  return out.length === TIER_IDS.size ? out : null;
+  return out.length === TIER_IDS.size && new Set(out.map((tier) => tier.id)).size === TIER_IDS.size ? out : null;
 }

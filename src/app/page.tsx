@@ -3,9 +3,8 @@ export const runtime = 'edge';
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { UtopiaHero } from "@/components/UtopiaHero";
-import { ArtLayer } from "@/components/art/ArtLayer";
+import { GoldDust } from "@/components/GoldDust";
 import { SITE_URL } from "@/lib/seo";
-
 
 export const metadata: Metadata = {
   title: "عقل في صندوق",
@@ -23,9 +22,7 @@ export const metadata: Metadata = {
  * JSON-LD for the home page.
  *
  * Deliberately narrow: `WebApplication` and `Organization` describe what this
- * page actually is. No `Review`, no `AggregateRating`, no `offers` with a price
- * — there is no payment path, no user rating, and nothing here has been
- * measured. Structured data that overstates the product is a liability.
+ * page actually is.
  */
 const JSON_LD = {
   "@context": "https://schema.org",
@@ -52,8 +49,6 @@ const JSON_LD = {
         "ملاذ فلسفي للذكاء الاصطناعي: حوار مع فلاسفة، ومفكرة خاصة، وتتبّع للوعي اليومي.",
       isAccessibleForFree: true,
       offers: {
-        // Free tier exists and is real; the paid tiers are stated on /pricing
-        // but there is no checkout, so no paid offer is declared here.
         "@type": "Offer",
         price: "0",
         priceCurrency: "USD",
@@ -75,22 +70,22 @@ export default function HomePage() {
     <>
       <script
         type="application/ld+json"
-        // Static, developer-authored object. No user input reaches this string.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
-      {/* A `<div>`, not a `<main>`: `ShellChrome` owns the single main landmark. */}
-      {/*
-        `UtopiaHero` reads `?philosopher=` and `?q=` through `useSearchParams`. A
-        client component calling that without a Suspense boundary above it opts
-        the *whole* route into client-side rendering at request time, which would
-        undo the static generation of the landing page. The boundary is the
-        thinnest possible one and sits directly around the component that needs it.
+      {/* 
+        Single Main Landmark Integrity:
+        ShellChrome owns <main id="main"> for chromeless routes.
+        HomePage renders <div className="relative"> to ensure exactly 1 <main> exists in DOM.
       */}
-      <div className="relative">
-        <ArtLayer id="colonnade" />
-        <Suspense fallback={null}>
-          <UtopiaHero />
-        </Suspense>
+      <div className="relative min-h-screen overflow-hidden">
+        {/* Ambient Gold Dust Radiance Layer */}
+        <GoldDust count={36} className="opacity-75 z-0" />
+
+        <div className="relative z-10 sanctuary-container">
+          <Suspense fallback={null}>
+            <UtopiaHero />
+          </Suspense>
+        </div>
       </div>
     </>
   );

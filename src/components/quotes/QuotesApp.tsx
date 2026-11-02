@@ -184,7 +184,7 @@ export function QuotesApp() {
 
       {/* â”€â”€ Template picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="mb-6 flex items-center gap-2">
-        <span className="display-arabic text-xs text-gold-muted/60">القالب:</span>
+        <span className="display-arabic text-xs text-gold-muted">القالب:</span>
         {CARD_TEMPLATES.map((t) => (
           <button
             key={t}
@@ -204,7 +204,7 @@ export function QuotesApp() {
 
       {/* â”€â”€ The list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {filtered.length === 0 ? (
-        <p className="glass p-8 text-center text-sm leading-relaxed text-gold-muted/70">
+        <p className="glass p-8 text-center text-sm leading-relaxed text-gold-muted">
           لا نتائج. جرّب كلمة أخرى، أو امسح الفلترة.
         </p>
       ) : (
@@ -311,7 +311,7 @@ function QuoteCard({
       {/* Source, always. Not collapsed, not behind a link â€” it is part of the
           quote, not metadata about it. */}
       <div className="mt-1 space-y-0.5">
-        <p className="text-xs text-gold-muted/60">
+        <p className="text-xs text-gold-muted">
           {quote.workEn}, {quote.locator}
         </p>
         <p className="text-[0.7rem] text-ink-3">
@@ -325,7 +325,7 @@ function QuoteCard({
         <summary className="cursor-pointer text-[0.7rem] text-ink-3 hover:text-gold-light">
           النص الأصلي
         </summary>
-        <p dir="auto" className="mt-2 text-[0.8rem] leading-relaxed text-gold-muted/70">
+        <p dir="auto" className="mt-2 text-[0.8rem] leading-relaxed text-gold-muted">
           {quote.sourceText}
         </p>
         {quote.sourceUrl && (
@@ -348,7 +348,7 @@ function QuoteCard({
           className={`display-arabic flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs transition-colors ${
             favourite
               ? "border-gold/60 bg-gold/20 text-gold-light"
-              : "border-gold/20 text-gold-muted/60 hover:border-gold/45"
+              : "border-gold/20 text-gold-muted hover:border-gold/45"
           }`}
         >
           <Heart className={`size-3.5 ${favourite ? "fill-current" : ""}`} />
@@ -375,7 +375,7 @@ function QuoteCard({
       </div>
 
       {status && (
-        <p role="status" className="display-arabic mt-3 text-xs leading-relaxed text-gold-muted/75">
+        <p role="status" className="display-arabic mt-3 text-xs leading-relaxed text-gold-muted">
           {status}
         </p>
       )}
@@ -400,7 +400,7 @@ function FilterChip({
       className={`display-arabic rounded-full border px-4 py-1.5 text-xs transition-colors ${
         active
           ? "border-gold/60 bg-gold/20 text-gold-light"
-          : "border-gold/15 text-gold-muted/60 hover:border-gold/40"
+          : "border-gold/15 text-gold-muted hover:border-gold/40"
       }`}
     >
       {children}

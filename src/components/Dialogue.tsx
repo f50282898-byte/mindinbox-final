@@ -456,8 +456,7 @@ export function Dialogue() {
             انتهت الجولة المجانية
           </h2>
           <p className="display-arabic mt-3 leading-loose text-gold-muted">
-            هذه جولة كاملة، بالمجّان. لو أردت الجولتين المتبقيتين والخلاصة، فأنشئ حساباً
-            وستفتح لك أربعة عشر يوماً بلا حدود — بلا بطاقة، ولا تجديد.
+            قرأت الجولة الأولى. تتضمن العضوية الجولات التالية وخلاصة تقارن بين حجتي الفيلسوفين.
           </p>
           <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row">
             <button
@@ -472,8 +471,8 @@ export function Dialogue() {
             >
               اكتفِ بهذا
             </button>
-            <Link href="/enter?mode=signup" className="btn-gold flex-1 py-3 text-center text-sm font-semibold">
-              أنشئ حسابي — 14 يوماً مجاناً
+            <Link href="/pricing" className="btn-gold flex-1 py-3 text-center text-sm font-semibold">
+              استكشف العضويات
             </Link>
           </div>
         </section>

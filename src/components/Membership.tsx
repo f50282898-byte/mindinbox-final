@@ -24,7 +24,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
         <h1 className="gold-text-glow display-arabic mt-4 text-3xl font-bold text-gold-light sm:text-5xl">
           اختر مستوى التزامك
         </h1>
-        <p className="display-arabic mx-auto mt-5 max-w-xl text-sm leading-relaxed text-gold-muted/70">
+        <p className="display-arabic mx-auto mt-5 max-w-xl text-sm leading-relaxed text-gold-muted">
           يبدأ الجميع من الباب نفسه. المستويات الأعلى تفتح أدوات أكبر، لا حكمة أكبر —
           الحكمة نفسُها متاحة للجميع.
         </p>
@@ -63,11 +63,11 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
               <div className="mt-6 flex items-baseline gap-1.5">
                 <span className="display-latin text-4xl font-bold text-gold-light">${price}</span>
                 {tier.period && (
-                  <span className="text-xs text-gold-muted/60">{tier.period}</span>
+                  <span className="text-xs text-gold-muted">{tier.period}</span>
                 )}
               </div>
 
-              <p className="display-arabic mt-4 text-sm leading-relaxed text-gold-muted/75">
+              <p className="display-arabic mt-4 text-sm leading-relaxed text-gold-muted">
                 {tier.tagline}
               </p>
 
@@ -75,7 +75,7 @@ export function Membership({ currentTier }: { currentTier: Tier }) {
 
               <ul className="flex-1 space-y-3">
                 {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm text-gold-muted/85">
+                  <li key={feature} className="flex items-start gap-2.5 text-sm text-gold-muted">
                     <Check className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden="true" />
                     <span>{feature}</span>
                   </li>

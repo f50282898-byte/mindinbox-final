@@ -68,7 +68,7 @@ export function LegalDocument({
         <h1 className="display-arabic text-3xl font-bold leading-tight text-gold-light sm:text-4xl">
           {titleAr}
         </h1>
-        <p className="display-latin mt-1 text-lg text-gold-muted/80">{titleEn}</p>
+        <p className="display-latin mt-1 text-lg text-gold-muted">{titleEn}</p>
         <p className="mt-4 text-xs tracking-wide text-ink-3">
           {updatedAr} · {updatedEn}
         </p>
@@ -86,7 +86,7 @@ export function LegalDocument({
               >
                 <span className="display-arabic">{s.headingAr}</span>
                 <span className="mx-2 text-ink-3">/</span>
-                <span className="display-latin text-gold-muted/70">{s.headingEn}</span>
+                <span className="display-latin text-gold-muted">{s.headingEn}</span>
               </a>
             </li>
           ))}
@@ -100,14 +100,14 @@ export function LegalDocument({
               <span className="me-2 text-ink-3">{String(i + 1).padStart(2, "0")}</span>
               {s.headingAr}
             </h2>
-            <p className="display-latin mb-3 text-sm text-gold-muted/65">{s.headingEn}</p>
+            <p className="display-latin mb-3 text-sm text-gold-muted">{s.headingEn}</p>
 
             {s.paragraphs.map((p, j) => (
               <div key={j} className="mb-4">
                 <p className="display-arabic text-[0.975rem] leading-loose text-gold-muted">
                   {p.ar}
                 </p>
-                <p className="display-latin mt-1.5 text-sm leading-relaxed text-gold-muted/65">
+                <p className="display-latin mt-1.5 text-sm leading-relaxed text-gold-muted">
                   {p.en}
                 </p>
               </div>
@@ -118,7 +118,7 @@ export function LegalDocument({
                 {s.items.map((it, j) => (
                   <li key={j}>
                     <p className="display-arabic text-[0.95rem] leading-loose text-gold-muted">{it.ar}</p>
-                    <p className="display-latin text-sm leading-relaxed text-gold-muted/60">{it.en}</p>
+                    <p className="display-latin text-sm leading-relaxed text-gold-muted">{it.en}</p>
                   </li>
                 ))}
               </ul>

@@ -39,22 +39,29 @@ function isTheme(v: unknown): v is Theme {
   return v === "dark" || v === "light";
 }
 
-/**
- * Runs before first paint. Kept as a string so layout.tsx can inline it and
- * avoid the theme flash. Must stay in sync with STORAGE_KEY above.
- */
-export const THEME_BOOTSTRAP_SCRIPT = `(function(){try{var k=${JSON.stringify(
-  STORAGE_KEY
-)};var s=localStorage.getItem(k);if(s==="dark"||s==="light"){document.documentElement.dataset.theme=s;return;}document.documentElement.dataset.theme="dark";}catch(e){}})();`;
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
 
-  // Adopt whatever the bootstrap script already decided (always "dark" unless the
-  // user has explicitly chosen Parchment).
   useEffect(() => {
-    const attr = document.documentElement.dataset.theme;
-    if (isTheme(attr)) setThemeState(attr);
+    const media = window.matchMedia("(prefers-color-scheme: light)");
+    function sync() {
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem(STORAGE_KEY);
+      } catch {
+        saved = document.documentElement.dataset.theme ?? null;
+      }
+      const next = isTheme(saved) ? saved : media.matches ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      setThemeState(next);
+    }
+    sync();
+    media.addEventListener("change", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      media.removeEventListener("change", sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
   const setTheme = useCallback((t: Theme) => {

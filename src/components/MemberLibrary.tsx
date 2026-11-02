@@ -20,7 +20,7 @@ import { auth, db, paths, storage } from "@/lib/firebase";
 import { useAppStore } from "@/lib/store";
 import { TIER_DEFINITIONS, tierSatisfies, type Tier } from "@/lib/tiers";
 import { PremiumShield } from "@/components/PremiumShield";
-import { GreekColumns } from "@/components/GreekColumns";
+import { useTheme } from "@/components/ThemeProvider";
 import { ArtLayer } from "@/components/art/ArtLayer";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -184,7 +184,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
   if (!checked) {
     return (
       <Shell requiredTier={requiredTier}>
-        <p className="display-arabic py-20 text-center text-sm text-gold-muted/60">
+        <p className="display-arabic py-20 text-center text-sm text-gold-muted">
           …جارٍ فتح مكتبتك
         </p>
       </Shell>
@@ -223,7 +223,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
           <h1 className="gold-text-glow display-arabic mt-3 text-3xl font-bold text-gold-light sm:text-5xl">
             {definition.name}
           </h1>
-          <p className="display-arabic mt-4 text-sm text-gold-muted/70">{definition.tagline}</p>
+          <p className="display-arabic mt-4 text-sm text-gold-muted">{definition.tagline}</p>
         </header>
 
         <PremiumShield>
@@ -248,7 +248,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                       <figcaption className="px-2 pb-1 pt-4">
                         <h3 className="display-arabic text-lg text-gold-light">{item.title}</h3>
                         {item.summary && (
-                          <p className="mt-1.5 text-sm leading-relaxed text-gold-muted/70">
+                          <p className="mt-1.5 text-sm leading-relaxed text-gold-muted">
                             {item.summary}
                           </p>
                         )}
@@ -266,7 +266,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
           {requiredTier === "sanctum" && (
             <section className="panel mt-12 p-6 sm:p-8">
               <h2 className="display-arabic text-xl text-gold-light">دائرة المحراب</h2>
-              <p className="mt-2 text-sm text-gold-muted/65">
+              <p className="mt-2 text-sm text-gold-muted">
                 غرفة مقصورة لأسئلة جادة وتأملات مشتركة.
               </p>
 
@@ -299,7 +299,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                 {posts.length ? (
                   posts.map((post) => (
                     <article key={post.id} className="panel-inset p-4" data-allow-select>
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-gold-muted/90">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-gold-muted">
                         {post.text}
                       </p>
                       <p className="mt-2 text-[10px] text-ink-3">
@@ -331,7 +331,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
                       <div className="min-w-0">
                         <p className="truncate text-sm text-gold-light">{item.title}</p>
                         {item.summary && (
-                          <p className="mt-0.5 truncate text-xs text-gold-muted/60">
+                          <p className="mt-0.5 truncate text-xs text-gold-muted">
                             {item.summary}
                           </p>
                         )}
@@ -359,7 +359,7 @@ export function MemberLibrary({ requiredTier }: { requiredTier: Extract<Tier, "o
         </PremiumShield>
 
         {message && (
-          <p role="status" className="mt-8 text-center text-xs text-gold/70">
+          <p role="status" className="mt-8 text-center text-xs text-gold">
             {message}
           </p>
         )}
@@ -482,7 +482,7 @@ function DailyAnalysis() {
   return (
     <section className="panel mt-12 p-6 sm:p-8">
       <h2 className="display-arabic text-xl text-gold-light">قراءة الفيلسوف اليومية</h2>
-      <p className="mt-2 text-sm text-gold-muted/65">
+      <p className="mt-2 text-sm text-gold-muted">
         يقرأ الفيلسوف سجلّك الأسبوعي ويعيد إليك قراءته.
       </p>
 
@@ -507,12 +507,46 @@ function DailyAnalysis() {
           className="mt-6"
         >
           <div className="hairline mb-5" />
-          <p className="display-arabic whitespace-pre-wrap text-sm leading-loose text-gold-muted/90">
+          <p className="display-arabic whitespace-pre-wrap text-sm leading-loose text-gold-muted">
             {reading}
           </p>
         </motion.div>
       )}
     </section>
+  );
+}
+
+function ColonnadeBackdrop({ opacity = 0.28 }: { opacity?: number }) {
+  const { theme } = useTheme();
+  const variant = theme === "light" ? "light" : "dark";
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+    >
+      <picture>
+        <source
+          type="image/avif"
+          srcSet={`/art/colonnade-${variant}-768.avif 768w, /art/colonnade-${variant}-1280.avif 1280w, /art/colonnade-${variant}-1920.avif 1920w`}
+          sizes="100vw"
+        />
+        <source
+          type="image/webp"
+          srcSet={`/art/colonnade-${variant}-768.webp 768w, /art/colonnade-${variant}-1280.webp 1280w, /art/colonnade-${variant}-1920.webp 1920w`}
+          sizes="100vw"
+        />
+        <img
+          src={`/art/colonnade-${variant}-1920.webp`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          style={{ objectPosition: "50% 100%", opacity }}
+          className="h-full w-full object-cover transition-opacity duration-700"
+        />
+      </picture>
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-0)]/80 via-transparent to-[var(--bg-0)]" />
+    </div>
   );
 }
 
@@ -526,8 +560,10 @@ function Shell({
   const definition = TIER_DEFINITIONS[requiredTier];
   return (
     <div className="relative min-h-screen">
-      {/* The gate engraving, with the procedural colonnade as its placeholder. */}
-      <ArtLayer id="gate" fallback={<GreekColumns density="sparse" />} />
+      {/* Authentic high-resolution colonnade cinematography delivered via <picture> */}
+      <ColonnadeBackdrop opacity={requiredTier === "sanctum" ? 0.32 : 0.22} />
+      {/* The sacred portal gate engraving */}
+      <ArtLayer id="gate" opacity={requiredTier === "sanctum" ? 0.34 : 0.20} />
       <div className="relative">{children}</div>
       <footer className="display-arabic flex flex-col items-center gap-3 pb-10 text-center text-[11px] text-ink-3">
         <Logo size={38} />
@@ -544,7 +580,7 @@ function LockedState({ title, message }: { title: string; message: string }) {
       <h1 className="gold-text-glow display-arabic mt-6 text-3xl font-bold text-gold-light">
         {title}
       </h1>
-      <p className="display-arabic mt-5 text-sm leading-relaxed text-gold-muted/65">{message}</p>
+      <p className="display-arabic mt-5 text-sm leading-relaxed text-gold-muted">{message}</p>
       <div className="mt-9 flex flex-wrap justify-center gap-3">
         <Link href="/membership" className="btn-gold py-3">
           <span>راجع العضويات</span>

@@ -59,6 +59,19 @@
     --lens-rumi: 197 160 89;
     --lens-dostoevsky: 158 54 58;
     --lens-aesop: 140 140 132;
+    --lens-socrates: 160 170 185;
+    --lens-nietzsche: 180 60 70;
+    --lens-aurelius: 184 134 11;
+    --lens-ibn-rushd: 142 120 80;
+    --lens-al-ghazali: 110 145 130;
+    --lens-aristotle: 135 150 170;
+    --lens-ibn-sina: 130 140 90;
+    --lens-spinoza: 105 130 160;
+    --lens-seneca: 170 120 90;
+    --lens-hypatia: 160 130 180;
+    --lens-al-farabi: 125 155 140;
+    --lens-confucius: 185 115 85;
+    --lens-lao-tzu: 115 160 145;
 
     /* ---- Theme: default is dark (Luminous Obsidian) ---- */
     --theme-bg: #06070B;
@@ -96,6 +109,11 @@
     --edge-2: rgba(212, 175, 55, 0.32);
     --edge-strong: rgba(212, 175, 55, 0.85);
     --edge-hairline: rgba(212, 175, 55, 0.22);
+
+    /* Specular Hairline & Border Lighting (Apple-Grade) */
+    --specular-hairline: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    --border-hairline: rgba(212, 175, 55, 0.15);
+    --border-specular: rgba(255, 255, 255, 0.12);
 
     /* Glass */
     --glass-blur: 20px;
@@ -178,7 +196,7 @@
     --dur-3: 320ms;
     --dur-4: 520ms;
     --dur-5: 800ms;
-    --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-silk: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-gate: cubic-bezier(0.65, 0, 0.35, 1);
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-exit: cubic-bezier(0.4, 0, 1, 1);
@@ -222,7 +240,7 @@
 
     --text-1: #1a1712; /* 15.1:1 on --bg-0 */
     --text-2: #453d31; /* 9.8:1  */
-    --text-3: #6b6152; /* 5.3:1  */
+    --text-3: #5e5445; /* 6.1:1 on --bg-0, 5.6:1 on --bg-1 (robust AA) */
     --text-on-gold: #1a1712;
 
     --accent: #6f5611; /* readable accent *text* on parchment */
@@ -239,6 +257,11 @@
     --edge-2: rgba(90, 74, 40, 0.34);
     --edge-strong: rgba(90, 74, 40, 0.7);
     --edge-hairline: rgba(90, 74, 40, 0.26);
+
+    /* Specular Hairline & Border Lighting (Light Ivory Highlight) */
+    --specular-hairline: inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
+    --border-hairline: rgba(111, 86, 17, 0.22);
+    --border-specular: rgba(111, 86, 17, 0.28);
 
     --glass-highlight: rgba(255, 255, 255, 0.6);
 
@@ -349,46 +372,100 @@
 }
 
 @layer components {
+  /* ---------- Multi-tier Frosted Glassmorphism (Apple-Grade) ---------- */
+  .surface-glass-subtle {
+    background: var(--surface-1);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid var(--border-hairline);
+    box-shadow: var(--specular-hairline), var(--shadow-1);
+    transition:
+      border-color var(--dur-3) var(--ease-silk),
+      box-shadow var(--dur-3) var(--ease-silk),
+      background-color var(--dur-3) var(--ease-silk);
+  }
+  .surface-glass-subtle:hover {
+    border-color: rgba(var(--gold), 0.35);
+    box-shadow: var(--specular-hairline), var(--shadow-2);
+  }
+
+  .surface-glass-elevated {
+    background: var(--surface-2);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--border-hairline);
+    box-shadow:
+      var(--specular-hairline),
+      var(--shadow-2);
+    transition:
+      border-color var(--dur-3) var(--ease-silk),
+      box-shadow var(--dur-3) var(--ease-silk),
+      background-color var(--dur-3) var(--ease-silk);
+  }
+  .surface-glass-elevated:hover {
+    border-color: rgba(var(--gold), 0.45);
+    box-shadow:
+      var(--specular-hairline),
+      var(--shadow-3),
+      var(--glow-gold);
+  }
+
   /* ---------- Glassmorphism — Luminous Obsidian & Antique Gold ---------- */
   .glass {
     background: var(--surface-1);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--border-hairline);
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9);
     transition:
+      background-color var(--dur-3) var(--ease-silk),
       border-color var(--dur-3) var(--ease-silk),
       box-shadow var(--dur-3) var(--ease-silk);
   }
   .glass:hover {
     border-color: rgba(212, 175, 55, 0.40);
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9),
       0 0 40px rgba(212, 175, 55, 0.12);
   }
 
   .glass-strong {
     background: var(--surface-2);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid var(--border-hairline);
     backdrop-filter: blur(calc(var(--glass-blur) * 1.5)) saturate(var(--glass-saturate));
     -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5))
       saturate(var(--glass-saturate));
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9);
     transition:
+      background-color var(--dur-3) var(--ease-silk),
       border-color var(--dur-3) var(--ease-silk),
       box-shadow var(--dur-3) var(--ease-silk);
   }
   .glass-strong:hover {
     border-color: rgba(212, 175, 55, 0.40);
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9),
       0 0 40px rgba(212, 175, 55, 0.14);
+  }
+
+  /* Hairline and Specular Border Utilities */
+  .border-hairline {
+    border-color: var(--border-hairline);
+  }
+
+  .border-specular {
+    border-color: var(--border-specular);
+    box-shadow: var(--specular-hairline);
+  }
+
+  .specular-hairline {
+    box-shadow: var(--specular-hairline);
   }
 
   /* ---------- Gold treatments ---------- */
@@ -431,9 +508,11 @@
 
   /* ---------- Surfaces ---------- */
   .panel {
-    @apply rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-2xl;
+    @apply rounded-3xl border backdrop-blur-xl shadow-2xl;
+    background: var(--surface-1);
+    border-color: var(--border-hairline);
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9);
     transition:
       border-color var(--dur-3) var(--ease-silk),
@@ -442,15 +521,17 @@
   .panel:hover {
     border-color: rgba(212, 175, 55, 0.40);
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9),
       0 0 40px rgba(212, 175, 55, 0.12);
   }
 
   .panel-inset {
-    @apply rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-2xl;
+    @apply rounded-2xl border backdrop-blur-xl shadow-2xl;
+    background: var(--surface-1);
+    border-color: var(--border-hairline);
     box-shadow:
-      inset 0 1px 0 0 rgba(231, 217, 161, 0.14),
+      var(--specular-hairline),
       0 24px 60px -30px rgba(0, 0, 0, 0.9);
   }
 
@@ -521,8 +602,8 @@
   }
 
   .field {
-    @apply w-full rounded-2xl border border-gold/20 bg-black/60 px-5 py-4 text-gold-light
-      placeholder:text-gold-muted/35 transition-colors;
+    @apply w-full rounded-2xl border border-gold/20 bg-black/60 px-5 py-4 text-ink-1
+      placeholder:text-ink-3 transition-colors;
   }
   .field:focus {
     @apply border-gold/70 outline-none ring-1 ring-gold/40;
@@ -539,48 +620,8 @@
     @apply border-gold/70 bg-gold/15 text-gold-light;
   }
 
-  /* ---------- Greek column (pure CSS, no imagery) ---------- */
-  .greek-column {
-    position: relative;
-    width: 100%;
-    /* Fluted shaft: a repeating gradient carves the grooves.
-       Alpha here is low on purpose — GreekColumns multiplies it by a per-column
-       opacity (depth fog). Combined peak should land around 0.10 alpha so the
-       colonnade stays an atmosphere and never competes with the copy. */
-    background-image:
-      linear-gradient(90deg,
-        rgb(var(--gold) / 0.030) 0%,
-        rgb(var(--gold) / 0.105) 16%,
-        rgb(var(--gold) / 0.045) 33%,
-        rgb(var(--gold) / 0.095) 50%,
-        rgb(var(--gold) / 0.035) 67%,
-        rgb(var(--gold) / 0.095) 83%,
-        rgb(var(--gold) / 0.030) 100%),
-      linear-gradient(180deg, rgb(var(--gold) / 0.075), rgb(var(--gold) / 0.008) 70%);
-    border-left: 1px solid rgb(var(--gold) / 0.14);
-    border-right: 1px solid rgb(var(--gold) / 0.14);
-    will-change: transform;
-  }
-
-  /* Capital (abacus) + base mouldings drawn with pseudo-elements */
-  .greek-column::before {
-    content: "";
-    position: absolute;
-    inset-inline: -6px;
-    top: 0;
-    height: 13px;
-    background: linear-gradient(180deg, rgb(var(--gold) / 0.30), rgb(var(--gold) / 0.06));
-    border-radius: 2px;
-  }
-  .greek-column::after {
-    content: "";
-    position: absolute;
-    inset-inline: -4px;
-    bottom: 0;
-    height: 10px;
-    background: linear-gradient(180deg, rgb(var(--gold) / 0.05), rgb(var(--gold) / 0.24));
-    border-radius: 2px;
-  }
+  /* Procedural .greek-column rules purged in compliance with Requirement R2.
+     Replaced by authentic high-resolution WebP/AVIF colonnade imagery delivered via <picture>. */
 
   /* ---------- Atmospheric depth ---------- */
   .void-vignette {
@@ -594,6 +635,28 @@
 
   .hairline {
     @apply h-px w-full bg-gradient-to-r from-transparent via-gold/25 to-transparent;
+  }
+
+  /* ---------- Spatial Container Grid — Apple-Grade Consistency ---------- */
+  .sanctuary-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3.5vw, 2.5rem);
+  }
+
+  .editorial-container {
+    width: 100%;
+    max-width: 840px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3.5vw, 2rem);
+  }
+
+  .compact-container {
+    width: 100%;
+    max-width: 540px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3vw, 1.5rem);
   }
 
   /*
@@ -790,17 +853,10 @@
     }
   }
 
-  /* ---------- The spatial box ----------
-     CSS 3D, not WebGL. A box of six faces and eight corners cannot tell you
-     anything a `transform: rotate3d()` cannot, and the difference is ~600KB of
-     gzip and a second GPU context competing with the page. If this ever outgrows
-     CSS, the swap is one component — the geometry here is already in CSS vars.
-
-     The scene is driven entirely by custom properties written once per frame from
-     one `requestAnimationFrame` loop in `SpatialBox`: --rx, --ry for the tilt,
-     --open for how far the faces have separated, --core for the heart's warmth.
-     Nothing here animates on its own, so one loop owns every moving pixel and the
-     browser never runs two of them at once. */
+  /* ---------- The Living Sanctuary Core (R2 Compliant) ----------
+     Replaces the procedural CSS wireframe cube with an authentic luxury focal portal.
+     Driven by custom properties written from usePointerField: --rx, --ry, --core. */
+  .sanctuary-stage,
   .spatial-stage {
     position: absolute;
     inset: 0;
@@ -809,84 +865,73 @@
     perspective: 1200px;
     perspective-origin: 50% 50%;
     pointer-events: none;
-    /* Fade the whole object at the edges of the viewport rather than clipping it,
-       so a rotated corner never produces a hard rectangular seam. */
     -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 42%, transparent 82%);
     mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 42%, transparent 82%);
   }
 
+  .sanctuary-core-container,
   .spatial-cube {
     position: relative;
-    width: clamp(210px, 30vw, 340px);
     aspect-ratio: 1;
-    /* Half the box, so the six faces meet in the middle when closed. A percentage
-       here resolves against the element's own height, which is why 50% is exact
-       at any size without a media query. */
-    --half: 50%;
     transform-style: preserve-3d;
     transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) rotateZ(var(--rz, 0deg));
     will-change: transform;
   }
 
-  .spatial-face {
+  .sanctuary-core-halo {
+    position: absolute;
+    inset: -6%;
+    border-radius: 50%;
+    border: 1px solid rgb(var(--lens-accent, var(--gold-antique)) / 0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      0 0 45px rgb(var(--lens-accent, var(--gold-antique)) / 0.14);
+    pointer-events: none;
+    transition: border-color 300ms var(--ease-silk);
+  }
+
+  .sanctuary-core-portal {
     position: absolute;
     inset: 0;
-    border: 1px solid rgb(var(--lens-accent, var(--gold-antique)) / 0.16);
-    background:
-      linear-gradient(
-        135deg,
-        rgb(var(--lens-accent, var(--gold-antique)) / 0.045),
-        transparent 55%
-      ),
-      rgb(var(--volcanic) / 0.16);
-    /* The `transform` is set inline per face in `SpatialBox`, because each one needs
-       a different rotation. What is shared is the easing, so the bloom reads as one
-       object opening rather than six independently animating panels. */
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgb(var(--volcanic) / 0.9);
+    border: 1px solid rgb(var(--lens-accent, var(--gold-antique)) / 0.32);
+    box-shadow:
+      0 26px 64px -14px rgba(0, 0, 0, 0.75),
+      inset 0 0 32px rgba(0, 0, 0, 0.85);
+    transform: translateZ(calc(12px + var(--open, 0) * 20px));
     transition: transform 240ms var(--ease-silk);
   }
 
-  /* How far each face travels once the box opens. Front faces push outward along
-     their own normal; the back face pushes inward, which is what gives the object
-     depth instead of making it inflate. */
-  .spatial-face-near {
-    --push-near: 44px;
-  }
-  .spatial-face-far {
-    --push-far: -44px;
-  }
-
-  .spatial-edge {
-    position: absolute;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgb(var(--lens-accent, var(--gold-antique)) / 0.34),
-      transparent
-    );
-    /* A rim, not a border: the gradient falls off at both ends so an edge reads
-       as a lit wire rather than a solid bar. */
+  .sanctuary-core-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 68%, transparent 100%);
+    mask-image: radial-gradient(circle at 50% 50%, #000 68%, transparent 100%);
+    transition: transform 600ms var(--ease-silk);
   }
 
-  /* The core: the "awareness" inside. Its opacity and scale are driven by --core,
-     written by the same loop, so the heart swells with the tilt instead of running
-     its own independent animation. */
+  .sanctuary-core-radiance,
   .spatial-core {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 42%;
+    width: 58%;
     aspect-ratio: 1;
     translate: -50% -50%;
     border-radius: 50%;
     background: radial-gradient(
       circle at 50% 50%,
-      rgb(var(--lens-accent, var(--gold-antique)) / 0.5),
-      rgb(var(--gold-antique) / 0.12) 46%,
-      transparent 70%
+      rgb(var(--lens-accent, var(--gold-antique)) / 0.65),
+      rgb(var(--gold-antique) / 0.18) 42%,
+      transparent 72%
     );
-    opacity: calc(0.16 + var(--core, 0) * 0.6);
-    scale: calc(1 + var(--core, 0) * 0.55);
-    filter: blur(6px);
+    opacity: calc(0.2 + var(--core, 0) * 0.65);
+    scale: calc(1 + var(--core, 0) * 0.45);
+    filter: blur(12px);
+    pointer-events: none;
     transition: opacity 320ms var(--ease-silk), scale 320ms var(--ease-silk);
   }
 
@@ -905,6 +950,7 @@
     }
   }
 
+  .sanctuary-breathe,
   .spatial-breathe {
     animation: spatial-breathe 9s ease-in-out infinite;
   }
@@ -912,12 +958,16 @@
   /* Fully static when the reader asked for less motion. The rAF loop is also
      stopped in JS — this only removes the leftover CSS animation. */
   @media (prefers-reduced-motion: reduce) {
+    .sanctuary-core-container,
     .spatial-cube,
+    .sanctuary-breathe,
     .spatial-breathe {
       animation: none;
       transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     }
-    .spatial-face,
+    .sanctuary-core-halo,
+    .sanctuary-core-portal,
+    .sanctuary-core-radiance,
     .spatial-core {
       transition: none;
     }

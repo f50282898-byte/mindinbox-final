@@ -58,6 +58,8 @@ export function createOpenAiCompatibleAdapter(opts: OpenAiCompatibleOptions): Pr
           max_tokens: call.maxOutputTokens,
           temperature: call.temperature,
           stream: true,
+          ...(opts.id === "nvidia" && call.model === "nvidia/nemotron-3.5-lightning-30b-a3b"
+            ? { chat_template_kwargs: { enable_thinking: false } } : {}),
           // Ask for usage in the final frame; some providers ignore it, which is
           // why `usage()` is allowed to resolve null.
           stream_options: { include_usage: true },
@@ -85,7 +87,7 @@ export function createOpenAiCompatibleAdapter(opts: OpenAiCompatibleOptions): Pr
           }
 
           const delta = data.choices?.[0]?.delta;
-          const text = delta?.content ?? delta?.reasoning_content ?? "";
+          const text = delta?.content ?? "";
           if (text) yield text;
         }
       })();

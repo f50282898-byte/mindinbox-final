@@ -25,7 +25,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ["list"],
-    ["html", { outputFolder: "test-results/html-report", open: "never" }],
+    ["html", { outputFolder: "playwright-report", open: "never" }],
     ["json", { outputFile: "test-results/results.json" }],
   ],
   timeout: 60_000,
@@ -122,6 +122,7 @@ export default defineConfig({
         // the machine: the base URLs point at the local fake.
         GEMINI_API_KEY: "e2e-placeholder",
         GROQ_API_KEY: "e2e-placeholder",
+        QUOTA_TEST_MEMORY: "1",
         AI_BASE_URL_GEMINI: "http://127.0.0.1:4010",
         AI_BASE_URL_GROQ: "http://127.0.0.1:4010",
         /*

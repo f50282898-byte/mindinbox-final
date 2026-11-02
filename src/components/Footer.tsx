@@ -10,7 +10,7 @@ import { groupItems, FALLBACK_NAV } from "@/lib/nav";
  * Contains: logo, grouped nav links, legal links, copyright.
  */
 export function Footer() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
 
   const practiceItems = groupItems(FALLBACK_NAV, "practice").filter(
     (i) => i.href !== "/enter"
@@ -19,9 +19,9 @@ export function Footer() {
 
   return (
     <footer
-      className="border-t border-white/10 bg-white/[0.03]"
+      className="border-t border-hairline bg-surface-1 backdrop-blur-md"
       role="contentinfo"
-      aria-label="تذييل الصفحة"
+      aria-label={t({ ar: "تذييل الصفحة", en: "Footer" })}
     >
       <div className="mx-auto max-w-[1280px] px-4 py-10 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -29,32 +29,56 @@ export function Footer() {
           <div className="lg:col-span-1">
             <Link
               href="/"
-              aria-label="عقل في صندوق — الصفحة الرئيسية"
-              className="flex items-center gap-2 mb-4"
+              aria-label={t({
+                ar: "عقل في صندوق — الصفحة الرئيسية",
+                en: "Mind in a Box — Home",
+              })}
+              className="min-h-[44px] inline-flex items-center gap-2 mb-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold rounded-lg"
             >
-              <Logo size={28} ariaLabel="شعار عقل في صندوق" />
-              <span className="display-arabic text-xl font-bold text-gold-light">
-                عقل في صندوق
+              <Logo
+                size={28}
+                ariaLabel={t({
+                  ar: "شعار عقل في صندوق",
+                  en: "Mind in a Box logo",
+                })}
+              />
+              <span
+                className={
+                  locale === "ar"
+                    ? "display-arabic text-xl font-bold text-gold-light"
+                    : "display-latin text-xl font-bold text-gold-light"
+                }
+              >
+                {locale === "ar" ? "عقل في صندوق" : "Mind in a Box"}
               </span>
             </Link>
-            <p className="display-arabic text-sm leading-relaxed text-gold-muted/70 max-w-xs">
-              ملاذك الفلسفي للذكاء الاصطناعي. اسأل، تأمّل، وابنِ وعيك — في بيئة معزولة عن ضجيج العالم.
+            <p
+              className={`text-sm leading-relaxed text-gold-muted max-w-xs ${
+                locale === "ar" ? "display-arabic" : "display-latin"
+              }`}
+            >
+              {t({
+                ar: "ملاذك الفلسفي للذكاء الاصطناعي. اسأل، تأمّل، وابنِ وعيك — في بيئة معزولة عن ضجيج العالم.",
+                en: "Your philosophical sanctuary for artificial intelligence. Inquire, reflect, and cultivate consciousness — insulated from the world's noise.",
+              })}
             </p>
           </div>
 
           {/* Practice links */}
           <nav aria-label={t({ ar: "الممارسة", en: "Practice" })}>
-            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted/70 mb-3">
+            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted mb-3">
               {t({ ar: "الممارسة", en: "Practice" })}
             </h3>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               {practiceItems.map((item) => (
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className="display-arabic text-sm text-gold-muted/70 hover:text-gold-light transition-colors"
+                    className={`min-h-[44px] flex items-center text-sm text-gold-muted hover:text-gold-light transition-colors ${
+                      locale === "ar" ? "display-arabic" : "display-latin"
+                    }`}
                   >
-                    {item.label.ar}
+                    {item.label[locale]}
                   </Link>
                 </li>
               ))}
@@ -63,17 +87,19 @@ export function Footer() {
 
           {/* Account / Legal links */}
           <nav aria-label={t({ ar: "الحساب والقانوني", en: "Account & Legal" })}>
-            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted/70 mb-3">
+            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted mb-3">
               {t({ ar: "الحساب", en: "Account" })}
             </h3>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               {accountItems.map((item) => (
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className="display-arabic text-sm text-gold-muted/70 hover:text-gold-light transition-colors"
+                    className={`min-h-[44px] flex items-center text-sm text-gold-muted hover:text-gold-light transition-colors ${
+                      locale === "ar" ? "display-arabic" : "display-latin"
+                    }`}
                   >
-                    {item.label.ar}
+                    {item.label[locale]}
                   </Link>
                 </li>
               ))}
@@ -82,14 +108,16 @@ export function Footer() {
 
           {/* Legal + Social */}
           <nav aria-label={t({ ar: "قانوني", en: "Legal" })}>
-            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted/70 mb-3">
+            <h3 className="display-arabic text-xs font-bold tracking-[0.22em] text-gold-muted mb-3">
               {t({ ar: "قانوني", en: "Legal" })}
             </h3>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               <li>
                 <Link
                   href="/privacy"
-                  className="display-arabic text-sm text-gold-muted/70 hover:text-gold-light transition-colors"
+                  className={`min-h-[44px] flex items-center text-sm text-gold-muted hover:text-gold-light transition-colors ${
+                    locale === "ar" ? "display-arabic" : "display-latin"
+                  }`}
                 >
                   {t({ ar: "الخصوصية", en: "Privacy" })}
                 </Link>
@@ -97,7 +125,9 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="display-arabic text-sm text-gold-muted/70 hover:text-gold-light transition-colors"
+                  className={`min-h-[44px] flex items-center text-sm text-gold-muted hover:text-gold-light transition-colors ${
+                    locale === "ar" ? "display-arabic" : "display-latin"
+                  }`}
                 >
                   {t({ ar: "الشروط", en: "Terms" })}
                 </Link>

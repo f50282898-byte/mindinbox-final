@@ -8,10 +8,11 @@ import sharp from "sharp";
 const WIDTH = 1200;
 const HEIGHT = 630;
 const OUTPUT = resolve(process.cwd(), "public/og.png");
-const BACKGROUND = resolve(
-  process.cwd(),
-  "public/images/Philosophical_academy_with_pillars_2K_20260920021618.webp"
-);
+const BACKGROUND = [
+  resolve(process.cwd(), "assets-source/colonnade-dark.webp"),
+  resolve(process.cwd(), "public/art/colonnade-dark-1920.webp"),
+  resolve(process.cwd(), "public/images/hero/hero-sanctuary.webp"),
+].find((p) => existsSync(p)) ?? resolve(process.cwd(), "assets-source/colonnade-dark.webp");
 const LOGO = resolve(
   process.cwd(),
   "public/images/Logo_representing_philosophical___2K_20260922065211.webp"

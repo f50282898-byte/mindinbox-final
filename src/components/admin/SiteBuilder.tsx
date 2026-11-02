@@ -218,7 +218,7 @@ export function SiteBuilder() {
 
   if (!draft) {
     return (
-      <p role="status" className="text-sm text-gold-muted/70">
+      <p role="status" className="text-sm text-gold-muted">
         جارٍ التحميل…
       </p>
     );
@@ -227,7 +227,7 @@ export function SiteBuilder() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-xs text-gold-muted/60">
+        <p className="text-xs text-gold-muted">
           النسخة المنشورة: {publishedVersion} {dirty ? "— مسودة غير منشورة" : ""}
         </p>
         <button
@@ -283,11 +283,11 @@ export function SiteBuilder() {
             src="/?preview=1"
             className="h-[420px] w-full rounded-xl border border-white/10 bg-white/[0.04]"
           />
-          <p className="mt-2 text-xs text-gold-muted/60">
+          <p className="mt-2 text-xs text-gold-muted">
             المعاينة تحمّل الصفحة الحقيقية. ما تراه في «ترتيب الشريط» هو ما سيظهر بعد
             النشر، لا ما هو منشور الآن.
           </p>
-          <ul className="mt-3 flex flex-col gap-1 text-xs text-gold-muted/70">
+          <ul className="mt-3 flex flex-col gap-1 text-xs text-gold-muted">
             {visibleNav.length === 0 ? (
               <li>كل عناصر التنقّل مخفية — الموقع بلا شريط.</li>
             ) : (
@@ -326,7 +326,7 @@ function SortableNavRow({
         // These are the drag handles, and they are buttons so they are focusable and
         // operable by keyboard. `aria-label` says what they do rather than naming the row.
         aria-label={`اسحب ${item.label.ar}`}
-        className="cursor-grab px-1 text-gold-muted/60"
+        className="cursor-grab px-1 text-gold-muted"
         {...attributes}
         {...listeners}
       >

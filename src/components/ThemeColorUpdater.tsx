@@ -18,13 +18,9 @@ export function ThemeColorUpdater() {
 
   useEffect(() => {
     const color = theme === "dark" ? "#050505" : "#f8f4e8";
-    let meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta) {
-      meta = document.createElement("meta");
-      meta.setAttribute("name", "theme-color");
-      document.head.appendChild(meta);
+    for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+      meta.setAttribute("content", color);
     }
-    meta.setAttribute("content", color);
   }, [theme]);
 
   return null;

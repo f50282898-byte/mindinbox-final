@@ -164,7 +164,7 @@ export function DailyTracker() {
         <h1 className="gold-text-glow display-arabic text-3xl font-bold text-gold-light sm:text-4xl">
           متتبع الوعي
         </h1>
-        <p className="display-arabic mt-3 text-sm text-gold-muted/70">
+        <p className="display-arabic mt-3 text-sm text-gold-muted">
           راقب عاداتك وأفكارك ومجرى وقتك يوماً بيوم
         </p>
       </header>
@@ -176,7 +176,7 @@ export function DailyTracker() {
             <p className="text-xs text-ink-3">الأسبوع</p>
             <p className="display-arabic mt-1 text-lg text-gold-light">{total} إدخال</p>
           </div>
-          <div className="flex items-center gap-5 text-xs text-gold-muted/65">
+          <div className="flex items-center gap-5 text-xs text-gold-muted">
             <Stat label="سلسلة" value={`${streak} يوم`} />
             <Stat label="ذروة" value={`${peak} / يوم`} />
             {!unlocked && <Stat label="حدّ اليوم" value={`${todayCount} / ${limit}`} />}
@@ -257,7 +257,7 @@ export function DailyTracker() {
           </div>
         </form>
 
-        {notice && <p className="mt-4 text-xs text-gold/75">{notice}</p>}
+        {notice && <p className="mt-4 text-xs text-gold">{notice}</p>}
         {error && <p role="alert" className="mt-4 text-xs text-red-300/85">{error}</p>}
         {syncing && <p className="mt-4 text-xs text-ink-3">جارٍ المزامنة…</p>}
       </section>
@@ -291,7 +291,7 @@ export function DailyTracker() {
                     })}
                   </time>
                 </div>
-                <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gold-muted/90">
+                <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gold-muted">
                   {entry.text}
                 </p>
               </div>

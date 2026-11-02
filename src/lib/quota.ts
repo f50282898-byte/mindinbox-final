@@ -23,6 +23,7 @@ export function checkBurst(uid: string | null, ip: string | null): boolean {
 }
 function localMode(): boolean {
   if (adminConfigured()) return false;
+  if (process.env.NODE_ENV === "production" && process.env.QUOTA_TEST_MEMORY !== "1") throw new QuotaUnavailable();
   return true;
 }
 async function counterPaths(uid: string, ip: string | null, now: number): Promise<string[]> {

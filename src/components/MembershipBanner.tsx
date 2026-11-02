@@ -164,7 +164,7 @@ export function MembershipBanner() {
             <p className="display-arabic mt-1.5 text-base leading-snug text-gold-light">
               {active.headline}
             </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-gold-muted/70">{active.detail}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-gold-muted">{active.detail}</p>
             <Link
               href={active.href}
               className="mt-3 inline-flex items-center gap-1.5 text-xs text-gold transition-colors hover:text-gold-light"

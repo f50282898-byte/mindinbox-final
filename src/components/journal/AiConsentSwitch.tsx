@@ -39,7 +39,7 @@ export function AiConsentSwitch() {
         هل يقرأ الذكاء مفكرتك؟
       </h2>
 
-      <p className="display-arabic mb-4 text-xs leading-loose text-gold-muted/60">
+      <p className="display-arabic mb-4 text-xs leading-loose text-gold-muted">
         {consent ? (
           <>
             نعم، ما تكتبه في «صفحة حرة» وسؤال اليوم ومتابعة مزاجك يمكن أن يُقرأ لتلخيص

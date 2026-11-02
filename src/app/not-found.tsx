@@ -19,7 +19,7 @@ export default function NotFound() {
       <h1 className="display-arabic mt-4 text-3xl font-bold text-gold-light">
         هذه الصفحة ليست هنا
       </h1>
-      <p className="mt-3 leading-relaxed text-gold-muted/70">
+      <p className="mt-3 leading-relaxed text-gold-muted">
         Perhaps the path was mistyped, or the page has moved.
       </p>
 
